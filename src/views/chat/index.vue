@@ -585,7 +585,7 @@ onUnmounted(() => {
 </template>
 <style scoped>
 .mycard{ margin-top: 10px; position: relative; margin-left: 10px ; max-width: 200px ; cursor: pointer; }
-.myTitle{ display: flex; flex-wrap: wrap; justify-content: center; margin-top: 20px}
+.myTitle{ display: flex; flex-wrap: wrap; justify-content: center;margin:0 auto; margin-top: 20px; max-width: 800px;  }
 @media  screen and (max-width: 600px){
 	.mycard{
 		width: 45vw;
