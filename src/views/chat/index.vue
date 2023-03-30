@@ -1,9 +1,9 @@
 <script setup lang='ts'>
 import type { Ref } from 'vue'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref,reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { NAutoComplete, NButton, NInput, useDialog, useMessage } from 'naive-ui'
+import { NAutoComplete, NButton, NInput,NCard, useDialog, useMessage } from 'naive-ui'
 import html2canvas from 'html2canvas'
 import { Message } from './components'
 import { useScroll } from './hooks/useScroll'
@@ -42,6 +42,17 @@ const conversationList = computed(() => dataSources.value.filter(item => (!item.
 const prompt = ref<string>('')
 const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
+
+//默认问题
+let arr=[];
+arr.push({title:'商品文案', v:"销售电饭锅，请生成商品标题、描述、客户好评"});
+arr.push({title:'快速编程',v:'请用Python基于flask实现chatgpt的服务器端'})
+arr.push({title:'广告文案',v:'我是卖炸鸡的，请模拟顾客给我写5条好评'})
+arr.push({title:'文学创作',v:'我正在写一篇小说，关于爱情的题材，请帮我构思一下主要情节和人物设定'})
+arr.push({title:'社交推广',v:'请创作一条微博内容，以吸引年轻用户对你的服装品牌产生兴趣'})
+arr.push({title:'故事现编',v:'写一篇童话故事，讲述一只勇敢的小兔子如何打败了恶龙'})
+const myArray= reactive(arr);
+const rqList= ref(myArray)
 
 // 添加PromptStore
 const promptStore = usePromptStore()
@@ -387,6 +398,12 @@ function handleClear() {
   })
 }
 
+function go(v:any){
+	console.log('go',v);
+	prompt.value =v.v;
+	handleSubmit();
+}
+
 function handleEnter(event: KeyboardEvent) {
   if (!isMobile.value) {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -486,8 +503,14 @@ onUnmounted(() => {
           <template v-if="!dataSources.length">
             <div class="flex items-center justify-center mt-4 text-center text-neutral-300">
               <SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
-              <span>Aha~</span>
+              <span>开始与chatGPT对话吧！</span>
+
             </div>
+						<div v-if="rqList.length" class="myTitle">
+							<n-card :title="v2.title" size="small" class="mycard"  v-for="v2 in rqList" @click="go(v2)">{{v2.v}}</n-card>
+						</div>
+
+
           </template>
           <template v-else>
             <div>
@@ -507,7 +530,7 @@ onUnmounted(() => {
                   <template #icon>
                     <SvgIcon icon="ri:stop-circle-line" />
                   </template>
-                  Stop Responding
+									{{$t('chat.stop')}}
                 </NButton>
               </div>
             </div>
@@ -560,3 +583,13 @@ onUnmounted(() => {
     </footer>
   </div>
 </template>
+<style scoped>
+.mycard{ margin-top: 10px; position: relative; margin-left: 10px ; max-width: 200px ; cursor: pointer; }
+.myTitle{ display: flex; flex-wrap: wrap; justify-content: center; margin-top: 20px}
+@media  screen and (max-width: 600px){
+	.mycard{
+		width: 45vw;
+		margin-left: 1vw ;
+	}
+}
+</style>
