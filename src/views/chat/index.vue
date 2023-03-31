@@ -14,7 +14,7 @@ import HeaderComponent from './components/Header/index.vue'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
-import {fetchChatAPIProcess, fetchUser} from '@/api'
+import {fetchChatAPIProcess} from '@/api' //fetchUser
 import { t } from '@/locales'
 
 let controller = new AbortController()
