@@ -18,7 +18,7 @@ export function defaultSetting(): UserState {
       //avatar: 'https://raw.githubusercontent.com/Chanzhaoyu/chatgpt-web/main/src/assets/avatar.jpg',
       avatar: 'https://www.aidutu.cn/res/head/ai.png',
       name: 'AiDuTu',
-      description: '友链 <a href="https://www.aidutu.cn" class="text-blue-500" target="_blank" >大麦商品</a>',
+      description: '友链 <a href="https://www.aidutu.cn" class="text-blue-500" target="_blank" >快识图OCR</a>',
     },
   }
 }
