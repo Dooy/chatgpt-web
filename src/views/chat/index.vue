@@ -14,7 +14,7 @@ import HeaderComponent from './components/Header/index.vue'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
-import { fetchChatAPIProcess } from '@/api'
+import {fetchChatAPIProcess, fetchUser} from '@/api'
 import { t } from '@/locales'
 
 let controller = new AbortController()
@@ -67,6 +67,9 @@ dataSources.value.forEach((item, index) => {
 })
 
 function handleSubmit() {
+	//就是在这个地方需要去请求是用户是否有权限
+	//console.log('提交之前 做下过滤 检查是否登录了');
+	//fetchUser().then(d=>console.log('vip',d)).catch(e=>console.log('error',e) )
   onConversation()
 }
 
@@ -503,7 +506,8 @@ onUnmounted(() => {
           <template v-if="!dataSources.length">
             <div class="flex items-center justify-center mt-4 text-center text-neutral-300">
               <SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
-              <span>开始与chatGPT对话吧！</span>
+              <span v-if="isMobile">你可以点击下面的例子，体验我的能力<br/>当然，这只是冰山一角</span>
+              <span v-else>你可以点击下面的例子，体验我的能力，当然，这只是冰山一角</span>
 
             </div>
 						<div v-if="rqList.length" class="myTitle">

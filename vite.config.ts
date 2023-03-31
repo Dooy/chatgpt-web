@@ -36,11 +36,17 @@ export default defineConfig((env) => {
       port: 4002,
       open: false,
       proxy: {
+				'/api/cg': {
+					target: viteEnv.VITE_CG_API_BASE_URL,
+					changeOrigin: true, // 允许跨域
+					rewrite: path => path.replace('/api/cg', '/'),
+				},
         '/api': {
           target: viteEnv.VITE_APP_API_BASE_URL,
           changeOrigin: true, // 允许跨域
           rewrite: path => path.replace('/api/', '/'),
         },
+
       },
     },
     build: {

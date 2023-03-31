@@ -1,6 +1,7 @@
 import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
-import { post } from '@/utils/request'
+import {post, Response} from '@/utils/request'
 import { useSettingStore } from '@/store'
+import {getIam} from "@/utils/functions";
 
 export function fetchChatAPI<T = any>(
   prompt: string,
@@ -13,6 +14,8 @@ export function fetchChatAPI<T = any>(
     signal,
   })
 }
+
+
 
 export function fetchChatConfig<T = any>() {
   return post<T>({
@@ -41,6 +44,14 @@ export function fetchSession<T>() {
   return post<T>({
     url: '/session',
   })
+}
+
+export function fetchUser():Promise<Response<any>>
+{
+	return post({
+		url:'/cg/chatgpt/user/info'
+		,data:{'iam':getIam() }
+	})
 }
 
 export function fetchVerify<T>(token: string) {

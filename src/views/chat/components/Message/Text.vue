@@ -6,6 +6,9 @@ import mila from 'markdown-it-link-attributes'
 import hljs from 'highlight.js'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { t } from '@/locales'
+import { copyText3} from '@/utils/format'
+import AiMsg from "@/views/aidutu/aiMsg.vue";
+
 
 interface Props {
   inversion?: boolean
@@ -60,10 +63,18 @@ function highlightBlock(str: string, lang?: string) {
   return `<pre class="code-block-wrapper"><div class="code-block-header"><span class="code-block-header__lang">${lang}</span><span class="code-block-header__copy">${t('chat.copyCode')}</span></div><code class="hljs code-block-body ${lang}">${str}</code></pre>`
 }
 
+function copy(){
+	//console.log('复制',childRef,childRef.value.count  );
+	//copyText({ text: props.text ?? '' })
+	copyText3( props.text ?? '').then(()=>childRef.value.showMsg('复制成功！'));
+
+}
+const childRef = ref();
 defineExpose({ textRef })
 </script>
 
 <template>
+	<ai-msg ref="childRef"></ai-msg>
   <div class="text-black" :class="wrapClass">
     <template v-if="loading">
       <span class="dark:text-white w-[4px] h-[20px] block animate-blink" />

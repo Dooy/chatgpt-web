@@ -4,10 +4,11 @@ import { NDropdown } from 'naive-ui'
 import AvatarComponent from './Avatar.vue'
 import TextComponent from './Text.vue'
 import { SvgIcon } from '@/components/common'
-import { copyText } from '@/utils/format'
+import {copyText, copyText3} from '@/utils/format'
 import { useIconRender } from '@/hooks/useIconRender'
 import { t } from '@/locales'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
+import AiMsg from "@/views/aidutu/aiMsg.vue";
 
 interface Props {
   dateTime?: string
@@ -64,7 +65,8 @@ const options = computed(() => {
 function handleSelect(key: 'copyText' | 'delete' | 'toggleRenderType') {
   switch (key) {
     case 'copyText':
-      copyText({ text: props.text ?? '' })
+      //copyText({ text: props.text ?? '' })
+			copy();
       return
     case 'toggleRenderType':
       asRawText.value = !asRawText.value
@@ -78,9 +80,18 @@ function handleRegenerate() {
   messageRef.value?.scrollIntoView()
   emit('regenerate')
 }
+
+const msgRef = ref();
+function copy(){
+	//console.log('复制',childRef,childRef.value.count  );
+	//copyText({ text: props.text ?? '' })
+	copyText3( props.text ?? '').then(()=>msgRef.value.showMsg('复制成功！'));
+
+}
 </script>
 
 <template>
+	<ai-msg ref="msgRef"></ai-msg>
   <div
     ref="messageRef"
     class="flex w-full mb-6 overflow-hidden"
@@ -94,8 +105,11 @@ function handleRegenerate() {
     </div>
     <div class="overflow-hidden text-sm " :class="[inversion ? 'items-end' : 'items-start']">
       <p class="text-xs text-[#b4bbc4]" :class="[inversion ? 'text-right' : 'text-left']">
+				<span v-if="inversion" style="cursor: pointer" @click="copy()">复制 </span>
         {{ dateTime }}
+				<span v-if="!inversion" style="cursor: pointer" @click="copy()"> 复制</span>
       </p>
+
       <div
         class="flex items-end gap-1 mt-2"
         :class="[inversion ? 'flex-row-reverse' : 'flex-row']"
@@ -107,6 +121,7 @@ function handleRegenerate() {
           :text="text"
           :loading="loading"
           :as-raw-text="asRawText"
+
         />
         <div class="flex flex-col">
           <button

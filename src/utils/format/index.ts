@@ -1,3 +1,4 @@
+import clipboard3 from "vue-clipboard3"
 /**
  * 转义 HTML 字符
  * @param source
@@ -41,4 +42,11 @@ export function copyText(options: { text: string; origin?: boolean }) {
   if (document.execCommand('copy'))
     document.execCommand('copy')
   document.body.removeChild(input)
+}
+
+
+export function copyText3 (text:string)
+{
+	const { toClipboard } = clipboard3();
+	return toClipboard(text)
 }
