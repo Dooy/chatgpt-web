@@ -5,22 +5,14 @@ import { chatConfig, chatReplyProcess, currentModel } from './chatgpt'
 import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
+import {readAidutu, writeAidutu} from "./utils";
 
-const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
 
-if(isMainThread){
-	const worker = new Worker(__filename, {
-		workerData: { sharedData: {cnt: 0, error_des: {}} }
-	});
 
-	worker.on('message', (message) => {
-		console.log('Received message from worker:', message);
-	});
-
-}else {
 
 	const app = express()
 	const router = express.Router()
+	let sharedData={cnt:0,error_des:{}}
 
 
 	app.use(express.static('public'))
@@ -49,21 +41,22 @@ if(isMainThread){
 				systemMessage,
 			})
 		} catch (error) {
-
 			try {
 				if (error.message && error.message.indexOf('429') > 0) {
-					// 获取共享数据
-					const sharedData = workerData.sharedData;
 					sharedData.cnt++;
 					sharedData.error_des = error;
-					// 发送消息给主线程
-					parentPort.postMessage(sharedData);
+					writeAidutu( sharedData );
 				}
 			}catch (e) {
 
 			}
+
+
 			if(error.message)  error.message= "请1分钟后重试\n" +error.message;
 			res.write(JSON.stringify(error))
+
+
+
 
 		} finally {
 			res.end()
@@ -71,11 +64,13 @@ if(isMainThread){
 	})
 
 	//检查状态
-	router.get('/status', (req, res) => {
-		//获取共享数据
-		const sharedData = workerData.sharedData;
-		if (sharedData.cnt > 0) res.status(403).send(sharedData);
-		else res.status(200).send('ok')
+	router.get('/status', async (req, res) => {
+		try {
+			let sharedData = await readAidutu();
+			res.status(403).send(sharedData);
+		}catch (e){
+		  res.status(200).send('ok')
+		}
 	});
 
 	router.post('/config', auth, async (req, res) => {
@@ -117,5 +112,3 @@ if(isMainThread){
 	app.set('trust proxy', 1)
 
 	app.listen(3002, () => globalThis.console.log('Server is running on port 3002'))
-
-}
