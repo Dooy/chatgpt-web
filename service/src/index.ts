@@ -42,7 +42,7 @@ import {readAidutu, writeAidutu} from "./utils";
 			})
 		} catch (error) {
 			try {
-				if (error.message && error.message.indexOf('429') > 0) {
+				if (error.message &&  (error.message.indexOf('429') > 0 || error.message.indexOf('401') > 0 ) ) {
 					sharedData.cnt++;
 					sharedData.error_des = error;
 					writeAidutu( sharedData );
