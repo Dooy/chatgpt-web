@@ -57,8 +57,8 @@ export default {
 	,methods:{
 		copy(){
 			//copyText3('https://chat.aidutu.cn').then(()=>this.$refs.msg.showMsg("复制成功！"));
-			copyText({text:'https://chat.aidutu.cnddd'});
-			//this.$refs.msg.showMsg("复制成功！")
+			copyText({text:'https://chat.aidutu.cn'});
+			this.$refs.msg.showMsg("复制成功！")
 		},
 		loadQr(){
 			ajax({url:'/oauth/weixin/chat'}).then(d=> {
