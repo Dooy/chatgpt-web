@@ -90,8 +90,6 @@ function handleSubmit() {
 	fetchUser().then(d=>{
 		console.log('vip',d);
 		if(d.error==317){
-			showLoginWx();
-			return;
 			if(isWechat.value){
 				showLoginWx();
 				return;
