@@ -16,6 +16,7 @@ import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
 import {fetchChatAPIProcess} from '@/api' //fetchUser
 import { t } from '@/locales'
+import AiWeixin from "@/views/aidutu/aiWeixin.vue";
 
 let controller = new AbortController()
 
@@ -47,10 +48,10 @@ const inputRef = ref<Ref | null>(null)
 let arr=[];
 arr.push({title:'商品文案', v:"销售电饭锅，请生成商品标题、描述、客户好评"});
 arr.push({title:'快速编程',v:'请用Python基于flask实现chatgpt的服务器端'})
-arr.push({title:'广告文案',v:'我是卖炸鸡的，请模拟顾客给我写5条好评'})
+if( !isMobile.value ) arr.push({title:'广告文案',v:'我是卖炸鸡的，请模拟顾客给我写5条好评'})
 arr.push({title:'文学创作',v:'我正在写一篇小说，关于爱情的题材，请帮我构思一下主要情节和人物设定'})
 arr.push({title:'社交推广',v:'请创作一条微博内容，以吸引年轻用户对你的服装品牌产生兴趣'})
-arr.push({title:'故事现编',v:'写一篇童话故事，讲述一只勇敢的小兔子如何打败了恶龙'})
+if( !isMobile.value ) arr.push({title:'故事现编',v:'写一篇童话故事，讲述一只勇敢的小兔子如何打败了恶龙'})
 const myArray= reactive(arr);
 const rqList= ref(myArray)
 
@@ -484,6 +485,9 @@ onUnmounted(() => {
   if (loading.value)
     controller.abort()
 })
+
+
+
 </script>
 
 <template>
@@ -511,10 +515,9 @@ onUnmounted(() => {
 						<div v-if="rqList.length" class="myTitle">
 							<n-card :title="v2.title" size="small" class="mycard"  v-for="v2 in rqList" @click="go(v2)">{{v2.v}}</n-card>
 						</div>
-						<div style="text-align: center;justify-content: center;padding-top: 20px">
-							 <img src="https://www.aidutu.cn/res/aidutu/wx.jpg" style="width: 200px;height: 200px;display: inline-block">
-							<div style="color: #cccccc">防走失，请加我微信进群</div>
-						</div>
+
+							<ai-weixin></ai-weixin>
+
 
 
           </template>
