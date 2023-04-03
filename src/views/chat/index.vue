@@ -512,7 +512,7 @@ onUnmounted(() => {
 							<n-card :title="v2.title" size="small" class="mycard"  v-for="v2 in rqList" @click="go(v2)">{{v2.v}}</n-card>
 						</div>
 						<div style="text-align: center;justify-content: center;padding-top: 20px">
-							 <img src="/res/aidutu/wx.jpg" style="width: 200px;height: 200px;display: inline-block">
+							 <img src="https://www.aidutu.cn/res/aidutu/wx.jpg" style="width: 200px;height: 200px;display: inline-block">
 							<div style="color: #cccccc">防走失，请加我微信进群</div>
 						</div>
 
