@@ -1,7 +1,7 @@
 <script setup lang='ts'>
 import type { CSSProperties } from 'vue'
 import { computed, ref, watch } from 'vue'
-import { NButton, NLayoutSider } from 'naive-ui'
+import { NButton, NLayoutSider,NModal } from 'naive-ui'
 import List from './List.vue'
 import Footer from './Footer.vue'
 import { useAppStore, useChatStore } from '@/store'
@@ -13,6 +13,7 @@ const chatStore = useChatStore()
 
 const { isMobile } = useBasicLayout()
 const show = ref(false)
+const show2 = ref(false)
 
 const collapsed = computed(() => appStore.siderCollapsed)
 
@@ -80,9 +81,12 @@ watch(
           <List />
         </div>
         <div class="p-4">
-          <NButton block @click="show = true">
+          <NButton block @click="show = true" v-if="show">
             {{ $t('store.siderButton') }}
           </NButton>
+					<NButton block @click="show2 = true" type="warning">
+						 求赞赏
+					</NButton>
         </div>
       </main>
       <Footer />
@@ -92,4 +96,14 @@ watch(
     <div v-show="!collapsed" class="fixed inset-0 z-40 bg-black/40" @click="handleUpdateCollapsed" />
   </template>
   <PromptStore v-model:visible="show" />
+	<NModal v-model:show="show2" style=" width: 450px;" preset="card" >
+		<div class="space-y-4" style="text-align: center">
+
+				<img src="https://www.aidutu.cn/res/aidutu/wxsan.jpg" style="width: 400px;height: 400px;display: inline-block" >
+				<div style="color: #cccccc"  >
+					求打赏<br />人越来越多，成本越来越高
+
+				</div>
+		</div>
+	</NModal>
 </template>

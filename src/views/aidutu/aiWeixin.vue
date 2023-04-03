@@ -9,13 +9,7 @@
 			</div>
 		</div>
 
-		<div>
-			<img src="https://www.aidutu.cn/res/aidutu/wxsan.jpg" style="width: 200px;height: 200px;display: inline-block" @click="copy">
-			<div style="color: #cccccc"  @click="copy">
-				求打赏<br />人越来越多，成本越来越高
 
-			</div>
-		</div>
 
 	</div>
 </template>
