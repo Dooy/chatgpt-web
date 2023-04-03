@@ -45,6 +45,9 @@ export function copyText(options: { text: string; origin?: boolean }) {
 }
 
 
+
+
+
 export function copyText3 (text:string)
 {
 	const { toClipboard } = clipboard3();
