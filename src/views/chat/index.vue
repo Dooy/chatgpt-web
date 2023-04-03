@@ -3,7 +3,7 @@ import type { Ref } from 'vue'
 import { computed, onMounted, onUnmounted, ref,reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { NAutoComplete, NButton, NInput,NCard, useDialog, useMessage } from 'naive-ui'
+import { NAutoComplete, NButton, NInput,NCard, useDialog, useMessage,NModal } from 'naive-ui'
 import html2canvas from 'html2canvas'
 import { Message } from './components'
 import { useScroll } from './hooks/useScroll'
@@ -14,9 +14,12 @@ import HeaderComponent from './components/Header/index.vue'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
-import {fetchChatAPIProcess} from '@/api' //fetchUser
+import { fetchChatAPIProcess, fetchUser} from '@/api' //
 import { t } from '@/locales'
 import AiWeixin from "@/views/aidutu/aiWeixin.vue";
+import AiMsg from "@/views/aidutu/aiMsg.vue";
+import AiWeixinlogin from "@/views/aidutu/aiWeixinlogin.vue";
+import {getCookieUserInfo} from "@/utils/functions";
 
 let controller = new AbortController()
 
@@ -55,6 +58,8 @@ if( !isMobile.value ) arr.push({title:'故事现编',v:'写一篇童话故事，
 const myArray= reactive(arr);
 const rqList= ref(myArray)
 
+const isWechat = ref( /MicroMessenger/i.test(navigator.userAgent) ); //是否在微信内
+
 // 添加PromptStore
 const promptStore = usePromptStore()
 
@@ -67,11 +72,46 @@ dataSources.value.forEach((item, index) => {
     updateChatSome(+uuid, index, { loading: false })
 })
 
+function showLoginWx(){
+	dialog.warning({
+		title: '当前状态未登录',
+		content: "使用chatGPT必须先登录",
+		positiveText: "去登录",
+		negativeText:'取消',
+		onPositiveClick: () => {
+			//chatStore.clearChatByUuid(+uuid)
+			location.href='https://www.lingduquan.com/oauth/weixin?f=chat'
+		},
+	});
+}
 function handleSubmit() {
 	//就是在这个地方需要去请求是用户是否有权限
 	//console.log('提交之前 做下过滤 检查是否登录了');
-	//fetchUser().then(d=>console.log('vip',d)).catch(e=>console.log('error',e) )
-  onConversation()
+	fetchUser().then(d=>{
+		console.log('vip',d);
+		if(d.error==317){
+			showLoginWx();
+			return;
+			if(isWechat.value){
+				showLoginWx();
+				return;
+			}
+			isShowWx.value=true;
+			return;
+		}
+		else if(d.error>0) {
+			msgRef.value.showError( d.error_des );
+			return ;
+		}
+
+		localStorage.setItem('token', d.data.token )
+		onConversation()
+
+	}).catch(e=>{
+		console.log('error',e);
+
+	} )
+
 }
 
 async function onConversation() {
@@ -479,6 +519,11 @@ onMounted(() => {
   scrollToBottom()
   if (inputRef.value && !isMobile.value)
     inputRef.value?.focus()
+
+	if(isWechat.value) {
+		let u = getCookieUserInfo();
+		if (!u) showLoginWx();
+	}
 })
 
 onUnmounted(() => {
@@ -487,10 +532,22 @@ onUnmounted(() => {
 })
 
 
-
+const msgRef = ref();
+const isShowWx= ref(false);
+const loginSuccess=()=>{
+	msgRef.value.showMsg('登录成功！');
+	isShowWx.value=false;
+	handleSubmit();
+}
 </script>
 
 <template>
+	<ai-msg ref="msgRef"></ai-msg>
+	<NModal v-model:show="isShowWx" style=" width: 350px;" preset="card" >
+		<ai-weixinlogin @success="loginSuccess" v-if="isShowWx"></ai-weixinlogin>
+	</NModal>
+
+
   <div class="flex flex-col w-full h-full">
     <HeaderComponent
       v-if="isMobile"

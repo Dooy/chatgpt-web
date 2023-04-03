@@ -29,3 +29,29 @@ export function randomCoding(n=16):string
 }
 
 
+/**
+ * cookie 抓JSON
+ */
+export function cookie2json(ck:string):any
+{
+	let av= ck.split(';').map(v=>{
+		let arr= v.split('=');
+		return {k: arr[0].replace(' ',''),v:arr[1]};
+	});
+	let rz = {}
+	for(let v of av) { // @ts-ignore
+		rz[v.k]=v.v
+	}
+	return rz ;
+}
+
+export function getCookieUserInfo(){
+	let ck= cookie2json( document.cookie);
+	//showLog('ck',ck );
+	if( !ck || !ck._UHAO) return null;
+
+	let u= JSON.parse( decodeURIComponent(ck._UHAO) );
+	//showLog('u',u );
+	return  u;
+}
+

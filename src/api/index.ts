@@ -2,6 +2,9 @@ import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
 import {post, Response} from '@/utils/request'
 import { useSettingStore } from '@/store'
 import {getIam} from "@/utils/functions";
+import axios  from 'axios'
+
+
 
 export function fetchChatAPI<T = any>(
   prompt: string,
@@ -31,27 +34,52 @@ export function fetchChatAPIProcess<T = any>(
     onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void },
 ) {
   const settingStore = useSettingStore()
+	let token= localStorage.getItem('token');
 
   return post<T>({
     url: '/chat-process',
     data: { prompt: params.prompt, options: params.options, systemMessage: settingStore.systemMessage },
     signal: params.signal,
+		headers:{'x-token':token},
     onDownloadProgress: params.onDownloadProgress,
   })
 }
 
 export function fetchSession<T>() {
-  return post<T>({
-    url: '/session',
-  })
+  // return post<T>({
+  //   url: '/session',
+  // })
+	return new Promise(h=>{
+		let json={
+			"status": "Success",
+			"message": "",
+			"data": {
+				"auth": false,
+				"model": "ChatGPTAPI"
+			}
+		}
+			h(json);
+	});
 }
 
-export function fetchUser():Promise<Response<any>>
+export function fetchUser()
 {
-	return post({
-		url:'/cg/chatgpt/user/info'
-		,data:{'iam':getIam() }
-	})
+
+	return ajax({url:'/chatgpt/user/info',method:'POST',data:{'iam':getIam() } })
+}
+
+export function ajax({ url="",method='GET',data={}}): Promise<Response<any>> {
+
+	const service = axios.create({
+		headers: {'Content-Type':'application/json','Accept':'application/json'},
+		withCredentials: true,
+		baseURL: '/api/cg',
+		timeout: 30000 // request timeout
+	});
+	//
+	return new Promise<Response<any>>((h,r)=>{
+		service.request({url,method,data}).then(d=>h(d.data)).catch(e=>r(e));
+	});
 }
 
 export function fetchVerify<T>(token: string) {

@@ -21,6 +21,15 @@ function showMsg(str:string){
 	});
 }
 
-defineExpose({ count, increment,showMsg });
+function showError(str:string){
+	notification.error({
+		title: "错误",
+		content: str,
+		duration: 3000,
+		keepAliveOnHover: true
+	});
+}
+
+defineExpose({ count, increment,showMsg,showError });
 
 </script>
