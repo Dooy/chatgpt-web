@@ -123,6 +123,15 @@ function handleImportButtonClick(): void {
 <template>
   <div class="p-4 space-y-5 min-h-[200px]">
     <div class="space-y-6">
+
+				<h2 class="text-xl font-bold">
+					使用提醒
+				</h2>
+				<div class="p-2 space-y-2 rounded-md bg-neutral-100 dark:bg-neutral-700">
+			本网站旨在辅助用户更高效的工作和学习，解决您工作和学习中遇到的问题。为了维护互联网安全和健康发展，以及保障您的人个权益，我们郑重提醒您：<br>
+			1.  请勿在此输入涉及个人隐私或机密信息；<br>
+			2.  请勿用于生成并发布、输出、传播涉及国家法律法规禁止的涉及政治、色情、暴力、恐怖主义、谣言等相关内容，否则造成责任后果自负。
+				</div>
       <div class="flex items-center space-x-4">
         <span class="flex-shrink-0 w-[100px]">{{ $t('setting.avatarLink') }}</span>
         <div class="flex-1">
