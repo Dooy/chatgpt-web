@@ -99,7 +99,7 @@ watch(
 	<NModal v-model:show="show2" style=" width: 450px;" preset="card" >
 		<div class="space-y-4" style="text-align: center">
 
-				<img src="https://www.aidutu.cn/res/aidutu/wxsan.jpg" style="width: 400px;height: 400px;display: inline-block" >
+				<img src="https://cdn.aidutu.cn/res/aidutu/wxsan.jpg" style="width: 400px;height: 400px;display: inline-block" >
 				<div style="color: #cccccc"  >
 					求打赏<br />人越来越多，成本越来越高
 
