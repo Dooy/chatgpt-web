@@ -4,6 +4,8 @@ import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
 
+import externalGlobals from 'rollup-plugin-external-globals'
+import { visualizer } from 'rollup-plugin-visualizer';
 function setupPlugins(env: ImportMetaEnv): PluginOption[] {
   return [
     vue(),
@@ -18,6 +20,7 @@ function setupPlugins(env: ImportMetaEnv): PluginOption[] {
         ],
       },
     }),
+
   ]
 }
 
@@ -60,6 +63,20 @@ export default defineConfig((env) => {
       commonjsOptions: {
         ignoreTryCatch: false,
       },
-    },
+			// externals: {
+			// 	'vue': 'Vue',
+			// 	'vue-router': 'VueRouter',
+			// 	'axios': 'axios',
+			// },
+			rollupOptions: {
+				external: ["vue", "axios"],
+				plugins: [
+					externalGlobals({
+						vue: "Vue",
+						"axios": "axios"
+					})
+				]
+			}
+    }
   }
 })

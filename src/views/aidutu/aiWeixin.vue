@@ -2,10 +2,10 @@
 	<ai-msg ref="msgRef"></ai-msg>
 	<div style="text-align: center;justify-content: center;padding-top: 20px;display: flex; align-items: center;flex-wrap: wrap" >
 		<div>
-			<img src="https://www.aidutu.cn/res/aidutu/wx.jpg" style="width: 200px;height: 200px;display: inline-block" @click="copy">
+			<img src="https://www.aidutu.cn/res/aidutu/wx.jpg" style="width: 200px;height: 200px;display: inline-block"  >
 			<div style="color: #cccccc"  @click="copy">
 
-				微信号：{{wxHao}} <br>防走失，请加我微信进群
+			防走失，请扫码进群
 			</div>
 		</div>
 
