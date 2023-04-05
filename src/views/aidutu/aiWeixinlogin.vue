@@ -1,4 +1,5 @@
 <template>
+	<div style="color: #999999;padding-bottom: 10px">为防被恶意调用，请扫码关注微信后再继续使用</div>
 <div style="text-align: center; position: relative;justify-content: center">
 
 	<div v-if="st.timeout" class="wx-qr">
@@ -78,7 +79,7 @@ export default {
 					console.log('登录成功') //djj/user/logout 登出
 					return;
 				}
-				if( this.st.cnt>120  ) {
+				if( this.st.cnt>60 ) {
 					this.st.timeout =1;
 					return;
 				}

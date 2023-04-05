@@ -87,7 +87,7 @@ function showLoginWx(){
 function handleSubmit() {
 	//就是在这个地方需要去请求是用户是否有权限
 	//console.log('提交之前 做下过滤 检查是否登录了');
-	fetchUser().then(d=>{
+	fetchUser( prompt.value ).then(d=>{
 		console.log('vip',d);
 		if(d.error==317){
 			if(isWechat.value){

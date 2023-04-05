@@ -62,10 +62,10 @@ export function fetchSession<T>() {
 	});
 }
 
-export function fetchUser()
+export function fetchUser(q)
 {
 
-	return ajax({url:'/chatgpt/user/info',method:'POST',data:{'iam':getIam() } })
+	return ajax({url:'/chatgpt/user/info?v=1.0',method:'POST',data:{'iam':getIam() ,q} })
 }
 
 export function ajax({ url="",method='GET',data={}}): Promise<Response<any>> {

@@ -10,7 +10,7 @@ export function getCurrentDate() {
 export function getIam():string|null
 {
 	let iam : string | null = localStorage.getItem('iam');
-	if(iam){
+	if(!iam){
 		iam= "D"+randomCoding(7).toLowerCase();
 		localStorage.setItem('iam',iam );
 	}
