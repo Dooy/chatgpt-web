@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { computed, nextTick } from 'vue'
+import { computed, nextTick,ref } from 'vue'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useAppStore, useChatStore } from '@/store'
-
+import AiDasan from "@/views/aidutu/aiDasan.vue";
+import {NModal } from 'naive-ui'
 interface Props {
   usingContext: boolean
 }
@@ -39,6 +40,8 @@ function handleExport() {
 function toggleUsingContext() {
   emit('toggleUsingContext')
 }
+const isShow= ref(true);
+const show2= ref(false);
 </script>
 
 <template>
@@ -67,12 +70,21 @@ function toggleUsingContext() {
             <SvgIcon icon="ri:chat-history-line" />
           </span>
         </HoverButton>
-        <HoverButton @click="handleExport">
+        <HoverButton @click="handleExport" v-if="isShow">
           <span class="text-xl text-[#4f555e] dark:text-white">
             <SvgIcon icon="ri:download-2-line" />
           </span>
         </HoverButton>
+				<HoverButton @click="show2=true">
+				<span class="text-xl text-[#18a058] dark:text-white" style="font-size: 16px;font-weight: 600">
+            打赏
+          </span>
+				</HoverButton>
       </div>
     </div>
   </header>
+
+	<NModal v-model:show="show2" style=" width: 450px;" preset="card" >
+		<ai-dasan></ai-dasan>
+	</NModal>
 </template>

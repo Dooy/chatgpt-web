@@ -52,7 +52,7 @@ import {readAidutu, writeAidutu} from "./utils";
 			}
 
 
-			if(error.message)  error.message= "请1分钟后重试\n" +error.message;
+			if(error.message)  error.message= "抱歉，用户太多，余额耗尽了，站长正在充值的路上，请收藏下网址，等会再试试吧。欢迎给我们打赏帮我们分担一些成本。\n\n" +error.message;
 			res.write(JSON.stringify(error))
 
 

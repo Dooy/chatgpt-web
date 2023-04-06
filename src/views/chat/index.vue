@@ -112,6 +112,10 @@ function handleSubmit() {
 
 }
 
+//过滤
+function fingler( str:string ):string{
+	 return  str.replace(/openai/ig,'duTuAi').replace(/ChatGPT/ig,'AI');
+}
 async function onConversation() {
   let message = prompt.value
 
@@ -181,7 +185,7 @@ async function onConversation() {
               dataSources.value.length - 1,
               {
                 dateTime: new Date().toLocaleString(),
-                text: lastText + data.text ?? '',
+                text: fingler(lastText + data.text ?? ''),
                 inversion: false,
                 error: false,
                 loading: true,
@@ -210,7 +214,8 @@ async function onConversation() {
     await fetchChatAPIOnce()
   }
   catch (error: any) {
-    const errorMessage = error?.message ?? t('common.wrong')
+    let errorMessage = error?.message ?? t('common.wrong')
+		errorMessage= "抱歉，用户太多，余额耗尽了，站长正在充值的路上，请收藏下网址，等会再试试吧。欢迎给我们打赏帮我们分担一些成本。\n\n" + errorMessage;
 
     if (error.message === 'canceled') {
       updateChatSome(
@@ -238,6 +243,7 @@ async function onConversation() {
       )
       return
     }
+
 
     updateChat(
       +uuid,
@@ -312,7 +318,7 @@ async function onRegenerate(index: number) {
               index,
               {
                 dateTime: new Date().toLocaleString(),
-                text: lastText + data.text ?? '',
+                text: fingler( lastText + data.text ?? ''),
                 inversion: false,
                 error: false,
                 loading: true,

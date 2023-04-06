@@ -7,6 +7,7 @@ import Footer from './Footer.vue'
 import { useAppStore, useChatStore } from '@/store'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { PromptStore } from '@/components/common'
+import AiDasan from "@/views/aidutu/aiDasan.vue";
 
 const appStore = useAppStore()
 const chatStore = useChatStore()
@@ -97,13 +98,6 @@ watch(
   </template>
   <PromptStore v-model:visible="show" />
 	<NModal v-model:show="show2" style=" width: 450px;" preset="card" >
-		<div class="space-y-4" style="text-align: center">
-
-				<img src="https://cdn.aidutu.cn/res/aidutu/wxsan.jpg" style="width: 400px;height: 400px;display: inline-block" >
-				<div style="color: #cccccc"  >
-					求打赏<br />人越来越多，成本越来越高
-
-				</div>
-		</div>
+		<ai-dasan></ai-dasan>
 	</NModal>
 </template>
