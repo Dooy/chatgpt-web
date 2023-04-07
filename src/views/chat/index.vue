@@ -20,6 +20,7 @@ import AiWeixin from "@/views/aidutu/aiWeixin.vue";
 import AiMsg from "@/views/aidutu/aiMsg.vue";
 import AiWeixinlogin from "@/views/aidutu/aiWeixinlogin.vue";
 import {getCookieUserInfo} from "@/utils/functions";
+import AiDasan from "@/views/aidutu/aiDasan.vue";
 
 let controller = new AbortController()
 
@@ -75,7 +76,7 @@ dataSources.value.forEach((item, index) => {
 function showLoginWx(){
 	dialog.warning({
 		title: '当前状态未登录',
-		content: "使用chatGPT必须先登录",
+		content: "使用 AiDuTu 必须先登录",
 		positiveText: "去登录",
 		negativeText:'取消',
 		onPositiveClick: () => {
@@ -102,8 +103,14 @@ function handleSubmit() {
 			return ;
 		}
 
+
+
 		localStorage.setItem('token', d.data.token )
 		onConversation()
+
+		if(d.data && d.data.info && d.data.info.zan){
+			show2.value=true
+		}
 
 	}).catch(e=>{
 		console.log('error',e);
@@ -538,17 +545,23 @@ onUnmounted(() => {
 
 const msgRef = ref();
 const isShowWx= ref(false);
+const show2=ref(false);
 const loginSuccess=()=>{
 	msgRef.value.showMsg('登录成功！');
 	isShowWx.value=false;
 	handleSubmit();
 }
+
 </script>
 
 <template>
 	<ai-msg ref="msgRef"></ai-msg>
 	<NModal v-model:show="isShowWx" style=" width: 350px;" preset="card" >
 		<ai-weixinlogin @success="loginSuccess" v-if="isShowWx"></ai-weixinlogin>
+	</NModal>
+
+	<NModal v-model:show="show2" style=" width: 450px;" preset="card" >
+		<ai-dasan></ai-dasan>
 	</NModal>
 
 
@@ -652,6 +665,7 @@ const loginSuccess=()=>{
       </div>
     </footer>
   </div>
+
 </template>
 <style scoped>
 .mycard{ margin-top: 10px; position: relative; margin-left: 10px ; max-width: 200px ; cursor: pointer; }

@@ -33,6 +33,7 @@ const show = computed({
     emit('update:visible', visible)
   },
 })
+const showChat= ref(false)
 </script>
 
 <template>
@@ -48,7 +49,7 @@ const show = computed({
             <General />
           </div>
         </NTabPane>
-        <NTabPane v-if="isChatGPTAPI" name="Advanced" tab="Advanced">
+        <NTabPane v-if="isChatGPTAPI && showChat " name="Advanced" tab="Advanced">
           <template #tab>
             <SvgIcon class="text-lg" icon="ri:equalizer-line" />
             <span class="ml-2">{{ $t('setting.advanced') }}</span>
