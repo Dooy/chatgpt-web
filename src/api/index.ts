@@ -65,7 +65,7 @@ export function fetchSession<T>() {
 export function fetchUser(q)
 {
 
-	return ajax({url:'/chatgpt/user/info?v=1.2',method:'POST',data:{'iam':getIam() ,q} })
+	return ajax({url:'/chatgpt/user/info?v=1.3',method:'POST',data:{'iam':getIam() ,q} })
 }
 
 export function ajax({ url="",method='GET',data={}}): Promise<Response<any>> {
@@ -78,7 +78,7 @@ export function ajax({ url="",method='GET',data={}}): Promise<Response<any>> {
 	});
 	//
 	return new Promise<Response<any>>((h,r)=>{
-		service.request({url,method,data}).then(d=>h(d.data)).catch(e=>r(e));
+		service.request({url,method,data,headers:{'x-iam':getIam()} }).then(d=>h(d.data)).catch(e=>r(e));
 	});
 }
 
