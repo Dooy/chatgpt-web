@@ -210,7 +210,11 @@ async function onConversation() {
               dataSources.value.length - 1,
               {
                 dateTime: new Date().toLocaleString(),
+<<<<<<< HEAD
                 text: fingler(lastText + data.text ?? ''),
+=======
+                text: lastText + (data.text ?? ''),
+>>>>>>> upstream/main
                 inversion: false,
                 error: false,
                 loading: true,
@@ -330,7 +334,7 @@ async function onRegenerate(index: number) {
       error: false,
       loading: true,
       conversationOptions: null,
-      requestOptions: { prompt: message, ...options },
+      requestOptions: { prompt: message, options: { ...options } },
     },
   )
 
@@ -356,12 +360,16 @@ async function onRegenerate(index: number) {
               index,
               {
                 dateTime: new Date().toLocaleString(),
+<<<<<<< HEAD
                 text: fingler( lastText + data.text ?? ''),
+=======
+                text: lastText + (data.text ?? ''),
+>>>>>>> upstream/main
                 inversion: false,
                 error: false,
                 loading: true,
                 conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
-                requestOptions: { prompt: message, ...options },
+                requestOptions: { prompt: message, options: { ...options } },
               },
             )
 
@@ -405,7 +413,7 @@ async function onRegenerate(index: number) {
         error: true,
         loading: false,
         conversationOptions: null,
-        requestOptions: { prompt: message, ...options },
+        requestOptions: { prompt: message, options: { ...options } },
       },
     )
   }
