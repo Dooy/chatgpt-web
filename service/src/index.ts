@@ -14,31 +14,6 @@ import {readAidutu, writeAidutu} from "./utils";
 	const router = express.Router()
 	let sharedData={cnt:0,error_des:{}}
 
-<<<<<<< HEAD
-=======
-  try {
-    const { prompt, options = {}, systemMessage, temperature, top_p } = req.body as RequestProps
-    let firstChunk = true
-    await chatReplyProcess({
-      message: prompt,
-      lastContext: options,
-      process: (chat: ChatMessage) => {
-        res.write(firstChunk ? JSON.stringify(chat) : `\n${JSON.stringify(chat)}`)
-        firstChunk = false
-      },
-      systemMessage,
-      temperature,
-      top_p,
-    })
-  }
-  catch (error) {
-    res.write(JSON.stringify(error))
-  }
-  finally {
-    res.end()
-  }
-})
->>>>>>> upstream/main
 
 	app.use(express.static('public'))
 	app.use(express.json())

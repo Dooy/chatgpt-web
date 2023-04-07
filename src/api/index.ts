@@ -1,15 +1,11 @@
 import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
-<<<<<<< HEAD
+
 import {post, Response} from '@/utils/request'
-import { useSettingStore } from '@/store'
+import {useAuthStore, useSettingStore } from '@/store'
 import {getIam} from "@/utils/functions";
 import axios  from 'axios'
 
 
-=======
-import { post } from '@/utils/request'
-import { useAuthStore, useSettingStore } from '@/store'
->>>>>>> upstream/main
 
 export function fetchChatAPI<T = any>(
   prompt: string,
@@ -39,9 +35,9 @@ export function fetchChatAPIProcess<T = any>(
     onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void },
 ) {
   const settingStore = useSettingStore()
-<<<<<<< HEAD
+
 	let token= localStorage.getItem('token');
-=======
+
   const authStore = useAuthStore()
 
   let data: Record<string, any> = {
@@ -57,7 +53,6 @@ export function fetchChatAPIProcess<T = any>(
       top_p: settingStore.top_p,
     }
   }
->>>>>>> upstream/main
 
   return post<T>({
     url: '/chat-process',
@@ -85,7 +80,7 @@ export function fetchSession<T>() {
 	});
 }
 
-export function fetchUser(q)
+export function fetchUser(q:string)
 {
 
 	return ajax({url:'/chatgpt/user/info?v=1.3',method:'POST',data:{'iam':getIam() ,q} })
