@@ -371,6 +371,19 @@ async function onRegenerate(index: number) {
               message = ''
               return fetchChatAPIOnce()
             }
+						daanFingler(data ,
+							+uuid,
+							index,
+							{
+								dateTime: new Date().toLocaleString(),
+								text: fingler(lastText + data.text ?? ''),
+								inversion: false,
+								error: false,
+								loading: false,
+								conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
+								requestOptions: { prompt: message, options: { ...options } },
+							});
+
           }
           catch (error) {
             //
