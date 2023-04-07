@@ -14,7 +14,7 @@ import HeaderComponent from './components/Header/index.vue'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
-import { fetchChatAPIProcess, fetchUser} from '@/api' //
+import {ajax, fetchChatAPIProcess, fetchUser} from '@/api' //
 import { t } from '@/locales'
 import AiWeixin from "@/views/aidutu/aiWeixin.vue";
 import AiMsg from "@/views/aidutu/aiMsg.vue";
@@ -119,9 +119,27 @@ function handleSubmit() {
 
 }
 
-//过滤
+//问题过滤 过滤
 function fingler( str:string ):string{
 	 return  str.replace(/openai/ig,'duTuAi').replace(/ChatGPT/ig,'AI');
+}
+//答案过滤
+function daanFingler( data:any,uuid:any,index:any,chat:any) {
+	if(data.detail.choices[0].finish_reason === 'stop'){
+		console.log('daanFingler stop');
+		//chat.text= " daanFingler stop ";
+		ajax({
+			url:'/chatgpt/word/check',
+			method:"POST"
+			,data:{q:chat.text}
+		}).then(d=>{
+			console.log('stop', d ); //data.rz
+			if(d.data.rz){
+				chat.text= d.data.rz;
+				updateChat(uuid, index, chat)
+			}
+		});
+	}
 }
 async function onConversation() {
   let message = prompt.value
@@ -207,6 +225,19 @@ async function onConversation() {
               message = ''
               return fetchChatAPIOnce()
             }
+
+						daanFingler(data ,
+							+uuid,
+							dataSources.value.length - 1,
+							{
+								dateTime: new Date().toLocaleString(),
+								text: fingler(lastText + data.text ?? ''),
+								inversion: false,
+								error: false,
+								loading: false,
+								conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
+								requestOptions: { prompt: message, options: { ...options } },
+							});
 
             scrollToBottomIfAtBottom()
           }
