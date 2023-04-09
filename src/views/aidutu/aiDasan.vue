@@ -1,12 +1,26 @@
 <template>
 	<div class="space-y-4" style="text-align: center">
 
-		<img src="https://cdn.aidutu.cn/res/aidutu/wxsan.jpg?d=ds" style="width: 400px;height: 400px;display: inline-block" >
-		<div style="color: #cccccc"  >
-			<div style="color: #666;font-weight: 600;font-size: 18px">求打赏</div> 因用户激增，每天服务器和接口成本都在增长,如果您觉得它对您有用，欢迎给我们打赏，帮我们分担一些成本。
-
+		<div v-if="st.img==''">
+			 Loading....
 		</div>
+		<template v-else>
+		<img :src="st.img" style="width: 400px;height: 400px;display: inline-block" >
+			<div style="color: #cccccc"  >
+				<div style="color: #666;font-weight: 600;font-size: 18px">求打赏</div>
+				<div v-html="st.msg"></div>
+
+			</div>
+		</template>
 	</div>
 </template>
 <script lang="ts" setup>
+import {onMounted, ref} from "vue";
+import {ajax} from "@/api";
+const st=ref({img:'',msg:''});
+onMounted(()=>{
+	ajax({url:'/chatgpt/config/zan'}).then(d=> st.value=d.data.cf).catch(()=>{
+		 st.value.img='https://cdn.aidutu.cn/res/aidutu/wxsan.jpg?d=ds';
+	})
+})
 </script>
