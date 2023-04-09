@@ -88,7 +88,12 @@ function showLoginWx(){
 function handleSubmit() {
 	//就是在这个地方需要去请求是用户是否有权限
 	//console.log('提交之前 做下过滤 检查是否登录了');
-	fetchUser( prompt.value ).then(d=>{
+	getToken( prompt.value, onConversation );
+
+}
+
+function getToken( str:string ,func=()=>{}){
+	fetchUser( str ).then(d=>{
 		console.log('vip',d);
 		if(d.error==317){
 			if(isWechat.value){
@@ -106,7 +111,7 @@ function handleSubmit() {
 
 
 		localStorage.setItem('token', d.data.token )
-		onConversation()
+		func()
 
 		if(d.data && d.data.info && d.data.info.zan){
 			show2.value=true
@@ -116,7 +121,6 @@ function handleSubmit() {
 		console.log('error',e);
 
 	} )
-
 }
 
 //问题过滤 过滤
@@ -302,7 +306,11 @@ async function onConversation() {
     loading.value = false
   }
 }
+async function onRegenerateD(index: number) {
+	if (loading.value) return
+	getToken("",()=>onRegenerate(index));
 
+}
 async function onRegenerate(index: number) {
   if (loading.value)
     return
@@ -649,7 +657,7 @@ const loginSuccess=()=>{
                 :inversion="item.inversion"
                 :error="item.error"
                 :loading="item.loading"
-                @regenerate="onRegenerate(index)"
+                @regenerate="onRegenerateD(index)"
                 @delete="handleDelete(index)"
               />
               <div class="sticky bottom-0 left-0 flex justify-center">
