@@ -123,7 +123,7 @@ function fingler( str:string ):string{
 	 return  str.replace(/openai/ig,'duTuAi').replace(/ChatGPT/ig,'AI');
 }
 //答案过滤
-function daanFingler( data:any,uuid:any,index:any,chat:any) {
+/*function daanFingler( data:any,uuid:any,index:any,chat:any) {
 	if(data.detail.choices[0].finish_reason === 'stop'){
 		console.log('daanFingler stop');
 		//chat.text= " daanFingler stop ";
@@ -139,6 +139,36 @@ function daanFingler( data:any,uuid:any,index:any,chat:any) {
 			}
 		});
 	}
+}*/
+//答案过滤V2
+function daanFinglerV2(uuid:number, index:number) {
+
+	const currentChat = getChatByUuidAndIndex(uuid, index ) ;//+uuid, dataSources.value.length - 1
+
+	if (currentChat?.text && currentChat.text !== '') {
+
+		ajax({
+			url:'/chatgpt/word/check',
+			method:"POST"
+			,data:{q:currentChat.text}
+		}).then(d=>{
+			console.log('stop', d ); //data.rz
+			if(d.data.rz){
+				//chat.text= d.data.rz;
+				updateChatSome( //这个地方要去过滤下
+					uuid, index,
+					{
+						text: d.data.rz,
+						error: false,
+						loading: false,
+					},
+				)
+				return
+			}
+		});
+
+	}
+
 }
 async function onConversation() {
   let message = prompt.value
@@ -225,19 +255,6 @@ async function onConversation() {
               return fetchChatAPIOnce()
             }
 
-						daanFingler(data ,
-							+uuid,
-							dataSources.value.length - 1,
-							{
-								dateTime: new Date().toLocaleString(),
-								text: fingler(lastText + data.text ?? ''),
-								inversion: false,
-								error: false,
-								loading: false,
-								conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
-								requestOptions: { prompt: message, options: { ...options } },
-							});
-
             scrollToBottomIfAtBottom()
           }
           catch (error) {
@@ -269,7 +286,7 @@ async function onConversation() {
     const currentChat = getChatByUuidAndIndex(+uuid, dataSources.value.length - 1)
 
     if (currentChat?.text && currentChat.text !== '') {
-      updateChatSome(
+      updateChatSome( //这个地方要去过滤下
         +uuid,
         dataSources.value.length - 1,
         {
@@ -298,6 +315,9 @@ async function onConversation() {
     scrollToBottomIfAtBottom()
   }
   finally {
+		//当前过滤
+		//console.log('当前过滤' , dataSources.value.length - 1 );
+		daanFinglerV2( +uuid, dataSources.value.length - 1 );
     loading.value = false
   }
 }
@@ -328,7 +348,7 @@ async function onRegenerate(index: number) {
     index,
     {
       dateTime: new Date().toLocaleString(),
-      text: '',
+      text: 'Thinking...',
       inversion: false,
       error: false,
       loading: true,
@@ -374,18 +394,6 @@ async function onRegenerate(index: number) {
               message = ''
               return fetchChatAPIOnce()
             }
-						daanFingler(data ,
-							+uuid,
-							index,
-							{
-								dateTime: new Date().toLocaleString(),
-								text: fingler(lastText + data.text ?? ''),
-								inversion: false,
-								error: false,
-								loading: false,
-								conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
-								requestOptions: { prompt: message, options: { ...options } },
-							});
 
           }
           catch (error) {
@@ -426,6 +434,8 @@ async function onRegenerate(index: number) {
     )
   }
   finally {
+		//console.log('当前过滤3' , index );
+		daanFinglerV2(	+uuid, index);
     loading.value = false
   }
 }
