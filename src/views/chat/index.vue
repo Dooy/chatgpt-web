@@ -13,7 +13,7 @@ import { useUsingContext } from './hooks/useUsingContext'
 import HeaderComponent from './components/Header/index.vue'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
-import { useChatStore, usePromptStore } from '@/store'
+import { useChatStore, usePromptStore,useUserStore } from '@/store'
 import {ajax, fetchChatAPIProcess, fetchUser} from '@/api' //
 import { t } from '@/locales'
 import AiWeixin from "@/views/aidutu/aiWeixin.vue";
@@ -21,6 +21,8 @@ import AiMsg from "@/views/aidutu/aiMsg.vue";
 import AiWeixinlogin from "@/views/aidutu/aiWeixinlogin.vue";
 import {getCookieUserInfo} from "@/utils/functions";
 import AiDasan from "@/views/aidutu/aiDasan.vue";
+import AiFirst from "@/views/aidutu/aiFirst.vue";
+import AiOpenVip from "@/views/aidutu/aiOpenVip.vue";
 
 let controller = new AbortController()
 
@@ -47,17 +49,6 @@ const conversationList = computed(() => dataSources.value.filter(item => (!item.
 const prompt = ref<string>('')
 const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
-
-//默认问题
-let arr=[];
-arr.push({title:'商品文案', v:"销售电饭锅，请生成商品标题、描述、客户好评"});
-arr.push({title:'快速编程',v:'请用Python基于flask实现chatgpt的服务器端'})
-if( !isMobile.value ) arr.push({title:'广告文案',v:'我是卖炸鸡的，请模拟顾客给我写5条好评'})
-arr.push({title:'文学创作',v:'我正在写一篇小说，关于爱情的题材，请帮我构思一下主要情节和人物设定'})
-arr.push({title:'社交推广',v:'请创作一条微博内容，以吸引年轻用户对你的服装品牌产生兴趣'})
-if( !isMobile.value ) arr.push({title:'故事现编',v:'写一篇童话故事，讲述一只勇敢的小兔子如何打败了恶龙'})
-const myArray= reactive(arr);
-const rqList= ref(myArray)
 
 const isWechat = ref( /MicroMessenger/i.test(navigator.userAgent) ); //是否在微信内
 
@@ -93,7 +84,7 @@ function handleSubmit() {
 }
 
 function getToken( str:string ,func=()=>{}){
-	fetchUser( str ).then(d=>{
+	fetchUser( str,userInfo.value.isVip ).then(d=>{
 		console.log('vip',d);
 		if(d.error==317){
 			if(isWechat.value){
@@ -106,6 +97,10 @@ function getToken( str:string ,func=()=>{}){
 		else if(d.error>0) {
 			msgRef.value.showError( d.error_des );
 			return ;
+		}
+		if(userInfo.value.isVip && d.data.uvip.isOver!=0){ //data.uvip.isOver
+			isOpenVip.value=true;
+			return;
 		}
 
 
@@ -182,7 +177,7 @@ async function onConversation() {
     +uuid,
     {
       dateTime: new Date().toLocaleString(),
-      text: '',
+      text: 'Thinking...',
       loading: true,
       inversion: false,
       error: false,
@@ -257,8 +252,8 @@ async function onConversation() {
   }
   catch (error: any) {
     let errorMessage = error?.message ?? t('common.wrong')
-		errorMessage= "抱歉，用户太多，余额耗尽了，站长正在充值的路上，请收藏下网址，等会再试试吧。欢迎给我们打赏帮我们分担一些成本。\n\n" + errorMessage;
-
+		if( ! userInfo.value.isVip) errorMessage= "抱歉，用户太多，余额耗尽了，站长正在充值的路上，请收藏下网址，等会再试试吧。欢迎给我们打赏帮我们分担一些成本。\n\n" + errorMessage;
+		else errorMessage ="稍后尝试\n\n"+ errorMessage;
     if (error.message === 'canceled') {
       updateChatSome(
         +uuid,
@@ -587,6 +582,7 @@ onMounted(() => {
 		let u = getCookieUserInfo();
 		if (!u) showLoginWx();
 	}
+
 })
 
 onUnmounted(() => {
@@ -604,6 +600,13 @@ const loginSuccess=()=>{
 	handleSubmit();
 }
 
+const isOpenVip=ref(false)
+const userStore = useUserStore()
+const userInfo = computed(() => userStore.userInfo)
+const goLogin=()=>{
+	isShowWx.value=true;
+	isOpenVip.value=false;
+}
 </script>
 
 <template>
@@ -614,6 +617,10 @@ const loginSuccess=()=>{
 
 	<NModal v-model:show="show2" style=" width: 450px;" preset="card" >
 		<ai-dasan></ai-dasan>
+	</NModal>
+
+	<NModal v-model:show="isOpenVip" style=" width: 550px;" preset="card" title="会员充值续费">
+		<ai-open-vip @toLogin="goLogin"  v-if="isOpenVip"></ai-open-vip>
 	</NModal>
 
 
@@ -632,19 +639,7 @@ const loginSuccess=()=>{
           :class="[isMobile ? 'p-2' : 'p-4']"
         >
           <template v-if="!dataSources.length">
-            <div class="flex items-center justify-center mt-4 text-center text-neutral-300">
-              <SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
-              <span v-if="isMobile">你可以点击下面的例子，体验我的能力<br/>当然，这只是冰山一角</span>
-              <span v-else>你可以点击下面的例子，体验我的能力，当然，这只是冰山一角</span>
-
-            </div>
-						<div v-if="rqList.length" class="myTitle">
-							<n-card :title="v2.title" size="small" class="mycard"  v-for="v2 in rqList" @click="go(v2)">{{v2.v}}</n-card>
-						</div>
-
-							<ai-weixin></ai-weixin>
-
-
+						<ai-first  @go="go" @openVip="isOpenVip=true"></ai-first>
 
           </template>
           <template v-else>
@@ -719,13 +714,4 @@ const loginSuccess=()=>{
   </div>
 
 </template>
-<style scoped>
-.mycard{ margin-top: 10px; position: relative; margin-left: 10px ; max-width: 200px ; cursor: pointer; }
-.myTitle{ display: flex; flex-wrap: wrap; justify-content: center;margin:0 auto; margin-top: 20px; max-width: 800px;  }
-@media  screen and (max-width: 600px){
-	.mycard{
-		width: 45vw;
-		margin-left: 1vw ;
-	}
-}
-</style>
+
