@@ -7,6 +7,7 @@ export interface UserInfo {
   name: string
   description: string
 	isVip:number
+	doLogin:number
 }
 
 export interface UserState {
@@ -20,7 +21,8 @@ export function defaultSetting(): UserState {
       avatar: 'https://cdn.aidutu.cn/res/head/ai.png',
       name: 'AiDuTu',
       description: '友链 <a href="https://www.aidutu.cn" class="text-blue-500" target="_blank" >快识图OCR</a>',
-			isVip:( location.href.indexOf('vip.aidutu.cn')>-1 )?1:0 // location.href.indexOf('localhost')>-1 ||
+			isVip:( location.href.indexOf('localhost')>-1 || location.href.indexOf('vip.aidutu.cn')>-1 )?1:0 //
+			,doLogin:0
     },
   }
 }

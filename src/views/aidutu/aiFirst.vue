@@ -1,41 +1,59 @@
 <template>
 
+
+
 	<div v-if="userInfo.isVip">
-		<div class="flex items-center justify-center mt-4 text-center">
-			<template v-if="!stvip.msg">
-			Loading...
-			</template>
-			<template v-else><span v-html="stvip.msg"></span> <n-button @click="emits('openVip')"  quaternary type="info" v-html="stvip.bt"></n-button></template>
-		</div>
+
+		<template v-if="showCard">
 		<div v-if="rqList.length" class="myTitle">
 			<n-card :title="v2.title" size="small" class="mycard"  v-for="v2 in rqList" @click="go(v2)">{{v2.v}}</n-card>
 		</div>
+		</template>
 		<ai-weixin></ai-weixin>
+		<div class="  mt-4 text-center">
+			<template v-if="!stvip.msg">
+				Loading...
+			</template>
+			<template v-else>
+				<div>
+				<n-button @click="openVip()"    type="info" v-html="stvip.bt" ></n-button>
+				</div>
+				<div v-html="stvip.msg"  style="padding-top: 10px;"></div>
+			</template>
+		</div>
 	</div>
 	<template v-else>
-		<div class="flex items-center justify-center mt-4 text-center text-neutral-300">
-			<SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
-			<span v-if="isMobile">你可以点击下面的例子，体验我的能力<br/>当然，这只是冰山一角</span>
-			<span v-else>你可以点击下面的例子，体验我的能力，当然，这只是冰山一角</span>
+		<template v-if="showCard">
+			<div class="flex items-center justify-center mt-4 text-center text-neutral-300">
+				<SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
+				<span v-if="isMobile">你可以点击下面的例子，体验我的能力<br/>当然，这只是冰山一角</span>
+				<span v-else>你可以点击下面的例子，体验我的能力，当然，这只是冰山一角</span>
 
-		</div>
-		<div v-if="rqList.length" class="myTitle">
-			<n-card :title="v2.title" size="small" class="mycard"  v-for="v2 in rqList" @click="go(v2)">{{v2.v}}</n-card>
-		</div>
+			</div>
+			<div v-if="rqList.length" class="myTitle">
+				<n-card :title="v2.title" size="small" class="mycard"  v-for="v2 in rqList" @click="go(v2)">{{v2.v}}</n-card>
+			</div>
+		</template>
+
 		<ai-weixin></ai-weixin>
 	</template>
+
+	<NModal v-model:show="isOpenVip" style=" width: 550px;" preset="card" title="会员充值续费"  :on-after-enter="vipClose">
+		<ai-open-vip   v-if="isOpenVip" @success="loadVip"></ai-open-vip>
+	</NModal>
 
 </template>
 
 <script  lang='ts' setup>
 //默认问题
-import {computed, onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref, watch} from "vue";
 import {useBasicLayout} from "@/hooks/useBasicLayout";
 import AiWeixin from "@/views/aidutu/aiWeixin.vue";
 import {  SvgIcon } from '@/components/common'
-import { NCard,NButton } from 'naive-ui'
+import { NCard,NButton,NModal } from 'naive-ui'
 import {useUserStore} from "@/store";
 import {ajax} from "@/api";
+import AiOpenVip from "@/views/aidutu/aiOpenVip.vue";
 
 const emits = defineEmits(['go', 'openVip'])
 const { isMobile } = useBasicLayout()
@@ -49,20 +67,38 @@ if( !isMobile.value ) arr.push({title:'故事现编',v:'写一篇童话故事，
 const myArray= reactive(arr);
 const rqList= ref(myArray)
 const go = (v:any)=>emits('go',v)
+const showCard=ref(false)
 
 const userStore = useUserStore()
 const userInfo = computed(() => userStore.userInfo)
 
 const stvip= ref({msg:'',bt:'',isVip:0});
-
-onMounted( ()=>{
-	if(userInfo.value.isVip) ajax({
+const isOpenVip=ref(false)
+const vipClose = () => {
+	userStore.updateUserInfo({doLogin:0})
+}
+const loadVip = () => {
+	ajax({
 		url:'/chatgpt/config/vip'
 	}).then(d=> {
 		stvip.value=d.data.cf;
-
 	} )
+
+	if( isOpenVip.value ) setTimeout(()=>isOpenVip.value=false ,1500)
+}
+onMounted( ()=>{
+	if(userInfo.value.isVip) loadVip();
 });
+const openVip= () => {
+	if(stvip.value.bt=='请先登录'){
+		userStore.updateUserInfo({doLogin:2})
+	}
+	else{
+		isOpenVip.value=true;
+	}
+}
+
+watch(userInfo, (val, o) => (val.doLogin==1 && o?.doLogin==0) && openVip(), {immediate: true, flush: 'post'} )
 
 </script>
 

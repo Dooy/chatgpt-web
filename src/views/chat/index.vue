@@ -1,9 +1,9 @@
 <script setup lang='ts'>
 import type { Ref } from 'vue'
-import { computed, onMounted, onUnmounted, ref,reactive } from 'vue'
+import {computed, onMounted, onUnmounted, ref, watch} from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { NAutoComplete, NButton, NInput,NCard, useDialog, useMessage,NModal } from 'naive-ui'
+import { NAutoComplete, NButton, NInput, useDialog, useMessage,NModal } from 'naive-ui'
 import html2canvas from 'html2canvas'
 import { Message } from './components'
 import { useScroll } from './hooks/useScroll'
@@ -16,13 +16,13 @@ import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore,useUserStore } from '@/store'
 import {ajax, fetchChatAPIProcess, fetchUser} from '@/api' //
 import { t } from '@/locales'
-import AiWeixin from "@/views/aidutu/aiWeixin.vue";
+//import AiWeixin from "@/views/aidutu/aiWeixin.vue";
 import AiMsg from "@/views/aidutu/aiMsg.vue";
 import AiWeixinlogin from "@/views/aidutu/aiWeixinlogin.vue";
 import {getCookieUserInfo} from "@/utils/functions";
 import AiDasan from "@/views/aidutu/aiDasan.vue";
 import AiFirst from "@/views/aidutu/aiFirst.vue";
-import AiOpenVip from "@/views/aidutu/aiOpenVip.vue";
+//import AiOpenVip from "@/views/aidutu/aiOpenVip.vue";
 
 let controller = new AbortController()
 
@@ -613,15 +613,24 @@ const loginSuccess=()=>{
 const isOpenVip=ref(false)
 const userStore = useUserStore()
 const userInfo = computed(() => userStore.userInfo)
-const goLogin=()=>{
-	isShowWx.value=true;
-	isOpenVip.value=false;
+const goLogin= ()=>{
+	if(isWechat.value) {
+		showLoginWx();
+	}else{
+		isShowWx.value=true;
+	}
 }
+watch(userInfo, (val, o) => (val.doLogin==2 && o?.doLogin!=2) && goLogin(), {immediate: true, flush: 'post'} )
+
+const vipClose = () => {
+	userStore.updateUserInfo({doLogin:0})
+}
+vipClose()
 </script>
 
 <template>
 	<ai-msg ref="msgRef"></ai-msg>
-	<NModal v-model:show="isShowWx" style=" width: 350px;" preset="card" >
+	<NModal v-model:show="isShowWx" style=" width: 350px;" preset="card" :on-after-enter="vipClose">
 		<ai-weixinlogin @success="loginSuccess" v-if="isShowWx"></ai-weixinlogin>
 	</NModal>
 
@@ -629,9 +638,7 @@ const goLogin=()=>{
 		<ai-dasan></ai-dasan>
 	</NModal>
 
-	<NModal v-model:show="isOpenVip" style=" width: 550px;" preset="card" title="会员充值续费">
-		<ai-open-vip @toLogin="goLogin"  v-if="isOpenVip"></ai-open-vip>
-	</NModal>
+
 
 
   <div class="flex flex-col w-full h-full">

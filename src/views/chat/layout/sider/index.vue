@@ -4,7 +4,7 @@ import { computed, ref, watch } from 'vue'
 import { NButton, NLayoutSider,NModal } from 'naive-ui'
 import List from './List.vue'
 import Footer from './Footer.vue'
-import { useAppStore, useChatStore } from '@/store'
+import {useAppStore, useChatStore, useUserStore} from '@/store'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { PromptStore } from '@/components/common'
 import AiDasan from "@/views/aidutu/aiDasan.vue";
@@ -57,6 +57,14 @@ watch(
     flush: 'post',
   },
 )
+
+const goCz=()=>{
+	userStore.updateUserInfo({doLogin:1})
+}
+
+const userStore = useUserStore()
+const userInfo = computed(() => userStore.userInfo)
+
 </script>
 
 <template>
@@ -85,9 +93,14 @@ watch(
           <NButton block @click="show = true" v-if="show">
             {{ $t('store.siderButton') }}
           </NButton>
-					<NButton block @click="show2 = true" type="warning">
-						 求赞赏
+
+					<NButton block @click="goCz()" type="warning" v-if="userInfo.isVip">
+						 充值续费
 					</NButton>
+					<NButton block @click="show2 = true" type="warning" v-else>
+						求赞赏
+					</NButton>
+					<div style="text-align: center;padding-top: 10px"> <a href="https://docs.qq.com/doc/DWHFYamFkV1RPTkxi" target="_blank">免责申明</a> </div>
         </div>
       </main>
       <Footer />
