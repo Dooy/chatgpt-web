@@ -70,8 +70,8 @@ function highlightBlock(str: string, lang?: string) {
 
 const guolv= (txt:string)=>{
 	//console.log( 'abc==>',txt );
-	txt = txt.replace(/href="([^"]*)"/ig, 'href="#"');
-	txt = txt.replace(/href='([^']*)'/ig, 'href="#"');
+	txt = txt.replace(/href="([^"]*)"/ig, 'href="https://www.aidutu.cn/info/link?url=$1"');
+	txt = txt.replace(/href='([^']*)'/ig, 'href="https://www.aidutu.cn/info/link?url=$1"');
 	return txt;
 }
 const childRef = ref();
