@@ -1,4 +1,5 @@
 <template>
+
 	<div v-if="userInfo.isVip">
 		<div class="flex items-center justify-center mt-4 text-center">
 			<template v-if="!stvip.msg">
@@ -11,7 +12,7 @@
 		</div>
 		<ai-weixin></ai-weixin>
 	</div>
-	<template>
+	<template v-else>
 		<div class="flex items-center justify-center mt-4 text-center text-neutral-300">
 			<SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
 			<span v-if="isMobile">你可以点击下面的例子，体验我的能力<br/>当然，这只是冰山一角</span>
