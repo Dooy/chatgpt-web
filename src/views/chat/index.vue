@@ -207,7 +207,7 @@ async function onConversation() {
     +uuid,
     {
       dateTime: new Date().toLocaleString(),
-      text: 'Thinking...',
+      text: 'Thinking...(wwww.baidu.com)',
       loading: true,
       inversion: false,
       error: false,

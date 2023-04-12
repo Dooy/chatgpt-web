@@ -67,6 +67,13 @@ function highlightBlock(str: string, lang?: string) {
 // 	copyText3( props.text ?? '').then(()=>childRef.value.showMsg('复制成功！'));
 //
 // }
+
+const guolv= (txt:string)=>{
+	//console.log( 'abc==>',txt );
+	txt = txt.replace(/href="([^"]*)"/g, 'href="#"');
+	txt = txt.replace(/href='([^']*)'/g, 'href="#"');
+	return txt;
+}
 const childRef = ref();
 defineExpose({ textRef })
 </script>
@@ -76,7 +83,7 @@ defineExpose({ textRef })
   <div class="text-black" :class="wrapClass">
     <div ref="textRef" class="leading-relaxed break-words">
       <div v-if="!inversion" class="flex items-end">
-        <div v-if="!asRawText" class="w-full markdown-body" v-html="text" />
+        <div v-if="!asRawText" class="w-full markdown-body" v-html="guolv(text)" />
         <div v-else class="w-full whitespace-pre-wrap" v-text="text" />
         <span v-if="loading" class="dark:text-white w-[4px] h-[20px] block animate-blink" />
       </div>
