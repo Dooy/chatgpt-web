@@ -608,6 +608,7 @@ const loginSuccess=()=>{
 	msgRef.value.showMsg('登录成功！');
 	isShowWx.value=false;
 	handleSubmit();
+	userStore.updateUserInfo({doLogin:4})
 }
 
 const isOpenVip=ref(false)

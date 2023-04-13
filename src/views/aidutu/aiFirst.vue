@@ -98,7 +98,14 @@ const openVip= () => {
 	}
 }
 
-watch(userInfo, (val, o) => (val.doLogin==1 && o?.doLogin==0) && openVip(), {immediate: true, flush: 'post'} )
+watch(userInfo, (val, o) =>{
+		if(val.doLogin==1 && o?.doLogin==0)   openVip()
+		else if( val.doLogin==4 ){
+			loadVip();
+		}
+	}
+
+	, {immediate: true, flush: 'post'} )
 
 </script>
 

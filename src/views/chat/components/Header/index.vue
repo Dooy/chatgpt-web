@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, nextTick,ref } from 'vue'
 import { HoverButton, SvgIcon } from '@/components/common'
-import { useAppStore, useChatStore } from '@/store'
+import {useAppStore, useChatStore, useUserStore} from '@/store'
 import AiDasan from "@/views/aidutu/aiDasan.vue";
 import {NModal } from 'naive-ui'
 interface Props {
@@ -42,6 +42,12 @@ function toggleUsingContext() {
 }
 const isShow= ref(true);
 const show2= ref(false);
+const goCz=()=>{
+	userStore.updateUserInfo({doLogin:1})
+}
+
+const userStore = useUserStore()
+const userInfo = computed(() => userStore.userInfo)
 </script>
 
 <template>
@@ -75,10 +81,15 @@ const show2= ref(false);
             <SvgIcon icon="ri:download-2-line" />
           </span>
         </HoverButton>
-				<HoverButton @click="show2=true">
+				<HoverButton @click="goCz" v-if="userInfo.isVip">
+				<span class="text-xl text-[#f0a020] dark:text-white" style="font-size: 16px;font-weight: 600">
+            充值
+				</span>
+				</HoverButton>
+				<HoverButton @click="show2=true" v-else>
 				<span class="text-xl text-[#18a058] dark:text-white" style="font-size: 16px;font-weight: 600">
             打赏
-          </span>
+				</span>
 				</HoverButton>
       </div>
     </div>
