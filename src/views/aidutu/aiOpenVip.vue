@@ -3,7 +3,7 @@
 		你未开通会员  (UID:{{uvip.user_id}})
 	</div>
 	<template v-else-if="uvip.dsEnd">
-	<div v-if="uvip.isOver">你的会员已截止 (UID:{{uvip.user_id}})</div>
+	<div v-if="uvip.isOver">你的会员已到期 (UID:{{uvip.user_id}})</div>
 		<div v-else>你的会员不足<b>{{uvip.dsTs}}</b>, 将在 <b >{{uvip.dsEnd}}</b> 到期  (UID:{{uvip.user_id}})</div>
 	</template>
 	<div  v-html="info.msg"></div>

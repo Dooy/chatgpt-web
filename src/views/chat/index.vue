@@ -22,7 +22,7 @@ import AiWeixinlogin from "@/views/aidutu/aiWeixinlogin.vue";
 import {getCookieUserInfo} from "@/utils/functions";
 import AiDasan from "@/views/aidutu/aiDasan.vue";
 import AiFirst from "@/views/aidutu/aiFirst.vue";
-//import AiOpenVip from "@/views/aidutu/aiOpenVip.vue";
+import AiOpenVip from "@/views/aidutu/aiOpenVip.vue";
 
 let controller = new AbortController()
 
@@ -82,7 +82,7 @@ function handleSubmit() {
 	getToken( prompt.value, onConversation );
 
 }
-
+const serverInfo=ref({'uid':0,isAd:0})
 function getToken( str:string ,func=()=>{}){
 	fetchUser( str,userInfo.value.isVip ).then(d=>{
 		console.log('vip',d);
@@ -106,11 +106,15 @@ function getToken( str:string ,func=()=>{}){
 
 
 		localStorage.setItem('token', d.data.token )
+		if(d.data && d.data.info){
+			serverInfo.value= d.data.info
+		}
 		func()
 
 		if(d.data && d.data.info && d.data.info.zan){
 			show2.value=true
 		}
+
 
 	}).catch(e=>{
 		console.log('error',e);
@@ -170,6 +174,26 @@ function daanFinglerV2(uuid:number, index:number) {
 	}
 
 }
+
+//adfun
+const adFun = (uuid:number,index:number) => {
+	//console.log('adFun');
+	if(serverInfo.value.isAd!=1) return ;
+	setTimeout(()=>{
+		const currentChat = getChatByUuidAndIndex(uuid, index ) ;
+		//console.log('adFun', currentChat );
+		if( currentChat?.text && currentChat.text=='Thinking...'){
+			//console.log('adFun', 'Thanks....' );
+			updateChatSome(
+				uuid, index,
+				{
+					text: 'Thinking...[慢？可尝试我们的VIP通道，快速出答案](https://vip.aidutu.cn/?tk) ',
+				})
+		}
+	},3000);
+
+}
+
 async function onConversation() {
   let message = prompt.value
 
@@ -203,11 +227,12 @@ async function onConversation() {
   if (lastContext && usingContext.value)
     options = { ...lastContext }
 
+	let think ='Thinking...';
   addChat(
     +uuid,
     {
       dateTime: new Date().toLocaleString(),
-      text: 'Thinking...',
+      text: think ,
       loading: true,
       inversion: false,
       error: false,
@@ -218,6 +243,7 @@ async function onConversation() {
   scrollToBottom()
 
   try {
+		adFun( +uuid, dataSources.value.length - 1 );
     let lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
@@ -358,6 +384,7 @@ async function onRegenerate(index: number) {
   )
 
   try {
+		adFun( +uuid,  index );
     let lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
@@ -621,7 +648,10 @@ const goLogin= ()=>{
 		isShowWx.value=true;
 	}
 }
-watch(userInfo, (val, o) => (val.doLogin==2 && o?.doLogin!=2) && goLogin(), {immediate: true, flush: 'post'} )
+watch(userInfo, (val, o) =>{
+	if (val.doLogin==2 && o?.doLogin!=2)   goLogin();
+	else if( val.doLogin==1) isOpenVip.value=true;
+}, {immediate: true, flush: 'post'} )
 
 const vipClose = () => {
 	userStore.updateUserInfo({doLogin:0})
@@ -657,10 +687,12 @@ vipClose()
           :class="[isMobile ? 'p-2' : 'p-4']"
         >
           <template v-if="!dataSources.length">
-						<ai-first  @go="go" @openVip="isOpenVip=true"></ai-first>
-
+						<ai-first  @go="go" ></ai-first>
           </template>
           <template v-else>
+						<NModal v-model:show="isOpenVip" style=" width: 550px;" preset="card" title="会员充值续费"  :on-after-enter="vipClose">
+							<ai-open-vip   v-if="isOpenVip"></ai-open-vip>
+						</NModal>
             <div>
               <Message
                 v-for="(item, index) of dataSources"
