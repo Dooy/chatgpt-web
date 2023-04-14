@@ -96,7 +96,7 @@ export function ajax({ url="",method='GET',data={}}): Promise<Response<any>> {
 	});
 	//
 	return new Promise<Response<any>>((h,r)=>{
-		service.request({url,method,data,headers:{'x-iam':getIam()} }).then(d=>h(d.data)).catch(e=>r(e));
+		service.request({url,method,data,headers:{'x-iam':getIam(),'x-version':'1.5'} }).then(d=>h(d.data)).catch(e=>r(e));
 	});
 }
 
