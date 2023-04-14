@@ -82,7 +82,7 @@ function handleSubmit() {
 	getToken( prompt.value, onConversation );
 
 }
-const serverInfo=ref({'uid':0,isAd:0,tm:3000})
+const serverInfo=ref({'uid':0,isAd:0,tm:3000,error:''})
 function getToken( str:string ,func=()=>{}){
 	fetchUser( str,userInfo.value.isVip ).then(d=>{
 		console.log('vip',d);
@@ -295,8 +295,9 @@ async function onConversation() {
   }
   catch (error: any) {
     let errorMessage = error?.message ?? t('common.wrong')
-		if( ! userInfo.value.isVip) errorMessage= "抱歉，用户太多，余额耗尽了，站长正在充值的路上，请收藏下网址，等会再试试吧。欢迎给我们打赏帮我们分担一些成本。\n\n" + errorMessage;
-		else errorMessage ="稍后尝试\n\n"+ errorMessage;
+		// if( ! userInfo.value.isVip) errorMessage= "抱歉，用户太多，余额耗尽了，站长正在充值的路上，请收藏下网址，等会再试试吧。欢迎给我们打赏帮我们分担一些成本。\n\n" + errorMessage;
+		// else errorMessage ="稍后尝试\n\n"+ errorMessage;
+		if(serverInfo.value.error )  errorMessage = serverInfo.value.error + errorMessage;
     if (error.message === 'canceled') {
       updateChatSome(
         +uuid,
