@@ -82,7 +82,7 @@ function handleSubmit() {
 	getToken( prompt.value, onConversation );
 
 }
-const serverInfo=ref({'uid':0,isAd:0})
+const serverInfo=ref({'uid':0,isAd:0,tm:3000})
 function getToken( str:string ,func=()=>{}){
 	fetchUser( str,userInfo.value.isVip ).then(d=>{
 		console.log('vip',d);
@@ -190,7 +190,7 @@ const adFun = (uuid:number,index:number) => {
 					text: 'Thinking...[慢？可尝试我们的VIP通道，快速出答案](https://vip.aidutu.cn/?tk) ',
 				})
 		}
-	},3000);
+	},serverInfo.value.tm?serverInfo.value.tm:3000);
 
 }
 
