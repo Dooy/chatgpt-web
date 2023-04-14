@@ -8,6 +8,8 @@ import type { UserInfo } from '@/store/modules/user/helper'
 import { getCurrentDate } from '@/utils/functions'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { t } from '@/locales'
+import AiMsg from "@/views/aidutu/aiMsg.vue";
+import {ajax} from "@/api";
 
 const appStore = useAppStore()
 const userStore = useUserStore()
@@ -118,9 +120,19 @@ function handleImportButtonClick(): void {
   if (fileInput)
     fileInput.click()
 }
+
+const msgRef=ref()
+function logout(){
+		ajax({url:'/chatgpt/config/logout'}).then(()=>{
+			msgRef.value.showMsg("退出成功！");
+			setTimeout(()=>location.reload(),1500 );
+
+		})
+}
 </script>
 
 <template>
+	<ai-msg ref="msgRef"></ai-msg>
   <div class="p-4 space-y-5 min-h-[200px]">
     <div class="space-y-6">
 
@@ -226,6 +238,9 @@ function handleImportButtonClick(): void {
         <NButton size="small" @click="handleReset">
           {{ $t('common.reset') }}
         </NButton>
+				<NButton size="small" @click="logout" type="primary">
+					 退出
+				</NButton>
       </div>
     </div>
   </div>

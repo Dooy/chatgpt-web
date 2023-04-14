@@ -83,7 +83,7 @@ export function fetchSession<T>() {
 export function fetchUser(q:string,isVip:number)
 {
 
-	return ajax({url:'/chatgpt/user/info?v=1.4',method:'POST',data:{'iam':getIam() ,q,isVip} })
+	return ajax({url:'/chatgpt/user/info?v=1.5',method:'POST',data:{'iam':getIam() ,q,isVip} })
 }
 
 export function ajax({ url="",method='GET',data={}}): Promise<Response<any>> {

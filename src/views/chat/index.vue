@@ -187,7 +187,7 @@ const adFun = (uuid:number,index:number) => {
 			updateChatSome(
 				uuid, index,
 				{
-					text: 'Thinking...[慢？可尝试我们的VIP通道，不拥挤](https://vip.aidutu.cn/?tk) ',
+					text: 'Thinking...[慢？可尝试我们的VIP通道，快速出答案](https://vip.aidutu.cn/?tk) ',
 				})
 		}
 	},serverInfo.value.tm?serverInfo.value.tm:3000);
@@ -643,6 +643,7 @@ const isOpenVip=ref(false)
 const userStore = useUserStore()
 const userInfo = computed(() => userStore.userInfo)
 const goLogin= ()=>{
+	isOpenVip.value=false;
 	if(isWechat.value) {
 		showLoginWx();
 	}else{
@@ -658,6 +659,8 @@ const vipClose = () => {
 	userStore.updateUserInfo({doLogin:0})
 }
 vipClose()
+
+const serverMsg=ref({des:'显示内容支持html',is:false })
 </script>
 
 <template>
@@ -668,6 +671,9 @@ vipClose()
 
 	<NModal v-model:show="show2" style=" width: 450px;" preset="card" >
 		<ai-dasan></ai-dasan>
+	</NModal>
+	<NModal v-model:show="serverMsg.is" style=" width: 450px;" preset="card" >
+		<div v-html="serverMsg.des"></div>
 	</NModal>
 
 

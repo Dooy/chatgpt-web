@@ -45,6 +45,7 @@ import {ajax} from "@/api";
 import { NCard ,NButton} from 'naive-ui'
 import QRCodeVue3 from "qrcode-vue3";
 import AiMsg from "@/views/aidutu/aiMsg.vue";
+import {useUserStore} from "@/store";
 
 const emit =defineEmits(['toLogin','success']);
 const stVip=ref([]);
@@ -55,13 +56,16 @@ const isWechat = ref( /MicroMessenger/i.test(navigator.userAgent) ); //是否在
 const msgRef = ref();
 const info=ref({msg:''})
 
+const userStore = useUserStore()
 
 onMounted(()=>{
+	//userStore.updateUserInfo({doLogin:0})
 	ajax({
 		url:'/chatgpt/config/cz'
 	}).then(d=>{
 		if(d.error==317){
-			emit('toLogin'); //user_id
+			//emit('toLogin'); //user_id
+			userStore.updateUserInfo({doLogin:2})
 			return ;
 		}
 		stVip.value=d.data.cf ;
