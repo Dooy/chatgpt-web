@@ -8,15 +8,18 @@
 	</template>
 	<div  v-html="info.msg"></div>
 
-<div class="myTitle" v-if="stVip.length>0">
-	<n-card :title="`${v2.ds}元`" size="small" class="mycard payCard" :class="{me:k==dfSelect}"  v-for="(v2,k) in stVip" @click="go(v2)">
-		{{v2.info}}
-	</n-card>
-</div>
+
+	<div class="myTitle" v-if="stVip.length>0">
+		<n-card :title="`${v2.ds}元`" size="small" class="mycard payCard" :class="{me:k==dfSelect}"  v-for="(v2,k) in stVip" @click="go(v2)">
+			{{v2.info}}
+		</n-card>
+	</div>
+	<div v-else>Loading....</div>
 	<div style="display: flex; justify-content: center; margin-top: 20px" >
 		<div v-if="isWechat">
 			<n-button type="info" @click="goUrl(st.pay.url )">点我微信支付</n-button>
 		</div>
+
 		<template v-else>
 		<QRCodeVue3 :width="200"  :height="200" :value="st.pay.url" v-if="st.pay.url" class="wx-qr"/>
 		<div  class="wx-qr" v-else>
@@ -29,6 +32,9 @@
 			<div style="margin-top: 20px;">
 
 				<n-button type="info" ghost @click="checkCz">我已充值成功 刷新</n-button>
+			</div>
+			<div v-if="isMobile" style="margin-top: 20px;">
+				<n-button type="info" @click="goUrl(st.pay.url )">使用支付宝付款</n-button>
 			</div>
 
 		</div>
@@ -46,6 +52,7 @@ import { NCard ,NButton} from 'naive-ui'
 import QRCodeVue3 from "qrcode-vue3";
 import AiMsg from "@/views/aidutu/aiMsg.vue";
 import {useUserStore} from "@/store";
+import {useBasicLayout} from "@/hooks/useBasicLayout";
 
 const emit =defineEmits(['toLogin','success']);
 const stVip=ref([]);
@@ -53,6 +60,7 @@ const dfSelect=ref(0)
 const st=ref({pay:{ds:'',url:'',info:''}})
 const uvip= ref({'dsEnd':'',isOver:0,'dsTs':'',user_id:0,last_order_id:0})
 const isWechat = ref( /MicroMessenger/i.test(navigator.userAgent) ); //是否在微信内
+const { isMobile } = useBasicLayout()
 const msgRef = ref();
 const info=ref({msg:''})
 
@@ -117,7 +125,7 @@ const checkCz = () => {
 .myTitle{ display: flex; flex-wrap: wrap; justify-content: center;margin:0 auto; margin-top: 20px; max-width: 800px;  }
 @media  screen and (max-width: 600px){
 	.mycard{
-		width: 45vw;
+		max-width: 110px ;
 		margin-left: 1vw ;
 	}
 }

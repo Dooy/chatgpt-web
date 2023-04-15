@@ -661,6 +661,9 @@ const vipClose = () => {
 vipClose()
 
 const serverMsg=ref({des:'显示内容支持html',is:false })
+const openSuccess = () => {
+	setTimeout(()=>isOpenVip.value=false,1500)
+}
 </script>
 
 <template>
@@ -698,7 +701,7 @@ const serverMsg=ref({des:'显示内容支持html',is:false })
           </template>
           <template v-else>
 						<NModal v-model:show="isOpenVip" style=" width: 550px;" preset="card" title="会员充值续费"  :on-after-enter="vipClose">
-							<ai-open-vip   v-if="isOpenVip"></ai-open-vip>
+							<ai-open-vip   v-if="isOpenVip" @success="openSuccess"></ai-open-vip>
 						</NModal>
             <div>
               <Message
