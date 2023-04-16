@@ -82,8 +82,12 @@ function handleSubmit() {
 	getToken( prompt.value, onConversation );
 
 }
-const serverInfo=ref({'uid':0,isAd:0,tm:3000,error:''})
+const serverInfo=ref({'uid':0,isAd:0,tm:3000,error:'', 'goon':['继续','请继续']})
 function getToken( str:string ,func=()=>{}){
+	if(!userInfo.value.isVip && serverInfo.value.goon.indexOf(str)>-1 ){
+		goOnAd( str );
+		return ;
+	}
 	fetchUser( str,userInfo.value.isVip ).then(d=>{
 		console.log('vip',d);
 		if(d.error==317){
@@ -194,6 +198,34 @@ const adFun = (uuid:number,index:number) => {
 
 }
 
+const goOnAd = (str:string) => {
+	addChat(
+		+uuid,
+		{
+			dateTime: new Date().toLocaleString(),
+			text: str,
+			inversion: true,
+			error: false,
+			conversationOptions: null,
+			requestOptions: { prompt: str, options: null },
+		},
+	)
+	let message ='公益通道不支持追问，[追问可尝试我们VIP通道](https://vip.aidutu.cn/?go)';
+	addChat(
+		+uuid,
+		{
+			dateTime: new Date().toLocaleString(),
+			text: message,
+			inversion: false,
+			error: false,
+			conversationOptions: null,
+			requestOptions: { prompt: message, options: null },
+		},
+	)
+	scrollToBottom();
+	prompt.value='';
+	loading.value=false;
+}
 async function onConversation() {
   let message = prompt.value
 
@@ -664,6 +696,8 @@ const serverMsg=ref({des:'显示内容支持html',is:false })
 const openSuccess = () => {
 	setTimeout(()=>isOpenVip.value=false,1500)
 }
+
+
 </script>
 
 <template>
