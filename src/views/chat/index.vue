@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import type { Ref } from 'vue'
-import {computed, onMounted, onUnmounted, ref, watch} from 'vue'
+import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { NAutoComplete, NButton, NInput, useDialog, useMessage,NModal } from 'naive-ui'
@@ -19,10 +19,11 @@ import { t } from '@/locales'
 //import AiWeixin from "@/views/aidutu/aiWeixin.vue";
 import AiMsg from "@/views/aidutu/aiMsg.vue";
 import AiWeixinlogin from "@/views/aidutu/aiWeixinlogin.vue";
-import {getCookieUserInfo} from "@/utils/functions";
+import {getCookieUserInfo,sleep} from "@/utils/functions";
 import AiDasan from "@/views/aidutu/aiDasan.vue";
 import AiFirst from "@/views/aidutu/aiFirst.vue";
 import AiOpenVip from "@/views/aidutu/aiOpenVip.vue";
+import {copyText3} from "@/utils/format";
 
 let controller = new AbortController()
 
@@ -82,13 +83,21 @@ function handleSubmit() {
 	getToken( prompt.value, onConversation );
 
 }
-const serverInfo=ref({'uid':0,isAd:0,tm:3000,error:'', 'goon':['继续','请继续']})
-function getToken( str:string ,func=()=>{}){
+const serverInfo=ref({
+	'uid':0
+	,isAd:0 //是否刚刚
+	,tm:3000 //当慢的时候多长时间跳出广告
+	,error:'' // 发生错的提示 比如429限制速度 支撑markdown
+	, 'goon':['继续','请继续'] //非会员 继续 匹配刚刚
+	,'sleep':0 //主动放慢多长场景
+	,'stk':0 //停止联系对话 1停止 0不停止
+})
+ function  getToken( str:string ,func=()=>{}){
 	if(!userInfo.value.isVip && serverInfo.value.goon.indexOf(str)>-1 ){
 		goOnAd( str );
 		return ;
 	}
-	fetchUser( str,userInfo.value.isVip ).then(d=>{
+	fetchUser( str,userInfo.value.isVip ).then(  (d)=>{
 		console.log('vip',d);
 		if(d.error==317){
 			if(isWechat.value){
@@ -256,7 +265,7 @@ async function onConversation() {
   let options: Chat.ConversationRequest = {}
   const lastContext = conversationList.value[conversationList.value.length - 1]?.conversationOptions
 
-  if (lastContext && usingContext.value)
+  if (lastContext && usingContext.value && serverInfo.value.stk==0)
     options = { ...lastContext }
 
 	let think ='Thinking...';
@@ -277,6 +286,9 @@ async function onConversation() {
   try {
 		adFun( +uuid, dataSources.value.length - 1 );
     let lastText = ''
+
+		if(serverInfo.value.sleep>0) await sleep( serverInfo.value.sleep );
+
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         prompt: message,
@@ -397,7 +409,7 @@ async function onRegenerate(index: number) {
 
   let options: Chat.ConversationRequest = {}
 
-  if (requestOptions.options)
+  if (requestOptions.options && serverInfo.value.stk==0 )
     options = { ...requestOptions.options }
 
   loading.value = true
@@ -419,6 +431,7 @@ async function onRegenerate(index: number) {
   try {
 		adFun( +uuid,  index );
     let lastText = ''
+		if(serverInfo.value.sleep>0) await sleep( serverInfo.value.sleep );
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         prompt: message,
@@ -670,7 +683,13 @@ const loginSuccess=()=>{
 	handleSubmit();
 	userStore.updateUserInfo({doLogin:4})
 }
+const loginCopy = (url:string) => {
+  //console.log('loginCopy',url );
+	isShowWx.value=false;
+	nextTick( ()=>copyText3("请在微信内打开下面链接 "+ url).then( ()=>msgRef.value.showMsg('复制成功！请将内容粘贴于微信对话框内打开')) )
 
+
+}
 const isOpenVip=ref(false)
 const userStore = useUserStore()
 const userInfo = computed(() => userStore.userInfo)
@@ -703,7 +722,7 @@ const openSuccess = () => {
 <template>
 	<ai-msg ref="msgRef"></ai-msg>
 	<NModal v-model:show="isShowWx" style=" width: 350px;" preset="card" :on-after-enter="vipClose">
-		<ai-weixinlogin @success="loginSuccess" v-if="isShowWx"></ai-weixinlogin>
+		<ai-weixinlogin @success="loginSuccess" v-if="isShowWx" @copy="loginCopy"></ai-weixinlogin>
 	</NModal>
 
 	<NModal v-model:show="show2" style=" width: 450px;" preset="card" >

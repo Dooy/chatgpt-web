@@ -55,3 +55,8 @@ export function getCookieUserInfo(){
 	return  u;
 }
 
+//sleep 毫秒
+export function sleep(time:number){
+	return new Promise(h=>setTimeout(()=>h(time ),time));
+}
+

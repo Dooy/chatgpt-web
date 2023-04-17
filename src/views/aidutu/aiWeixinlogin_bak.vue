@@ -19,58 +19,76 @@
 		<div>或</div>
 		<n-button  type="success" @click="copy()">复制网址进微信使用</n-button>
 	</div>
+	<ai-msg ref="msg"></ai-msg>
 </div>
 </template>
 
-<script setup lang='ts'>
+<script>
 import QRCodeVue3 from "qrcode-vue3";
 import {ajax} from "@/api";
 import {useBasicLayout} from "@/hooks/useBasicLayout";
 import {NButton} from "naive-ui";
-//import AiMsg from "@/views/aidutu/aiMsg.vue";
+import AiMsg from "@/views/aidutu/aiMsg.vue";
 import {copyText} from "@/utils/format";
-import {onMounted, onUnmounted, ref} from "vue";
 const { isMobile } = useBasicLayout()
+export default {
+	name: "aiWeixinlogin",
+	components: {
+		AiMsg,
+		QRCodeVue3,NButton
+	}
+	,mounted() {
+		this.loadQr();
+	}
+	,unmounted() {
+		this.st.timeout=1;
+	}
+	,data(){
+		return{
+			qr:{
+				"url": "",
+				'checkUrl':''
+			}
+			,st:{
+				timeout:0,cnt: 0,isMobile:isMobile
+			}
 
-const $emit=defineEmits(['success','copy']);
-
-const qr =  ref({"url": "", 'checkUrl':''});
-const st =  ref({timeout:0,cnt: 0,isMobile:isMobile});
-const msg= ref();
-const copy= ()=>{
-	$emit('copy',location.href)
-}
-
-const loadQr= ()=>{
-	ajax({url:'/oauth/weixin/chat'}).then(d=> {
-		console.log('wx',d )
-		qr.value.url= d.data.rz.url //data.rz.url
-		qr.value.checkUrl= d.data.rz.checkUrl //data.rz.url
-		//this.check();
-		check();
-	});
-}
-const check = ()=>{
-	if( st.value.timeout ) return ;
-	ajax({url: qr.value.checkUrl}).then(d=>{
-		console.log('check', st.value.cnt  ); //djj/user/logout
-		st.value.cnt++;
-		if(d.data.rz.user_id){
-			$emit('success');
-			console.log('登录成功') //djj/user/logout 登出
-			return;
 		}
-		if( st.value.cnt>60 ) {
-			st.value.timeout =1;
-			return;
+	}
+	,methods:{
+		copy(){
+			//copyText3('https://chat.aidutu.cn').then(()=>this.$refs.msg.showMsg("复制成功！"));
+			copyText({text:'https://chat.aidutu.cn'});
+			this.$refs.msg.showMsg("复制成功！")
+		},
+		loadQr(){
+			ajax({url:'/oauth/weixin/chat'}).then(d=> {
+				console.log('wx',d )
+				this.qr.url= d.data.rz.url //data.rz.url
+				this.qr.checkUrl= d.data.rz.checkUrl //data.rz.url
+				this.check();
+			});
 		}
-		let ms= d.data.rz.open_id?500:1500;
-		setTimeout( check, ms );
-	})
+		,check(){
+			if( this.st.timeout ) return ;
+			ajax({url: this.qr.checkUrl}).then(d=>{
+				console.log('check', this.st.cnt  ); //djj/user/logout
+				this.st.cnt++;
+				if(d.data.rz.user_id){
+					this.$emit('success');
+					console.log('登录成功') //djj/user/logout 登出
+					return;
+				}
+				if( this.st.cnt>60 ) {
+					this.st.timeout =1;
+					return;
+				}
+				let ms= d.data.rz.open_id?500:1500;
+				setTimeout( this.check, ms );
+			})
+		}
+	}
 }
-
-onMounted( ()=>loadQr() );
-onUnmounted(()=>{ st.value.timeout=1;})
 </script>
 
 <style scoped>
