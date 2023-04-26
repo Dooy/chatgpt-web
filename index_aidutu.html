@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+	<meta charset="UTF-8">
+	<link rel="icon"  href="https://cdn.aidutu.cn/res/head/ai.png">
+	<meta content="yes" name="apple-mobile-web-app-capable"/>
+	<link rel="apple-touch-icon" href="https://cdn.aidutu.cn/res/head/ai.png">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover" />
+	<title>AiDuTu</title>
+	<meta name="keywords" content="免费, 智能AI, 问答系统, 自然语言处理, 人工智能技术, AiDuTu"/>
+	<meta name="description" content="AiDuTu是一款免费的智能AI问答系统，可以快速、准确地解答您的问题，辅助您更高效的学习和工作。"/>
+	<meta http-equiv="Expires" content="0">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-control" content="no-cache">
+	<meta http-equiv="Cache" content="no-cache">
+
+</head>
+
+<body class="dark:bg-black">
+	<div id="app">
+		<style>
+			.loading-wrap {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100vh;
+			}
+
+			.balls {
+				width: 4em;
+				display: flex;
+				flex-flow: row nowrap;
+				align-items: center;
+				justify-content: space-between;
+			}
+
+			.balls div {
+				width: 0.8em;
+				height: 0.8em;
+				border-radius: 50%;
+				background-color: #4b9e5f;
+			}
+
+			.balls div:nth-of-type(1) {
+				transform: translateX(-100%);
+				animation: left-swing 0.5s ease-in alternate infinite;
+			}
+
+			.balls div:nth-of-type(3) {
+				transform: translateX(-95%);
+				animation: right-swing 0.5s ease-out alternate infinite;
+			}
+
+			@keyframes left-swing {
+
+				50%,
+				100% {
+					transform: translateX(95%);
+				}
+			}
+
+			@keyframes right-swing {
+				50% {
+					transform: translateX(-95%);
+				}
+
+				100% {
+					transform: translateX(100%);
+				}
+			}
+
+			@media (prefers-color-scheme: dark) {
+				body {
+					background: #121212;
+				}
+			}
+		</style>
+		<div class="loading-wrap">
+			<div class="balls">
+				<div></div>
+				<div></div>
+				<div></div>
+			</div>
+		</div>
+	</div>
+	<script type="module" src="/src/main.ts"></script>
+</body>
+
+<script>
+	var _hmt = _hmt || [];
+	(function() {
+		var hm = document.createElement("script");
+		hm.src = "https://hm.baidu.com/hm.js?8983c75dfe5366171d9541b4c4f70657";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(hm, s);
+	})();
+</script>
+
+</html>

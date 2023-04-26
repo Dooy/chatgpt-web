@@ -91,6 +91,7 @@ const serverInfo=ref({
 	, 'goon':['继续','请继续'] //非会员 继续 匹配刚刚
 	,'sleep':0 //主动放慢多长场景
 	,'stk':0 //停止联系对话 1停止 0不停止
+	,'dtz':''
 })
  function  getToken( str:string ,func=()=>{}){
 	if(!userInfo.value.isVip && serverInfo.value.goon.indexOf(str)>-1 ){
@@ -768,7 +769,8 @@ const openSuccess = () => {
                 @regenerate="onRegenerateD(index)"
                 @delete="handleDelete(index)"
               />
-              <div class="sticky bottom-0 left-0 flex justify-center">
+
+							<div class="sticky bottom-0 left-0 flex justify-center">
                 <NButton v-if="loading" type="warning" @click="handleStop">
                   <template #icon>
                     <SvgIcon icon="ri:stop-circle-line" />
@@ -776,6 +778,9 @@ const openSuccess = () => {
 									{{$t('chat.stop')}}
                 </NButton>
               </div>
+							<div class="flex items-end gap-1 mt-2 flex-row" style="margin-left: 40px" v-if="serverInfo.dtz">
+								<div v-html="serverInfo.dtz" class="text-black text-wrap min-w-[20px] rounded-md px-3 py-2 bg-[#faecd8] dark:bg-[#1e1e20] message-reply"></div>
+							</div>
             </div>
           </template>
         </div>
