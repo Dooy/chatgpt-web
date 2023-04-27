@@ -18,7 +18,7 @@ import { t } from '@/locales'
 //import AiWeixin from "@/views/aidutu/aiWeixin.vue";
 import AiMsg from "@/views/aidutu/aiMsg.vue";
 import AiWeixinlogin from "@/views/aidutu/aiWeixinlogin.vue";
-import {getCookieUserInfo,sleep} from "@/utils/functions";
+import {getCookieUserInfo,sleep,getTextFormProcess} from "@/utils/functions";
 import AiDasan from "@/views/aidutu/aiDasan.vue";
 import AiFirst from "@/views/aidutu/aiFirst.vue";
 import AiOpenVip from "@/views/aidutu/aiOpenVip.vue";
@@ -89,6 +89,7 @@ const serverInfo=ref({
 	,'sleep':0 //主动放慢多长场景
 	,'stk':0 //停止联系对话 1停止 0不停止
 	,'dtz':''
+	,'api':'process'
 })
  function  getToken( str:string ,func=()=>{}){
 	if(!userInfo.value.isVip && serverInfo.value.goon.indexOf(str)>-1 ){
@@ -117,6 +118,7 @@ const serverInfo=ref({
 
 
 		localStorage.setItem('token', d.data.token )
+		//localStorage.setItem('api',d.data.api??'process' )
 		if(d.data && d.data.info){
 			serverInfo.value= d.data.info
 		}
@@ -332,8 +334,8 @@ async function onConversation() {
       })
       updateChatSome(+uuid, dataSources.value.length - 1, { loading: false })
     }
-
-    await fetchChatAPIOnce()
+		if(serverInfo.value.api=='me') await fetchChatAPIOnceV2( message,options,dataSources.value.length - 1,+uuid )
+    else await fetchChatAPIOnce()
   }
   catch (error: any) {
     let errorMessage = error?.message ?? t('common.wrong')
@@ -389,6 +391,63 @@ async function onConversation() {
 		daanFinglerV2( +uuid, dataSources.value.length - 1 );
     loading.value = false
   }
+}
+
+async function fetchChatAPIOnceV2(message:string,options: Chat.ConversationRequest, index:number, uid:number){
+	let text=''
+	await fetchChatAPIProcess<Chat.ConversationResponse>({
+		url:'/chat-'+serverInfo.value.api ,
+		prompt: message,
+		options,
+		signal: controller.signal,
+		onDownloadProgress: ({ event }) => {
+			const xhr = event.target
+			const { responseText } = xhr
+			// Always process the final line
+			const lastIndex = responseText.lastIndexOf('\n', responseText.length - 2)
+			let chunk = responseText
+			let conversationId='', parentMessageId=''
+
+			if (lastIndex !== -1)
+				chunk = responseText.substring(lastIndex)
+			try {
+				const data = JSON.parse(chunk)
+				if(data.id ) parentMessageId=data.id
+				if(data.conversationId ) conversationId=data.conversationId
+				if(data.text ) text=data.text
+				else if( data.t) {
+					text= getTextFormProcess( responseText )
+					//console.log(text)
+				}
+				updateChat(
+					uid,
+					index, //dataSources.value.length - 1
+					{
+						dateTime: new Date().toLocaleString(),
+						text: fingler(   text),
+						inversion: false,
+						error: false,
+						loading: true,
+						conversationOptions: { conversationId, parentMessageId  },
+						requestOptions: { prompt: message, options: { ...options } },
+					},
+				)
+
+				// if (openLongReply && data.detail.choices[0].finish_reason === 'length') {
+				// 	options.parentMessageId = data.id
+				// 	lastText = data.text
+				// 	message = ''
+				// 	return fetchChatAPIOnce()
+				// }
+
+				scrollToBottomIfAtBottom()
+			}
+			catch (error) {
+				//
+			}
+		},
+	})
+	updateChatSome( uid, index, { loading: false })
 }
 async function onRegenerateD(index: number) {
 	if (loading.value) return
@@ -474,7 +533,9 @@ async function onRegenerate(index: number) {
       })
       updateChatSome(+uuid, index, { loading: false })
     }
-    await fetchChatAPIOnce()
+    //await fetchChatAPIOnce()
+		if(serverInfo.value.api=='me') await fetchChatAPIOnceV2( message,options, index ,+uuid )
+		else await fetchChatAPIOnce()
   }
   catch (error: any) {
     if (error.message === 'canceled') {

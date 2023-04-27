@@ -32,7 +32,9 @@ export function fetchChatAPIProcess<T = any>(
     prompt: string
     options?: { conversationId?: string; parentMessageId?: string }
     signal?: GenericAbortSignal
-    onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void },
+    onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void
+		url?:string
+	},
 ) {
   const settingStore = useSettingStore()
 
@@ -55,7 +57,7 @@ export function fetchChatAPIProcess<T = any>(
   }
 
   return post<T>({
-    url: '/chat-process',
+    url: params.url??'/chat-process',
     data,
     signal: params.signal,
 		headers:{'x-token':token},

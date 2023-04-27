@@ -60,3 +60,16 @@ export function sleep(time:number){
 	return new Promise(h=>setTimeout(()=>h(time ),time));
 }
 
+export function getTextFormProcess(text:string):string
+{
+	let arr = text.split("\n")
+	let str=''
+	arr.shift();
+	for(let  v of arr){
+		let obj= JSON.parse(v);
+		str+=obj.t;
+	}
+	return  str ;
+
+}
+
