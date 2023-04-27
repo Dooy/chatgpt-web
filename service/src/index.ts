@@ -63,6 +63,45 @@ import {readAidutu, writeAidutu} from "./utils";
 		}
 	})
 
+  //自己的优化下自己的传输方案
+	router.post('/chat-me', [auth, limiter], async (req, res) => {
+	res.setHeader('Content-type', 'application/octet-stream')
+	try {
+		const {prompt, options = {}, systemMessage} = req.body as RequestProps
+		let firstChunk = true
+		await chatReplyProcess({
+			message: prompt,
+			lastContext: options,
+			process: (chat: ChatMessage) => {
+				res.write(firstChunk ? `${JSON.stringify(chat)}` :(`\n`+ (chat.delta? JSON.stringify({t:chat.delta}): JSON.stringify(chat) )  ) ) // `\n${JSON.stringify(chat)}`)
+				firstChunk = false
+			},
+			systemMessage,
+		})
+	} catch (error) {
+		try {
+			if (error.message &&  (error.message.indexOf('check your plan and billing details') > 0 || error.message.indexOf('Incorrect API key provided') > 0 ) ) {
+				sharedData.cnt++;
+				sharedData.error_des = error;
+				writeAidutu( sharedData );
+			}
+		}catch (e) {
+
+		}
+
+
+		//if(error.message)  error.message= "抱歉，用户太多，余额耗尽了，站长正在充值的路上，请收藏下网址，等会再试试吧。欢迎给我们打赏帮我们分担一些成本。\n\n" +error.message;
+		res.write(JSON.stringify(error))
+
+
+
+
+	} finally {
+		res.end()
+	}
+})
+
+
 	//检查状态
 	router.get('/status', async (req, res) => {
 		try {
