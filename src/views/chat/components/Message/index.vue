@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import { computed, ref } from 'vue'
-import { NDropdown } from 'naive-ui'
+import { NDropdown, useMessage } from 'naive-ui'
 import AvatarComponent from './Avatar.vue'
 import TextComponent from './Text.vue'
 import { SvgIcon } from '@/components/common'
@@ -9,6 +9,7 @@ import { useIconRender } from '@/hooks/useIconRender'
 import { t } from '@/locales'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import AiMsg from "@/views/aidutu/aiMsg.vue";
+import { copyToClip } from '@/utils/copy'
 
 interface Props {
   dateTime?: string
@@ -30,6 +31,8 @@ const emit = defineEmits<Emit>()
 const { isMobile } = useBasicLayout()
 
 const { iconRender } = useIconRender()
+
+const message = useMessage()
 
 const textRef = ref<HTMLElement>()
 
@@ -81,10 +84,9 @@ function handleRegenerate() {
   emit('regenerate')
 }
 
+
 const msgRef = ref();
 function copy(){
-	//console.log('复制',childRef,childRef.value.count  );
-	//copyText({ text: props.text ?? '' })
 	copyText3( props.text ?? '').then(()=>msgRef.value.showMsg('复制成功！'));
 
 }

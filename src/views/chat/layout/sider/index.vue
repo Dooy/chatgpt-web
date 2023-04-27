@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import type { CSSProperties } from 'vue'
-import { computed, ref, watch } from 'vue'
+import {computed, onMounted, ref, watch} from 'vue'
 import { NButton, NLayoutSider,NModal } from 'naive-ui'
 import List from './List.vue'
 import Footer from './Footer.vue'
@@ -8,6 +8,7 @@ import {useAppStore, useChatStore, useUserStore} from '@/store'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { PromptStore } from '@/components/common'
 import AiDasan from "@/views/aidutu/aiDasan.vue";
+import {useRoute} from "vue-router";
 
 const appStore = useAppStore()
 const chatStore = useChatStore()
@@ -64,6 +65,13 @@ const goCz=()=>{
 
 const userStore = useUserStore()
 const userInfo = computed(() => userStore.userInfo)
+const route = useRoute()
+const { uuid } = route.params as { uuid: string }
+const dataSources = computed(() => chatStore.getChatByUuid(+uuid))
+onMounted(()=>{
+	const len= dataSources.value.length;
+	if(len>0) handleAdd() //进来先新建主题
+})
 
 </script>
 
