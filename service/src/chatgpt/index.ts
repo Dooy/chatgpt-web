@@ -108,7 +108,8 @@ async function chatReplyProcess(options: RequestOptions) {
         process?.(partialResponse)
       },
     });
-		process?.(response)
+		//process?.(response)
+
 
 
 
