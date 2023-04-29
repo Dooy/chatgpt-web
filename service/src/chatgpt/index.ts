@@ -108,6 +108,7 @@ async function chatReplyProcess(options: RequestOptions) {
         process?.(partialResponse)
       },
     });
+
 		process?.(response)
     return sendResponse({ type: 'Success', data: response })
   }
