@@ -47,7 +47,7 @@ RUN pnpm install --production && rm -rf /root/.npm /root/.pnpm-store /usr/local/
 
 COPY /service /app
 
-COPY --from=frontend /app/dist /app/public
+COPY --from=frontend /app/dist /app/public/chat
 
 COPY --from=backend /app/build /app/build
 
