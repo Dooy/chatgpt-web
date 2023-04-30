@@ -93,7 +93,7 @@ export function ajax({ url="",method='GET',data={}}): Promise<Response<any>> {
 	const service = axios.create({
 		headers: {'Content-Type':'application/json','Accept':'application/json'},
 		withCredentials: true,
-		baseURL: '/api/cg',
+		baseURL:  import.meta.env.VITE_GLOB_API_URL+'/cg',
 		timeout: 30000 // request timeout
 	});
 	//

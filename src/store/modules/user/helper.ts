@@ -18,8 +18,8 @@ export function defaultSetting(): UserState {
   return {
     userInfo: {
       //avatar: 'https://raw.githubusercontent.com/Chanzhaoyu/chatgpt-web/main/src/assets/avatar.jpg',
-      avatar: 'https://cdn.aidutu.cn/res/head/ai.png',
-      name: 'AiDuTu',
+      avatar: 'https://cdn.aidutu.cn/res/head/aitutu.png',
+      name: 'AiTuTu',
       description: '友链 <a href="https://123.lingduquan.com" class="text-blue-500" target="_blank" >AI网站导航</a>',
 			isVip:( location.href.indexOf('localhost')>-1 || location.href.indexOf('vip.aidutu.cn')>-1 ||  location.href.indexOf('vip')>-1 )?1:0 //
 			,doLogin:0

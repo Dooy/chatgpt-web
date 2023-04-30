@@ -3,7 +3,7 @@ import type { Ref } from 'vue'
 import {computed, nextTick, onMounted, onUnmounted, ref, watch} from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { NAutoComplete, NButton, NInput, useDialog, useMessage,NModal } from 'naive-ui'
+import { NAutoComplete, NButton, NInput, useDialog, useMessage,NModal ,NDivider,NSpace } from 'naive-ui'
 import html2canvas from 'html2canvas'
 import { Message } from './components'
 import { useScroll } from './hooks/useScroll'
@@ -65,7 +65,7 @@ dataSources.value.forEach((item, index) => {
 function showLoginWx(){
 	dialog.warning({
 		title: '当前状态未登录',
-		content: "使用 AiDuTu 必须先登录",
+		content: "使用 AiTuTu 必须先登录",
 		positiveText: "去登录",
 		negativeText:'取消',
 		onPositiveClick: () => {
@@ -138,25 +138,7 @@ const serverInfo=ref({
 //问题过滤 过滤
 function fingler( str:string ):string{
 	 return  str.replace(/openai/ig,'duTuAi').replace(/ChatGPT/ig,'AI');
-}
-//答案过滤
-/*function daanFingler( data:any,uuid:any,index:any,chat:any) {
-	if(data.detail.choices[0].finish_reason === 'stop'){
-		console.log('daanFingler stop');
-		//chat.text= " daanFingler stop ";
-		ajax({
-			url:'/chatgpt/word/check',
-			method:"POST"
-			,data:{q:chat.text}
-		}).then(d=>{
-			console.log('stop', d ); //data.rz
-			if(d.data.rz){
-				chat.text= d.data.rz;
-				updateChat(uuid, index, chat)
-			}
-		});
-	}
-}*/
+} 
 //答案过滤V2
 function daanFinglerV2(uuid:number, index:number) {
 
@@ -237,12 +219,16 @@ const goOnAd = (str:string) => {
 }
 async function onConversation() {
   let message = prompt.value
+  if(tutu.value.is==2){
+    message = tutu.value.text; 
+  }
 
   if (loading.value)
     return
 
   if (!message || message.trim() === '')
     return
+  if(tutu.value.is==2) message="你选中的内容["+tutu.value.now.v+"]：\n"+message;
 
   controller = new AbortController()
 
@@ -261,12 +247,20 @@ async function onConversation() {
 
   loading.value = true
   prompt.value = ''
+  
 
   let options: Chat.ConversationRequest = {}
   const lastContext = conversationList.value[conversationList.value.length - 1]?.conversationOptions
 
   if (lastContext && usingContext.value && serverInfo.value.stk==0)
     options = { ...lastContext }
+
+  //模版拼凑
+  if(tutu.value.is==2 && tutu.value.now.t ) {
+    message=tutu.value.now.t + tutu.value.text;
+    tutu.value.is=0;
+    options={}
+  }
 
 	let think ='Thinking...';
   addChat(
@@ -715,6 +709,39 @@ const footerClass = computed(() => {
   return classes
 })
 
+const tutu =ref({is:0,text:'',type:''
+,now:{k:'',v:'',t:''}
+,arr:[
+{k:'1',v:'改写',t:'Rephrase the following paragraph with Chinese in 3 different ways, to avoid repetition, while keeping its meaning:'}
+,{k:'2',v:'翻译',t:'I want you to act as an #English# translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in #English#. I want you to replace my simplified A0-level words and sentences with more beautiful and elegant, upper level English words and sentences. Keep the meaning same, but make them more literary. I want you to only reply the correction, the improvements and nothing else, do not write explanations. My first sentence is' }
+,{k:'3',v:'小红书',t:'Please edit the following passage using the Emoji style, which is characterized by captivating headlines, the inclusion of emoticons in each paragraph, and the addition of relevant tags at the end. Be sure to maintain the original meaning of the text. Please begin by editing the following text:'}
+,{k:'4',v:'微博',t:'使用#幽默#俏皮#的语气回复微博，100字以内，我要回复的内容是：'}
+//,{k:'5',v:'SEO',t:'Generate 5 unique meta descriptions, of a maximum of 150 characters, for the following text. Respond in Chinese. They should be catchy with a call to action, including the term : '}
+,{k:'5',v:'商品',t:'你是一名商品推销员，当我输入商品名称或商品标题时，自动帮我生成3个新的商品标题，并生成150字的商品简介。直接给我提供结果，我要输入的商品是: '}
+]
+});
+const aitutuMsg = (e: any) => {
+  console.log('aitutuMsg2',e.data );
+  let d= e.data;
+  if(!d && !d.cmd) return ;
+  if(d.cmd=='msg' && d.data?.text && d.data.text.length>0){
+    //prompt.value=d.data.text;
+    tutu.value.text=d.data.text;
+    tutu.value.type=d.data.type;
+    tutu.value.is=1;
+    nextTick(  scrollToBottom )
+  }
+}
+//模版生成器
+function goTemple(ai:any){
+  console.log('goTemple', ai  );
+  if(loading.value) return;
+  tutu.value.is=2;
+  tutu.value.now=ai;
+  getToken( tutu.value.text ,  onConversation );
+}
+
+ 
 onMounted(() => {
   scrollToBottom()
   if (inputRef.value && !isMobile.value)
@@ -725,11 +752,18 @@ onMounted(() => {
 		if (!u) showLoginWx();
 	}
 
+  //需要监听 iframe 发过来的消息
+  //document.addEventListener("aitutu-msg",  aitutuMsg );
+  
+  window.addEventListener("message", aitutuMsg, false);
+
 })
 
 onUnmounted(() => {
   if (loading.value)
     controller.abort()
+
+  window.removeEventListener("message", aitutuMsg, false);
 })
 
 
@@ -808,7 +842,7 @@ const openSuccess = () => {
           class="w-full max-w-screen-xl m-auto dark:bg-[#101014]"
           :class="[isMobile ? 'p-2' : 'p-4']"
         >
-          <template v-if="!dataSources.length">
+          <template v-if="!dataSources.length&&tutu.is==0">
 						<ai-first  @go="go" ></ai-first>
           </template>
           <template v-else>
@@ -836,9 +870,25 @@ const openSuccess = () => {
 									{{$t('chat.stop')}}
                 </NButton>
               </div>
+               <div class=" items-end gap-1 mt-2 flex-row" style="margin-left: 40px" v-if="tutu.is>0">
+								<div class="text-black text-wrap min-w-[20px] rounded-md px-3 py-2 bg-[#faecd8] dark:bg-[#1e1e20] message-reply">
+                  <div style="color: #999;">您选中的内容：</div>
+                  <div style="color: #333; white-space:pre-wrap; ">{{tutu.text}}</div>
+                  <NDivider title-placement="left"><span style="font-size: 12px; color: #999;">操作</span></NDivider>
+                 <n-space v-if="tutu.is==1">
+                  <template v-for="(ai,kk) in tutu.arr">
+                  <n-button type="info" size="small" v-if="kk==0" @click="goTemple(ai)">{{ ai.v }}</n-button> 
+                  <n-button size="small" strong secondary type="primary" @click="goTemple(ai)" v-else>{{ ai.v }}</n-button> 
+                  </template>
+                 </n-space>
+                 <div v-else-if="tutu.is==2">loading...</div>
+                </div>
+							</div>
+
 							<div class="flex items-end gap-1 mt-2 flex-row" style="margin-left: 40px" v-if="serverInfo.dtz">
 								<div v-html="serverInfo.dtz" class="text-black text-wrap min-w-[20px] rounded-md px-3 py-2 bg-[#faecd8] dark:bg-[#1e1e20] message-reply"></div>
 							</div>
+             
             </div>
           </template>
         </div>
@@ -891,3 +941,8 @@ const openSuccess = () => {
 
 </template>
 
+<style>
+.n-divider:not(.n-divider--dashed) .n-divider__line{
+  background-color: rgba(0,0,0,0.08);
+}
+</style>
