@@ -90,6 +90,7 @@ const serverInfo=ref({
 	,'stk':0 //停止联系对话 1停止 0不停止
 	,'dtz':''
 	,'api':'process'
+  ,'isVip':0
 })
  function  getToken( str:string ,func=()=>{}){
 	if(!userInfo.value.isVip && serverInfo.value.goon.indexOf(str)>-1 ){
@@ -110,11 +111,12 @@ const serverInfo=ref({
 			msgRef.value.showError( d.error_des );
 			return ;
 		}
+    userStore.updateUserInfo({isVip: serverInfo.value.isVip})
 		if(userInfo.value.isVip && d.data.uvip.isOver!=0){ //data.uvip.isOver
-			isOpenVip.value=true;
+			isOpenVip.value=true; //这个时候 应该去打开充值通道
 			return;
 		}
-
+    //isOpenVip.value=true;
 
 
 		localStorage.setItem('token', d.data.token )
@@ -127,6 +129,7 @@ const serverInfo=ref({
 		if(d.data && d.data.info && d.data.info.zan){
 			show2.value=true
 		}
+
 
 
 	}).catch(e=>{
