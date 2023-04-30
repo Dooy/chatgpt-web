@@ -5,7 +5,7 @@
 
 	</div>
 
-	<div style="text-align: center;justify-content: center;padding-top: 20px;display: flex; align-items: center;flex-wrap: wrap" >
+	<div style="text-align: center;justify-content: center;padding-top: 20px;display: flex; align-items: center;flex-wrap: wrap" v-if="wxConfig.img" >
 		<div>
 			<img :src="wxConfig.img" style="width: 200px;height: 200px;display: inline-block"  >
 			<div style="color: #cccccc"  @click="copy" v-html="wxConfig.ts">
