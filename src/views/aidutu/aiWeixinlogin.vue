@@ -25,18 +25,19 @@
 <script setup lang='ts'>
 import QRCodeVue3 from "qrcode-vue3";
 import {ajax} from "@/api";
-import {useBasicLayout} from "@/hooks/useBasicLayout";
+//import {useBasicLayout} from "@/hooks/useBasicLayout";
+//const { isMobile } = useBasicLayout()
 import {NButton} from "naive-ui";
 //import AiMsg from "@/views/aidutu/aiMsg.vue";
-import {copyText} from "@/utils/format";
+//import {copyText} from "@/utils/format";
 import {onMounted, onUnmounted, ref} from "vue";
-const { isMobile } = useBasicLayout()
+
 
 const $emit=defineEmits(['success','copy']);
 
 const qr =  ref({"url": "", 'checkUrl':''});
-const st =  ref({timeout:0,cnt: 0,isMobile:isMobile});
-const msg= ref();
+const st =  ref({timeout:0,cnt: 0,isMobile:false});
+//const msg= ref();
 const copy= ()=>{
 	$emit('copy',location.href)
 }
