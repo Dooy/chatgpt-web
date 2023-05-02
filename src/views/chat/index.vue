@@ -185,7 +185,7 @@ const adFun = (uuid:number,index:number) => {
 			updateChatSome(
 				uuid, index,
 				{
-					text: 'Thinking...[慢？可尝试我们的VIP通道，快速出答案](https://vip.aidutu.cn/?tk) ',
+					text: 'Thinking...', //[慢？可尝试我们的VIP通道，快速出答案](https://vip.aidutu.cn/?tk) 
 				})
 		}
 	},serverInfo.value.tm?serverInfo.value.tm:3000);
@@ -717,7 +717,7 @@ const tutu =ref({is:0,text:'',type:''
 ,arr:[
 {k:'1',v:'改写',t:'Rephrase the following paragraph with Chinese in 3 different ways, to avoid repetition, while keeping its meaning:'}
 ,{k:'2',v:'翻译',t:'I want you to act as an #English# translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in #English#. I want you to replace my simplified A0-level words and sentences with more beautiful and elegant, upper level English words and sentences. Keep the meaning same, but make them more literary. I want you to only reply the correction, the improvements and nothing else, do not write explanations. My first sentence is' }
-,{k:'3',v:'小红书',t:'Please edit the following passage using the Emoji style, which is characterized by captivating headlines, the inclusion of emoticons in each paragraph, and the addition of relevant tags at the end. Be sure to maintain the original meaning of the text. Please begin by editing the following text:'}
+,{k:'3',v:'小红书',t:'Please edit the following passage using the Emoji style, which is characterized by captivating headlines, the inclusion of emoticons in each paragraph, and the addition of relevant tags at the end. Be sure to maintain the original meaning of the text. Respond in Chinese. Please begin by editing the following text:'}
 ,{k:'4',v:'微博',t:'使用#幽默#俏皮#的语气回复微博，100字以内，我要回复的内容是：'}
 //,{k:'5',v:'SEO',t:'Generate 5 unique meta descriptions, of a maximum of 150 characters, for the following text. Respond in Chinese. They should be catchy with a call to action, including the term : '}
 ,{k:'5',v:'商品',t:'你是一名商品推销员，当我输入商品名称或商品标题时，自动帮我生成3个新的商品标题，并生成150字的商品简介。直接给我提供结果，我要输入的商品是: '}
