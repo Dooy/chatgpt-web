@@ -112,6 +112,7 @@ const serverInfo=ref({
 		}
 		if(userInfo.value.isVip && d.data.uvip.isOver!=0){ //data.uvip.isOver
 			isOpenVip.value=true;
+			userStore.updateUserInfo({doLogin:1})
 			return;
 		}
 

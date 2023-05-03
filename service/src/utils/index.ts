@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import {ChatMessage} from "../chatgpt";
 
 interface SendResponseOptions<T = any> {
   type: 'Success' | 'Fail'
@@ -50,6 +51,15 @@ export function readAidutu(){
 			}
 		});
 	})
+}
+
+export function jianDan(chat: ChatMessage){
+	let rz:any={t:chat.delta}
+	if( chat.detail?.usage ){
+		rz.i=chat.detail.usage.prompt_tokens;
+		rz.o=chat.detail.usage.completion_tokens;
+	}
+	return rz;
 }
 
 

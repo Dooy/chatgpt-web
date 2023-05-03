@@ -1,4 +1,4 @@
-import type { ChatMessage } from 'chatgpt'
+import type { ChatMessage } from 'chatgpt-dooy'
 import type fetch from 'node-fetch'
 
 export interface RequestOptions {

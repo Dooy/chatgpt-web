@@ -5,7 +5,7 @@ import { chatConfig, chatReplyProcess, currentModel } from './chatgpt'
 import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
-import {readAidutu, writeAidutu} from "./utils";
+import {jianDan, readAidutu, writeAidutu} from "./utils";
 
 
 
@@ -73,7 +73,7 @@ import {readAidutu, writeAidutu} from "./utils";
 			message: prompt,
 			lastContext: options,
 			process: (chat: ChatMessage) => {
-				res.write(firstChunk ? `${JSON.stringify(chat)}` :(`\n`+ (chat.delta? JSON.stringify({t:chat.delta}): JSON.stringify(chat) )  ) ) // `\n${JSON.stringify(chat)}`)
+				res.write(firstChunk ? `${JSON.stringify(chat)}` :(`\n`+ (chat.delta? JSON.stringify( jianDan(chat) ): JSON.stringify(chat) )  ) ) // `\n${JSON.stringify(chat)}`)
 				firstChunk = false
 			},
 			systemMessage,
