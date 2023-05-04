@@ -106,7 +106,7 @@ onMounted(()=>{
 					<NButton block @click="goCz()" type="warning" v-if="userInfo.isVip">
 						 充值续费
 					</NButton>
-					<NButton block @click="show2 = true" type="warning" v-else>
+					<NButton block @click="show2 = true" type="warning" v-else-if="userInfo.showZan==1">
 						求赞赏
 					</NButton>
 					<div style="text-align: center;padding-top: 10px"> <a href="https://j13on1iavz4.feishu.cn/docx/WTfEdf6uNomj2sxUca9cmEqNnAb" target="_blank" style="color: #1f6feb">免责申明</a> </div>

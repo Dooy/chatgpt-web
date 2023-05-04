@@ -86,7 +86,7 @@ const userInfo = computed(() => userStore.userInfo)
             充值
 				</span>
 				</HoverButton>
-				<HoverButton @click="show2=true" v-else>
+				<HoverButton @click="show2=true" v-else-if="userInfo.showZan==1 ">
 				<span class="text-xl text-[#18a058] dark:text-white" style="font-size: 16px;font-weight: 600">
             打赏
 				</span>

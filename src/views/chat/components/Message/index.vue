@@ -9,7 +9,8 @@ import { useIconRender } from '@/hooks/useIconRender'
 import { t } from '@/locales'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import AiMsg from "@/views/aidutu/aiMsg.vue";
-import { copyToClip } from '@/utils/copy'
+import {useUserStore} from  '@/store';
+//import { copyToClip } from '@/utils/copy'
 
 interface Props {
   dateTime?: string
@@ -90,6 +91,9 @@ function copy(){
 	copyText3( props.text ?? '').then(()=>msgRef.value.showMsg('复制成功！'));
 
 }
+
+const userStore = useUserStore()
+const userInfo = computed(() => userStore.userInfo)
 </script>
 
 <template>
@@ -101,7 +105,7 @@ function copy(){
   >
     <div
       class="flex items-center justify-center flex-shrink-0 h-8 overflow-hidden rounded-full basis-8"
-      :class="[inversion ? 'ml-2' : 'mr-2']"
+      :class="[inversion ? 'ml-2' : 'mr-2']" v-if="userInfo.showHead==1"
     >
       <AvatarComponent :image="inversion" />
     </div>

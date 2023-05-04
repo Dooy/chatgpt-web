@@ -91,6 +91,8 @@ const serverInfo=ref({
 	,'dtz':''
 	,'api':'process'
   ,'isVip':0
+  ,'showZan':0 //显示赞赏
+  ,'showHead':0 //显示头像
 })
  function  getToken( str:string ,func=()=>{}){
 	if(!userInfo.value.isVip && serverInfo.value.goon.indexOf(str)>-1 ){
@@ -111,7 +113,8 @@ const serverInfo=ref({
 			msgRef.value.showError( d.error_des );
 			return ;
 		}
-    userStore.updateUserInfo({isVip: serverInfo.value.isVip})
+    userStore.updateUserInfo({   isVip: serverInfo.value.isVip  })
+
 		if(userInfo.value.isVip && d.data.uvip.isOver!=0){ //data.uvip.isOver
 			isOpenVip.value=true; //这个时候 应该去打开充值通道
 			return;
@@ -124,11 +127,13 @@ const serverInfo=ref({
 		if(d.data && d.data.info){
 			serverInfo.value= d.data.info
 		}
+    userStore.updateUserInfo({ showHead: serverInfo.value.showHead ,showZan:serverInfo.value.showZan })
 		func()
 
 		if(d.data && d.data.info && d.data.info.zan){
 			show2.value=true
 		}
+     
 
 
 

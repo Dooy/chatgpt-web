@@ -90,7 +90,7 @@ onMounted( ()=>{
 	if(userInfo.value.isVip) loadVip();
 });
 const openVip= () => {
-	if(stvip.value.bt=='请先登录'){
+	if( stvip.value.bt.indexOf('登录')>=0 || stvip.value.bt.indexOf('login')>=0 ) {
 		userStore.updateUserInfo({doLogin:2})
 	}
 	else{
