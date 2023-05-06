@@ -86,13 +86,16 @@ let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
 
 async function chatReplyProcess(options: RequestOptions) {
   const { message, lastContext, process, systemMessage, temperature, top_p,tokens } = options
+  let tokens2 = tokens||max_tokens
+  if(tokens2<50 ) tokens2=50;
+  if(tokens2>15000 ) tokens2= 15000; //最大 15k
   try {
     let options: SendMessageOptions = { timeoutMs }
 
     if (apiModel === 'ChatGPTAPI') {
       if (isNotEmptyString(systemMessage))
         options.systemMessage = systemMessage
-      options.completionParams = { model, temperature, top_p,max_tokens }
+      options.completionParams = { model, temperature, top_p,max_tokens:tokens2 }
     }
 
     if (lastContext != null) {
