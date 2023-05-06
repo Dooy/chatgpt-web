@@ -397,8 +397,9 @@ async function fetchChatAPIOnceV2(message: string, options: Chat.ConversationReq
   let text = ''; let prompt_tokens = 0; let completion_tokens = 0,count=0
   let conversationId = ''; let parentMessageId = ''
   const model= userInfo.value.model;
-  const maxTokens= userInfo.value.tokens
+  const maxTokens= userInfo.value.tokens , message_id= Date.now()
   tokensSub={};
+  
   await fetchChatAPIProcess<Chat.ConversationResponse>({
     url: `/chat-${serverInfo.value.api}`,
     prompt: message,
@@ -433,7 +434,7 @@ async function fetchChatAPIOnceV2(message: string, options: Chat.ConversationReq
           
           //if(  os.parentMessageId ) parentMessageId = os.parentMessageId
 
-          const d3={prompt_tokens,completion_tokens, message_id:`${uid}-${index}`  ,text,message,model,maxTokens }
+          const d3={prompt_tokens,completion_tokens, id:`${uid}-${index}` ,message_id ,text,message,model,maxTokens }
 
           //if(count==0 ) countTokens(tokensSub.value).then().catch(e=>console.log('countTokens error', e ) );
           if(count==0 && model=='GPT4.0'  ) { //第一提交
