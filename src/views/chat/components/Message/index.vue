@@ -118,7 +118,7 @@ function copy(){
 						<template #trigger>
 							<span  > tokens:{{(prompt_tokens??0)+(completion_tokens??0)}}</span>
 						</template>
-						输入：{{prompt_tokens}} tokens，输出：{{completion_tokens}} tokens，共{{ (prompt_tokens??0)+(completion_tokens??0) }} tokens
+						问:{{prompt_tokens}} tokens，答:{{completion_tokens}} tokens，共{{ (prompt_tokens??0)+(completion_tokens??0) }} tokens
 					</n-tooltip>
 
       </p>

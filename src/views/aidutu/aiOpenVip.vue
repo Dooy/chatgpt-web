@@ -17,7 +17,7 @@ const uvip= ref({'dsEnd':'',isOver:0,'dsTs':'',user_id:0,last_order_id:0})
 const isWechat = ref( /MicroMessenger/i.test(navigator.userAgent) ); //是否在微信内
 const { isMobile } = useBasicLayout()
 const msgRef = ref();
-const info=ref({msg:'',msg4g:''})
+const info=ref({msg:'',msg4g:'',msg4g2:''})
 
 const userStore = useUserStore()
 
@@ -62,20 +62,28 @@ const goUrl= (url:string)=>  location.href=url
 const checkCz = () => {
 
 	ajax({
-		url:'/chatgpt/config/cz'
+		url:'/chatgpt/config/czCheck'
 	}).then((d:any)=>{
 		if(d.error==317){
 			emit('toLogin'); //user_id
 			return ;
 		}
 		//stVip.value=d.data.cf ;
-		if( d.data.uvip.last_order_id!=uvip.value.last_order_id ){
-			msgRef.value.showMsg('充值成功！');
+		// if( d.data.uvip.last_order_id!=uvip.value.last_order_id ){
+		// 	msgRef.value.showMsg('充值成功！');
+		// 	emit('success');
+		// 	uvip.value=d.data.uvip;
+		// }else{
+		// 	console.log( 'last_id', d.data.uvip.last_order_id , uvip.value.last_order_id );
+		// 	msgRef.value.showError('充值未成功！');
+		// }
+		const cf:any = d.data.cf ;
+		if(cf.cnt>0){
+			msgRef.value.showMsg(cf.msg);
 			emit('success');
-			uvip.value=d.data.uvip;
+			userStore.updateUserInfo({doLogin:4})
 		}else{
-			console.log( 'last_id', d.data.uvip.last_order_id , uvip.value.last_order_id );
-			msgRef.value.showError('充值未成功！');
+			msgRef.value.showError( cf.msg );
 		}
 
 	} )
@@ -89,7 +97,7 @@ watch( active ,initStart)
 
 <template>
 	<NTabs v-model:value="active" type="line" animated>
-        <NTabPane name="GPT3.5" tab="GPT3">
+        <NTabPane name="GPT3.5" tab="GPT3.5">
           <template #tab>
             <SvgIcon class="text-lg" icon="icon-park-twotone:vip-one" />
             <span class="ml-2">会员</span>
@@ -159,6 +167,8 @@ watch( active ,initStart)
 		</div>
 		</template>
 	</div>
+
+	<div v-html="info.msg4g2" v-if="active=='GPT4.0'"></div>
 
 	<ai-msg ref="msgRef"></ai-msg>
 </template>
