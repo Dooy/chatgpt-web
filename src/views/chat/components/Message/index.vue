@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import { computed, ref } from 'vue'
-import { NDropdown, useMessage } from 'naive-ui'
+import { NDropdown, useMessage,NTooltip } from 'naive-ui'
 import AvatarComponent from './Avatar.vue'
 import TextComponent from './Text.vue'
 import { SvgIcon } from '@/components/common'
@@ -9,7 +9,7 @@ import { useIconRender } from '@/hooks/useIconRender'
 import { t } from '@/locales'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import AiMsg from "@/views/aidutu/aiMsg.vue";
-import { copyToClip } from '@/utils/copy'
+//import { copyToClip } from '@/utils/copy'
 
 interface Props {
   dateTime?: string
@@ -17,6 +17,9 @@ interface Props {
   inversion?: boolean
   error?: boolean
   loading?: boolean
+	prompt_tokens?:number
+	completion_tokens?:number
+  model?:string
 }
 
 interface Emit {
@@ -110,6 +113,14 @@ function copy(){
 				<span v-if="inversion" style="cursor: pointer" @click="copy()">复制 </span>
         {{ dateTime }}
 				<span v-if="!inversion" style="cursor: pointer" @click="copy()"> 复制</span>
+
+					<n-tooltip trigger="hover" v-if="!inversion  &&model=='GPT4.0' && ((prompt_tokens??0)+(completion_tokens??0))>0 " >
+						<template #trigger>
+							<span  > tokens:{{(prompt_tokens??0)+(completion_tokens??0)}}</span>
+						</template>
+						输入：{{prompt_tokens}} tokens，输出：{{completion_tokens}} tokens，共{{ (prompt_tokens??0)+(completion_tokens??0) }} tokens
+					</n-tooltip>
+
       </p>
 
       <div

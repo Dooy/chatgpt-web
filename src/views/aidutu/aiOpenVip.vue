@@ -1,20 +1,139 @@
+<script lang='ts' setup>
+import {onMounted, ref, watch} from "vue";
+import {ajax} from "@/api";
+import { NCard ,NButton, NTabs,NTabPane } from 'naive-ui'
+import QRCodeVue3 from "qrcode-vue3";
+import AiMsg from "@/views/aidutu/aiMsg.vue";
+import {useUserStore} from "@/store";
+import {useBasicLayout} from "@/hooks/useBasicLayout";
+import { SvgIcon } from '@/components/common'
+
+const emit =defineEmits(['toLogin','success']);
+const stVip=ref([]);
+const stG4=ref([]);
+const dfSelect=ref(0)
+const st=ref({pay:{ds:'',url:'',info:''},start:0})
+const uvip= ref({'dsEnd':'',isOver:0,'dsTs':'',user_id:0,last_order_id:0})
+const isWechat = ref( /MicroMessenger/i.test(navigator.userAgent) ); //是否在微信内
+const { isMobile } = useBasicLayout()
+const msgRef = ref();
+const info=ref({msg:'',msg4g:''})
+
+const userStore = useUserStore()
+
+
+
+onMounted(()=>{
+	//userStore.updateUserInfo({doLogin:0})
+	ajax({
+		url:'/chatgpt/config/cz'
+	}).then((d:any) =>{
+		if(d.error==317){
+			//emit('toLogin'); //user_id
+			userStore.updateUserInfo({doLogin:2})
+			return ;
+		}
+		stVip.value=d.data.cf ;
+		stG4.value=d.data.g4 ;
+		
+		//dfSelect.value=d.data.st.index;
+		st.value.start=d.data.st.index
+		initStart()
+		//uvip.value= d.data.uvip?d.data.uvip:{'dsEnd':''};
+		if( d.data.uvip )uvip.value=d.data.uvip
+		info.value= d.data.info;
+		//console.log('ddd',d , uvip.value )
+	} )
+});
+function initStart(){
+	const obj= active.value=='GPT4.0'?stG4.value:stVip.value;
+	go(obj[st.value.start]);
+}
+
+const go = (v2:any ) => {
+  //console.log('pay',v2);
+	 
+	dfSelect.value=  active.value=='GPT4.0'? stG4.value.indexOf(v2):stVip.value.indexOf(v2);
+	st.value.pay=v2;
+	//if(isWechat) location.href=v2.url;
+}
+const goUrl= (url:string)=>  location.href=url
+
+const checkCz = () => {
+
+	ajax({
+		url:'/chatgpt/config/cz'
+	}).then((d:any)=>{
+		if(d.error==317){
+			emit('toLogin'); //user_id
+			return ;
+		}
+		//stVip.value=d.data.cf ;
+		if( d.data.uvip.last_order_id!=uvip.value.last_order_id ){
+			msgRef.value.showMsg('充值成功！');
+			emit('success');
+			uvip.value=d.data.uvip;
+		}else{
+			console.log( 'last_id', d.data.uvip.last_order_id , uvip.value.last_order_id );
+			msgRef.value.showError('充值未成功！');
+		}
+
+	} )
+
+}
+
+const active= ref(   userStore.userInfo.model )
+watch( active ,initStart)
+</script>
+
+
 <template>
-	<div v-if="uvip.isOver<=-1">
-		你未开通会员  (UID:{{uvip.user_id}})
-	</div>
-	<template v-else-if="uvip.dsEnd">
-	<div v-if="uvip.isOver">你的会员已到期 (UID:{{uvip.user_id}})</div>
-		<div v-else>你的会员不足<b>{{uvip.dsTs}}</b>, 将在 <b >{{uvip.dsEnd}}</b> 到期  (UID:{{uvip.user_id}})</div>
-	</template>
-	<div  v-html="info.msg"></div>
+	<NTabs v-model:value="active" type="line" animated>
+        <NTabPane name="GPT3.5" tab="GPT3">
+          <template #tab>
+            <SvgIcon class="text-lg" icon="icon-park-twotone:vip-one" />
+            <span class="ml-2">会员</span>
+          </template>
+          <div class="min-h-[100px]">
+				<div v-if="uvip.isOver<=-1">
+					你未开通会员  (UID:{{uvip.user_id}})
+				</div>
+				<template v-else-if="uvip.dsEnd">
+				<div v-if="uvip.isOver">你的会员已到期 (UID:{{uvip.user_id}})</div>
+					<div v-else>你的会员不足<b>{{uvip.dsTs}}</b>, 将在 <b >{{uvip.dsEnd}}</b> 到期  (UID:{{uvip.user_id}})</div>
+				</template>
+				<div  v-html="info.msg"></div>
 
 
-	<div class="myTitle" v-if="stVip.length>0">
-		<n-card :title="`${v2.ds}元`" size="small" class="mycard payCard" :class="{me:k==dfSelect}"  v-for="(v2,k) in stVip" @click="go(v2)">
-			{{v2.info}}
-		</n-card>
-	</div>
-	<div v-else>Loading....</div>
+				<div class="myTitle" v-if="stVip.length>0">
+					<n-card :title="`${v2.ds}元`" size="small" class="mycard payCard" :class="{me:k==dfSelect}"  v-for="(v2,k) in stVip" @click="go(v2)">
+						<div v-html="v2.info"></div>
+					</n-card>
+				</div>
+				<div v-else>Loading....</div>	
+          </div>
+        </NTabPane>
+
+		<NTabPane name="GPT4.0" tab="GPT4.0">
+          <template #tab>
+            <SvgIcon class="text-lg" icon="ic:outline-token" />
+            <span class="ml-2">GPT4.0(Tokens)</span>
+          </template>
+          <div class="min-h-[100px]">
+		     <div v-html="info.msg4g"></div>
+
+			 <div class="myTitle" v-if="stG4.length>0">
+					<n-card :title="`${v2.ds}元`" size="small" class="mycard payCard" :class="{me:k==dfSelect}"  v-for="(v2,k) in stG4" @click="go(v2)">
+						<div v-html="v2.info"></div>
+					</n-card>
+				</div>
+				<div v-else>Loading....</div>
+
+		  </div>
+		</NTabPane>
+	</NTabs>
+	
+
 	<div style="display: flex; justify-content: center; margin-top: 20px" >
 		<div v-if="isWechat">
 			<n-button type="info" @click="goUrl(st.pay.url )">点我微信支付</n-button>
@@ -44,85 +163,10 @@
 	<ai-msg ref="msgRef"></ai-msg>
 </template>
 
-<script lang='ts' setup>
-
-import {onMounted, ref} from "vue";
-import {ajax} from "@/api";
-import { NCard ,NButton} from 'naive-ui'
-import QRCodeVue3 from "qrcode-vue3";
-import AiMsg from "@/views/aidutu/aiMsg.vue";
-import {useUserStore} from "@/store";
-import {useBasicLayout} from "@/hooks/useBasicLayout";
-
-const emit =defineEmits(['toLogin','success']);
-const stVip=ref([]);
-const dfSelect=ref(0)
-const st=ref({pay:{ds:'',url:'',info:''}})
-const uvip= ref({'dsEnd':'',isOver:0,'dsTs':'',user_id:0,last_order_id:0})
-const isWechat = ref( /MicroMessenger/i.test(navigator.userAgent) ); //是否在微信内
-const { isMobile } = useBasicLayout()
-const msgRef = ref();
-const info=ref({msg:''})
-
-const userStore = useUserStore()
-
-onMounted(()=>{
-	//userStore.updateUserInfo({doLogin:0})
-	ajax({
-		url:'/chatgpt/config/cz'
-	}).then(d=>{
-		if(d.error==317){
-			//emit('toLogin'); //user_id
-			userStore.updateUserInfo({doLogin:2})
-			return ;
-		}
-		stVip.value=d.data.cf ;
-
-		//dfSelect.value=d.data.st.index;
-		go( d.data.cf[d.data.st.index]);
-		//uvip.value= d.data.uvip?d.data.uvip:{'dsEnd':''};
-		if( d.data.uvip )uvip.value=d.data.uvip
-		info.value= d.data.info;
-		//console.log('ddd',d , uvip.value )
-	} )
-});
-
-const go = (v2) => {
-  //console.log('pay',v2);
-	dfSelect.value= stVip.value.indexOf(v2);
-	st.value.pay=v2;
-	//if(isWechat) location.href=v2.url;
-}
-const goUrl= (url:string)=>  location.href=url
-
-const checkCz = () => {
-
-	ajax({
-		url:'/chatgpt/config/cz'
-	}).then(d=>{
-		if(d.error==317){
-			emit('toLogin'); //user_id
-			return ;
-		}
-		//stVip.value=d.data.cf ;
-		if( d.data.uvip.last_order_id!=uvip.value.last_order_id ){
-			msgRef.value.showMsg('充值成功！');
-			emit('success');
-			uvip.value=d.data.uvip;
-		}else{
-			console.log( 'last_id', d.data.uvip.last_order_id , uvip.value.last_order_id );
-			msgRef.value.showError('充值未成功！');
-		}
-
-	} )
-
-}
-
-</script>
 
 <style scoped>
 .mycard{ margin-top: 10px; position: relative; margin-left: 10px ; max-width: 130px ; cursor: pointer; }
-.myTitle{ display: flex; flex-wrap: wrap; justify-content: center;margin:0 auto; margin-top: 20px; max-width: 800px;  }
+.myTitle{ display: flex; flex-wrap: nowrap; justify-content: center;margin:0 auto; margin-top: 20px; max-width: 800px;  }
 @media  screen and (max-width: 600px){
 	.mycard{
 		max-width: 110px ;

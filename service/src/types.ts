@@ -1,4 +1,4 @@
-import type { FetchFn } from 'chatgpt'
+import type { FetchFn } from 'chatgpt-dooy'
 
 export interface RequestProps {
   prompt: string
@@ -6,6 +6,7 @@ export interface RequestProps {
   systemMessage: string
   temperature?: number
   top_p?: number
+  tokens?:number
 }
 
 export interface ChatContext {

@@ -23,7 +23,7 @@ function showMsg(str:string){
 
 function showError(str:string){
 	notification.info({
-		title: "错误",
+		//title: "错误",
 		content:() => h('div',{innerHTML:str  } ),
 		duration: 3000,
 		keepAliveOnHover: true

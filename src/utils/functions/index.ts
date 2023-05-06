@@ -60,16 +60,18 @@ export function sleep(time:number){
 	return new Promise(h=>setTimeout(()=>h(time ),time));
 }
 
-export function getTextFormProcess(text:string):string
+export function getTextFormProcess(text:string):any
 {
 	let arr = text.split("\n")
 	let str=''
+	let obj:any;
+	let f= JSON.parse(arr[0]);
 	arr.shift();
 	for(let  v of arr){
-		let obj= JSON.parse(v);
+		obj= JSON.parse(v);
 		str+=obj.t;
 	}
-	return  str ;
+	return  {text:str,i:obj?.i,o:obj?.o, parentMessageId:f.id } ;
 
 }
 

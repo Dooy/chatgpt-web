@@ -67,7 +67,7 @@ import {jianDan, readAidutu, writeAidutu} from "./utils";
 	router.post('/chat-me', [auth, limiter], async (req, res) => {
 	res.setHeader('Content-type', 'application/octet-stream')
 	try {
-		const {prompt, options = {}, systemMessage} = req.body as RequestProps
+		const {prompt, options = {}, systemMessage,tokens} = req.body as RequestProps
 		let firstChunk = true
 		await chatReplyProcess({
 			message: prompt,
@@ -76,7 +76,7 @@ import {jianDan, readAidutu, writeAidutu} from "./utils";
 				res.write(firstChunk ? `${JSON.stringify(chat)}` :(`\n`+ (chat.delta? JSON.stringify( jianDan(chat) ): JSON.stringify(chat) )  ) ) // `\n${JSON.stringify(chat)}`)
 				firstChunk = false
 			},
-			systemMessage,
+			systemMessage,tokens
 		})
 	} catch (error) {
 		try {

@@ -1,7 +1,7 @@
 import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
 
 import {post, Response} from '@/utils/request'
-import {useAuthStore, useSettingStore } from '@/store'
+import {useAuthStore, useSettingStore, useUserStore } from '@/store'
 import {getIam} from "@/utils/functions";
 import axios  from 'axios'
 
@@ -48,12 +48,18 @@ export function fetchChatAPIProcess<T = any>(
   }
 
   if (authStore.isChatGPTAPI) {
+    let tokens:number = parseInt( useUserStore().userInfo.tokens )??500;
+    if(tokens<=50) tokens=50;
+    //tokens = tokens??100
     data = {
       ...data,
       systemMessage: settingStore.systemMessage,
       temperature: settingStore.temperature,
       top_p: settingStore.top_p,
+      tokens,
     }
+    // Respond using markdown.
+    if( useUserStore().userInfo.model==='GPT4.0' )  data.systemMessage='Respond using markdown.';
   }
 
   return post<T>({
@@ -82,10 +88,13 @@ export function fetchSession<T>() {
 	});
 }
 
-export function fetchUser(q:string,isVip:number)
+export function fetchUser(q:string,isVip:number,data:any={})
 {
-
-	return ajax({url:'/chatgpt/user/info?v=1.5',method:'POST',data:{'iam':getIam() ,q,isVip} })
+  //:{'iam':getIam() ,q,isVip}
+  data.q=q;
+  data.iam= getIam();
+  data.isVip= isVip;
+	return ajax({url:'/chatgpt/user/info?v=1.6',method:'POST',data })
 }
 
 export function ajax({ url="",method='GET',data={}}): Promise<Response<any>> {
@@ -100,6 +109,11 @@ export function ajax({ url="",method='GET',data={}}): Promise<Response<any>> {
 	return new Promise<Response<any>>((h,r)=>{
 		service.request({url,method,data,headers:{'x-iam':getIam(),'x-version':'1.5'} }).then(d=>h(d.data)).catch(e=>r(e));
 	});
+}
+
+export function countTokens(data:any){
+  //{prompt_tokens:number, completion_tokens:number,id:string }
+  return ajax({url:'/chatgpt/gpt4/tokens',method:'POST',data })
 }
 
 export function fetchVerify<T>(token: string) {
