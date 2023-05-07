@@ -94,6 +94,9 @@ const serverInfo = ref({
 })
 function getToken(str: string, func = () => {}) {
  //msgRef.value.showError('请稍后')
+ const currentChat = getChatByUuidAndIndex(+uuid, dataSources.value.length - 1)
+ //console.log('currentChat', currentChat);
+
   if (loading.value) {
     msgRef.value.showError('请稍后')
     return ;
@@ -102,7 +105,9 @@ function getToken(str: string, func = () => {}) {
     goOnAd(str)
     return
   }
-  const data={'model':userInfo.value.model,tokens:userInfo.value.tokens };
+  const data={'model':userInfo.value.model,tokens:userInfo.value.tokens,usingContext:usingContext.value
+    ,completion_tokens:currentChat?.completion_tokens,prompt_tokens:currentChat?.prompt_tokens
+     };
   fetchUser(str, userInfo.value.isVip, data ).then((d: any) => {
     console.log('vip', d)
     if (d.error == 317) {
