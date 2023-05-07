@@ -434,7 +434,7 @@ async function fetchChatAPIOnceV2(message: string, options: Chat.ConversationReq
           
           //if(  os.parentMessageId ) parentMessageId = os.parentMessageId
 
-          const d3={prompt_tokens,completion_tokens, id:`${uid}-${index}` ,message_id ,text,message,model,maxTokens }
+          const d3={prompt_tokens,completion_tokens, local_id:`${uid}-${index}` ,message_id ,text,message,model,maxTokens }
 
           //if(count==0 ) countTokens(tokensSub.value).then().catch(e=>console.log('countTokens error', e ) );
           if(count==0 && model=='GPT4.0'  ) { //第一提交
@@ -931,12 +931,12 @@ function handleSelect(key: 'handleExport' | 'handleClear' | 'toggleUsingContext'
               <SvgIcon icon="ri:download-2-line" />
             </span>
           </HoverButton>
+          -->
           <HoverButton v-if="!isMobile" @click="toggleUsingContext">
             <span class="text-xl" :class="{ 'text-[#4b9e5f]': usingContext, 'text-[#a8071a]': !usingContext }">
               <SvgIcon icon="ri:chat-history-line" />
             </span>
           </HoverButton>
-          -->
           <NAutoComplete v-model:value="prompt" :options="searchOptions" :render-label="renderOption">
             <template #default="{ handleInput, handleBlur, handleFocus }">
               <NInput
