@@ -48,7 +48,8 @@ function cg2( ){
 <template>
   <AiMsg ref="msgRef" />
   <div style="color: #cccccc">
-    当前模型：{{ userInfo.model??'GPT3.5' }} ,上下文:{{ (usingContext?'连续':'断开') }}   <span style="color: #1f6feb;cursor: pointer" @click="st.show = !st.show">点这里切换4.0</span>
+    当前模型：{{ userInfo.model??'GPT3.5' }} ,上下文:{{ (usingContext?'连续':'断开') }}   
+    <span style="color: #1f6feb;cursor: pointer" @click="st.show = !st.show">点这里切换<a v-if="userInfo.model!='GPT4.0'">4.0</a></span>
   </div>
   <NModal v-model:show="st.show" :auto-focus="false" preset="card" title="模型切换" style="width: 95%; max-width: 540px">
     <div class="space-y-6">
