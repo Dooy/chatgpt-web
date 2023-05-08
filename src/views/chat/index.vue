@@ -147,10 +147,9 @@ function fingler(str: string): string {
    if(userInfo.value.model==='GPT4.0') {
     const istr= str.toLowerCase();
     if(istr.indexOf('gpt3')>-1 || istr.indexOf('gpt-3')>-1){
+      str=  str.replace(/3.5-turbo/ig, '4').replace(/-3.5/ig, '-4')
       str=  str.replace(/3/ig, '4').replace(/三/ig, '四').replace(/III/ig, 'IV').replace(/three/ig, 'four')
     }
-    //if(str.indexOf())
-    //str= str.replace(/GPT-3/ig, 'GPT-4').replace(/GPT3/ig, 'GPT4')
     return str; 
    }
 	 return str.replace(/openai/ig, 'duTuAi').replace(/ChatGPT/ig, 'AI')
