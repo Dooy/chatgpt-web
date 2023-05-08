@@ -8,7 +8,7 @@ import { isString } from '@/utils/is'
 const userStore = useUserStore()
 
 const userInfo = computed(() => userStore.userInfo)
-const isAd=ref(true);
+const isAd=ref(false);
 </script>
 
 <template>
@@ -28,17 +28,19 @@ const isAd=ref(true);
     </div>
     <div class="flex-1 min-w-0 ml-2">
       <h2 class="overflow-hidden font-bold text-md text-ellipsis whitespace-nowrap">
-        {{ userInfo.name ?? 'AiDuTu' }}
+        {{ userInfo.name ?? 'AiTuTu' }}
       </h2>
-      <p class="overflow-hidden text-xs text-gray-500 text-ellipsis whitespace-nowrap" v-if="isAd">
-				<span>友链 <a href="https://123.lingduquan.com" class="text-blue-500" target="_blank" >AI网站导航</a></span>
-      </p>
-			<p class="overflow-hidden text-xs text-gray-500 text-ellipsis whitespace-nowrap" v-else>
-        <span
-					v-if="isString(userInfo.description) && userInfo.description !== ''"
-					v-html="userInfo.description"
-				/>
-			</p>
+      <template v-if="isAd">
+        <p class="overflow-hidden text-xs text-gray-500 text-ellipsis whitespace-nowrap" v-if="isAd">
+          <span>友链 <a href="https://123.lingduquan.com" class="text-blue-500" target="_blank" >AI网站导航</a></span>
+        </p>
+        <p class="overflow-hidden text-xs text-gray-500 text-ellipsis whitespace-nowrap" v-else>
+          <span
+            v-if="isString(userInfo.description) && userInfo.description !== ''"
+            v-html="userInfo.description"
+          />
+        </p>
+      </template>
     </div>
   </div>
 </template>

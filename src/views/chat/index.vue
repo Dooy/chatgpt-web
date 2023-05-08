@@ -99,8 +99,8 @@ const serverInfo=ref({
 		goOnAd( str );
 		return ;
 	}
-	fetchUser( str,userInfo.value.isVip ).then(  (d)=>{
-		console.log('vip',d);
+	fetchUser( str,userInfo.value.isVip ).then(  (d:any)=>{
+		//console.log('vip',d);
 		if(d.error==317){
 			if(isWechat.value){
 				showLoginWx();
@@ -717,16 +717,47 @@ const footerClass = computed(() => {
   return classes
 })
 
-const tutu =ref({is:0,text:'',type:''
-,now:{k:'',v:'',t:''}
-,arr:[
+const mban=[
 {k:'1',v:'改写',t:'Rephrase the following paragraph with Chinese in 3 different ways, to avoid repetition, while keeping its meaning:'}
 ,{k:'2',v:'翻译',t:'I want you to act as an #English# translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in #English#. I want you to replace my simplified A0-level words and sentences with more beautiful and elegant, upper level English words and sentences. Keep the meaning same, but make them more literary. I want you to only reply the correction, the improvements and nothing else, do not write explanations. My first sentence is' }
 ,{k:'3',v:'小红书',t:'Please edit the following passage using the Emoji style, which is characterized by captivating headlines, the inclusion of emoticons in each paragraph, and the addition of relevant tags at the end. Be sure to maintain the original meaning of the text. Respond in Chinese. Please begin by editing the following text:'}
 ,{k:'4',v:'微博',t:'使用#幽默#俏皮#的语气回复微博，100字以内，我要回复的内容是：'}
 //,{k:'5',v:'SEO',t:'Generate 5 unique meta descriptions, of a maximum of 150 characters, for the following text. Respond in Chinese. They should be catchy with a call to action, including the term : '}
 ,{k:'5',v:'商品',t:'你是一名商品推销员，当我输入商品名称或商品标题时，自动帮我生成3个新的商品标题，并生成150字的商品简介。直接给我提供结果，我要输入的商品是: '}
-]
+,{k:'6',v:'快评',t:'请用幽默的文风针对以下内容进行点评，100字左右：'}
+,{k:'7',v:'快答',t:'请针对以下问题提供答案，语言尽可能简洁，易懂，500字左右：'}
+,{k:'8',v:'回邮件',t:'请回复以下邮件内容：'}
+];
+function getMoban():any[]{
+  function isInUrl(url:string, arr:string[]):boolean{
+    for(let i=0;i<arr.length;i++){
+      if( url.indexOf(arr[i])>-1 ) return true;
+    }
+    return false;
+  }
+  function doGetMoban(key:string[]){
+    let rz:any[]=[];
+    for(let i=0;i<key.length;i++){
+      let ik= mban.findIndex(v=>v.v==key[i]);
+      if(ik>=0) rz.push(mban[ik]) ;
+    }
+    return rz ;
+  }
+  //console.log('par',document.referrer  )
+  if( tutu.value.url ){
+    if(tutu.value.url.indexOf('mail')>-1){
+      return doGetMoban(['回邮件','翻译','快答','快评']) //、翻译、快答、快评
+    }
+    if(isInUrl(tutu.value.url,['taobao','tmall.com','jd.com','xiaomi','dangdang','duoduo','vip.com','mi.com'] )){
+      return doGetMoban(['商品','快评','改写','小红书','翻译']) ;//商品、快评、改写、小红书、翻译
+    }
+  }
+  return doGetMoban(['快答','快评','小红书','微博','翻译'])
+}
+
+const tutu =ref({is:0,text:'',type:'',url:'',title:''
+,now:{k:'',v:'',t:''}
+,arr:[]
 });
 const aitutuMsg = (e: any) => {
   console.log('aitutuMsg2',e.data );
@@ -737,6 +768,13 @@ const aitutuMsg = (e: any) => {
     tutu.value.text=d.data.text;
     tutu.value.type=d.data.type;
     tutu.value.is=1;
+    if(   d.data.url?.length>0 ){
+      tutu.value.url=d.data.url;
+    }
+    if( d.data.title?.length>0 ){
+      tutu.value.title=d.data.title;
+    }
+    tutu.value.arr= getMoban();
     nextTick(  scrollToBottom )
   }
 }
