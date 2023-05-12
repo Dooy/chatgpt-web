@@ -33,7 +33,7 @@ export default defineConfig((env) => {
     },
     plugins: setupPlugins(viteEnv),
     server: {
-      host: '0.0.0.0',
+      host: 'w.aibeke.cn',
       port: 4102,
       open: false,
       proxy: {

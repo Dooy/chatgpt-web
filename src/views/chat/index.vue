@@ -211,7 +211,7 @@ const adFun = (uuid: number, index: number) => {
       updateChatSome(
         uuid, index,
         {
-          text: 'Thinking...[慢？可尝试我们的VIP通道，快速出答案](https://vip.aidutu.cn/?tk) ',
+          text: 'Thinking... ', //[慢？可尝试我们的VIP通道，快速出答案](https://vip.aidutu.cn/?tk)
         })
     }
   }, serverInfo.value.tm ? serverInfo.value.tm : 3000)

@@ -108,7 +108,7 @@ onMounted(()=>{
 					<NButton block @click="show2 = true" type="warning" v-else>
 						求赞赏
 					</NButton>
-					<div style="text-align: center;padding-top: 10px"> <a href="https://docs.qq.com/doc/DWHFYamFkV1RPTkxi" target="_blank" style="color: #1f6feb">免责申明</a> </div>
+					<!-- <div style="text-align: center;padding-top: 10px"> <a href="https://docs.qq.com/doc/DWHFYamFkV1RPTkxi" target="_blank" style="color: #1f6feb">免责申明</a> </div> -->
         </div>
       </main>
       <Footer />

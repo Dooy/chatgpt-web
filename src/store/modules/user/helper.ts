@@ -20,9 +20,10 @@ export function defaultSetting(): UserState {
   return {
     userInfo: {
       //avatar: 'https://raw.githubusercontent.com/Chanzhaoyu/chatgpt-web/main/src/assets/avatar.jpg',
-      avatar: 'https://cdn.aidutu.cn/res/head/ai.png',
-      name: 'AiDuTu',
-      description: '友链 <a href="https://123.lingduquan.com" class="text-blue-500" target="_blank" >AI网站导航</a>',
+      avatar: 'https://cdn.aidutu.cn/res/img/beke.jpg',
+      name: 'AiBeKe',
+      //description: '友链 <a href="https://123.lingduquan.com" class="text-blue-500" target="_blank" >AI网站导航</a>',
+      description: '<a href="https://docs.qq.com/doc/DUnlOTlN2cHVjdkRT" class="text-blue-500" target="_blank" >免责申明</a>',
 			isVip:( location.href.indexOf('localhost')>-1 || location.href.indexOf('vip.aidutu.cn')>-1 ||  location.href.indexOf('vip')>-1 )?1:0 //
 			,doLogin:0
       ,model: 'GPT3.5'
