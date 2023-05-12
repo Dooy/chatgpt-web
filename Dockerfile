@@ -28,6 +28,8 @@ COPY /service/pnpm-lock.yaml /app
 
 RUN pnpm install
 
+RUN pnpm config set registry https://registry.npm.taobao.org
+
 COPY /service /app
 
 RUN pnpm build
@@ -36,6 +38,8 @@ RUN pnpm build
 FROM node:lts-alpine
 
 RUN npm install pnpm -g
+
+RUN pnpm config set registry https://registry.npm.taobao.org
 
 WORKDIR /app
 
