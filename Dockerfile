@@ -3,6 +3,8 @@ FROM node:lts-alpine AS frontend
 
 RUN npm install pnpm -g
 
+RUN pnpm config set registry https://registry.npm.taobao.org
+
 WORKDIR /app
 
 COPY ./package.json /app
@@ -20,6 +22,8 @@ FROM node:lts-alpine as backend
 
 RUN npm install pnpm -g
 
+RUN pnpm config set registry https://registry.npm.taobao.org
+
 WORKDIR /app
 
 COPY /service/package.json /app
@@ -27,8 +31,6 @@ COPY /service/package.json /app
 COPY /service/pnpm-lock.yaml /app
 
 RUN pnpm install
-
-RUN pnpm config set registry https://registry.npm.taobao.org
 
 COPY /service /app
 
