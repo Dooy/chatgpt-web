@@ -1,4 +1,5 @@
 import type { FetchFn } from 'chatgpt-dooy'
+import {  TiktokenEncoding} from '@dqbd/tiktoken'
 
 export interface RequestProps {
   prompt: string
@@ -7,6 +8,11 @@ export interface RequestProps {
   temperature?: number
   top_p?: number
   tokens?:number
+}
+
+export interface tokenProps {
+  q:string
+  encode?:TiktokenEncoding
 }
 
 export interface ChatContext {

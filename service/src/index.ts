@@ -1,11 +1,11 @@
 import express from 'express'
-import type { RequestProps } from './types'
+import type { RequestProps, tokenProps } from './types'
 import type { ChatMessage } from './chatgpt'
 import { chatConfig, chatReplyProcess, currentModel } from './chatgpt'
 import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
-import {jianDan, readAidutu, writeAidutu} from "./utils";
+import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
 
 
 
@@ -134,13 +134,18 @@ import {jianDan, readAidutu, writeAidutu} from "./utils";
 	router.post('/verify', async (req, res) => {
 		try {
 			const {token} = req.body as { token: string }
-			if (!token)
-				throw new Error('Secret key is empty')
-
-			if (process.env.AUTH_SECRET_KEY !== token)
-				throw new Error('密钥无效 | Secret key is invalid')
+			
 
 			res.send({status: 'Success', message: 'Verify successfully', data: null})
+		} catch (error) {
+			res.send({status: 'Fail', message: error.message, data: null})
+		}
+	})
+
+	router.post('/tokenizer', async (req, res) => {
+		try {
+			const rq = req.body as tokenProps 
+			res.send({status: 'Success', message: 'ok', data:getTokens(rq) })
 		} catch (error) {
 			res.send({status: 'Fail', message: error.message, data: null})
 		}

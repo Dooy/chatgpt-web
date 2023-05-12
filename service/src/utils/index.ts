@@ -1,5 +1,18 @@
 import * as fs from 'fs';
 import {ChatMessage} from "../chatgpt";
+import { get_encoding } from '@dqbd/tiktoken'
+import { tokenProps } from 'src/types';
+
+// TODO: make this configurable
+const tokenizer = get_encoding('cl100k_base')
+
+ 
+export function getTokens( rq:tokenProps): Uint32Array {
+	if(!rq.encode) return tokenizer.encode(rq.q)
+	const t = get_encoding( rq.encode)
+  return t.encode(rq.q)
+}
+
 
 interface SendResponseOptions<T = any> {
   type: 'Success' | 'Fail'
@@ -61,6 +74,7 @@ export function jianDan(chat: ChatMessage){
 	}
 	return rz;
 }
+
 
 
 
