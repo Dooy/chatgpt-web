@@ -723,7 +723,7 @@ const mban=[
 ,{k:'3',v:'小红书',t:'Please edit the following passage using the Emoji style, which is characterized by captivating headlines, the inclusion of emoticons in each paragraph, and the addition of relevant tags at the end. Be sure to maintain the original meaning of the text. Respond in Chinese. Please begin by editing the following text:'}
 ,{k:'4',v:'微博',t:'使用#幽默#俏皮#的语气回复微博，100字以内，我要回复的内容是：'}
 //,{k:'5',v:'SEO',t:'Generate 5 unique meta descriptions, of a maximum of 150 characters, for the following text. Respond in Chinese. They should be catchy with a call to action, including the term : '}
-,{k:'5',v:'商品',t:'你是一名商品推销员，当我输入商品名称或商品标题时，自动帮我生成3个新的商品标题，并生成150字的商品简介。直接给我提供结果，我要输入的商品是: '}
+,{k:'5',v:'商品',t:'你是一名商品推销员，当我输入商品名称或商品标题时，自动帮我生成1个新的商品标题，并生成150字的商品简介。直接给我提供结果，我要输入的商品是: '}
 ,{k:'6',v:'快评',t:'请用幽默的文风针对以下内容进行点评，100字左右：'}
 ,{k:'7',v:'快答',t:'请针对以下问题提供答案，语言尽可能简洁，易懂，500字左右：'}
 ,{k:'8',v:'回邮件',t:'请回复以下邮件内容：'}
