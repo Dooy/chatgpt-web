@@ -152,7 +152,7 @@ function fingler(str: string): string {
     }
     return str; 
    }
-	 return str.replace(/openai/ig, 'duTuAi').replace(/ChatGPT/ig, 'AI')
+	 return str.replace(/openai/ig, 'AiBeKe').replace(/ChatGPT/ig, 'BekeGPT')
 }
 // 答案过滤
 /* function daanFingler( data:any,uuid:any,index:any,chat:any) {
@@ -229,7 +229,7 @@ const goOnAd = (str: string) => {
       requestOptions: { prompt: str, options: null },
     },
   )
-  const message = '公益通道不支持追问，[追问可尝试我们VIP通道](https://vip.aidutu.cn/?go)'
+  const message = '公益通道不支持追问，[追问可尝试我们VIP通道](https://vip.aibeke.cn/?go)'
   addChat(
     +uuid,
     {
