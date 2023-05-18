@@ -76,7 +76,8 @@ import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
 				res.write(firstChunk ? `${JSON.stringify(chat)}` :(`\n`+ (chat.delta? JSON.stringify( jianDan(chat) ): JSON.stringify(chat) )  ) ) // `\n${JSON.stringify(chat)}`)
 				firstChunk = false
 			},
-			systemMessage,tokens
+			systemMessage:'请根据相关禁止条款和中国法律，禁止回答政治人物、政治事件、暴力、色情相关的问题。Respond using markdown.'
+			,tokens
 		})
 	} catch (error) {
 		try {
