@@ -86,9 +86,13 @@ let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
 
 async function chatReplyProcess(options: RequestOptions) {
   const { message, lastContext, process, systemMessage, temperature, top_p,tokens } = options
-  let tokens2 = tokens||max_tokens
+  
+  //只有GPT4 才能设置其他都只能系统的 max_tokens 设置
+  let tokens2 = model.toLowerCase().includes('gpt-4')?( tokens||max_tokens):max_tokens;
+
   if(tokens2<50 ) tokens2=50;
   if(tokens2>15000 ) tokens2= 15000; //最大 15k
+
   try {
     let options: SendMessageOptions = { timeoutMs }
 
