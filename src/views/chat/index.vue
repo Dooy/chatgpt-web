@@ -918,7 +918,7 @@ function handleSelect(key: 'handleExport' | 'handleClear' | 'toggleUsingContext'
       </div>
     </main>
     <footer :class="footerClass">
-      <div class="w-full max-w-screen-xl m-auto">
+      <div class="w-full max-w-screen-xl m-auto"> 
         <AiModel v-if="userInfo.isVip"/>
         <div class="flex items-center justify-between space-x-2">
           <NDropdown
