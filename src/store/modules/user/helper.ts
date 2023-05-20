@@ -10,6 +10,8 @@ export interface UserInfo {
 	doLogin:number
   model: string
   tokens: string
+  isStop: boolean
+  isCz: boolean
 }
 
 export interface UserState {
@@ -27,6 +29,8 @@ export function defaultSetting(): UserState {
 			,doLogin:0
       ,model: 'GPT3.5'
       ,tokens: '1000'
+      ,isStop: true
+      ,isCz:true
     },
   }
 }

@@ -962,6 +962,7 @@ function handleSelect(key: 'handleExport' | 'handleClear' | 'toggleUsingContext'
                 @focus="handleFocus"
                 @blur="handleBlur"
                 @keypress="handleEnter"
+                :disabled="userInfo.isStop"
               />
             </template>
           </NAutoComplete>

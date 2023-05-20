@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import {onMounted, ref, watch} from "vue";
+import {onMounted, ref, watch,computed } from "vue";
 import {ajax} from "@/api";
 import { NCard ,NButton, NTabs,NTabPane } from 'naive-ui'
 import QRCodeVue3 from "qrcode-vue3";
@@ -21,10 +21,12 @@ const info=ref({msg:'',msg4g:'',msg4g2:''})
 
 const userStore = useUserStore()
 
+const userInfo = computed(() => userStore.userInfo)
 
 
 onMounted(()=>{
 	//userStore.updateUserInfo({doLogin:0})
+	console.log('userInfo',userInfo.value)
 	ajax({
 		url:'/chatgpt/config/cz'
 	}).then((d:any) =>{
@@ -103,6 +105,7 @@ watch( active ,initStart)
             <span class="ml-2">会员</span>
           </template>
           <div class="min-h-[100px]">
+		  		<!--
 				<div v-if="uvip.isOver<=-1">
 					你未开通会员  (UID:{{uvip.user_id}})
 				</div>
@@ -110,15 +113,19 @@ watch( active ,initStart)
 				<div v-if="uvip.isOver">你的会员已到期 (UID:{{uvip.user_id}})</div>
 					<div v-else>你的会员不足<b>{{uvip.dsTs}}</b>, 将在 <b >{{uvip.dsEnd}}</b> 到期  (UID:{{uvip.user_id}})</div>
 				</template>
+				-->
+
 				<div  v-html="info.msg"></div>
 
+				<template  v-if=" userInfo.isCz">
+					<div class="myTitle" v-if="stVip.length>0  ">
+						<n-card :title="`${v2.ds}元`" size="small" class="mycard payCard" :class="{me:k==dfSelect}"  v-for="(v2,k) in stVip" @click="go(v2)">
+							<div v-html="v2.info"></div>
+						</n-card>
+					</div>
+					<div v-else>Loading....</div>	
+				</template>
 
-				<div class="myTitle" v-if="stVip.length>0">
-					<n-card :title="`${v2.ds}元`" size="small" class="mycard payCard" :class="{me:k==dfSelect}"  v-for="(v2,k) in stVip" @click="go(v2)">
-						<div v-html="v2.info"></div>
-					</n-card>
-				</div>
-				<div v-else>Loading....</div>	
           </div>
         </NTabPane>
 
@@ -129,20 +136,21 @@ watch( active ,initStart)
           </template>
           <div class="min-h-[100px]">
 		     <div v-html="info.msg4g"></div>
-
+			<template  v-if=" userInfo.isCz">
 			 <div class="myTitle" v-if="stG4.length>0">
 					<n-card :title="`${v2.ds}元`" size="small" class="mycard payCard" :class="{me:k==dfSelect}"  v-for="(v2,k) in stG4" @click="go(v2)">
 						<div v-html="v2.info"></div>
 					</n-card>
 				</div>
 				<div v-else>Loading....</div>
+			</template>
 
 		  </div>
 		</NTabPane>
 	</NTabs>
 	
 
-	<div style="display: flex; justify-content: center; margin-top: 20px" >
+	<div style="display: flex; justify-content: center; margin-top: 20px" v-if=" userInfo.isCz">
 		<div v-if="isWechat">
 			<n-button type="info" @click="goUrl(st.pay.url )">点我微信支付</n-button>
 		</div>

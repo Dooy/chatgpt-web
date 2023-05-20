@@ -75,3 +75,7 @@ export function getTextFormProcess(text:string):any
 
 }
 
+export function isIfram(){
+	return window.self !== window.top;
+}
+

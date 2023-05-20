@@ -2,7 +2,7 @@ import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
 
 import {post, Response} from '@/utils/request'
 import {useAuthStore, useSettingStore, useUserStore } from '@/store'
-import {getIam} from "@/utils/functions";
+import {getIam, isIfram} from "@/utils/functions";
 import axios  from 'axios'
 
 
@@ -94,7 +94,8 @@ export function fetchUser(q:string,isVip:number,data:any={})
   data.q=q;
   data.iam= getIam();
   data.isVip= isVip;
-	return ajax({url:'/chatgpt/user/info?v=1.7',method:'POST',data })
+  data.isf= isIfram()?1:2 ;
+	return ajax({url:'/chatgpt/user/info?v=1.8',method:'POST',data })
 }
 
 export function ajax({ url="",method='GET',data={}}): Promise<Response<any>> {
