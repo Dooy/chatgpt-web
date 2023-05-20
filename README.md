@@ -349,3 +349,25 @@ git merge upstream/main
 
 ## License
 MIT © [ChenZhaoYu](./license)
+
+
+## 改进分校
+
+前端变量
+| 变量名称          |  备注   |
+| --------------------- | -------------- | ------ |
+| wxLoginUrl| url 微信登录的链接（公众号登录） |
+| smUrl| url 免责声明URL |
+| name| app的名字 |
+| description| app的Solgo |
+| isGPT4| 是否开启GPT4 |
+| tj| 百度统计 |
+
+后台变量（PHP）要讲上面的前端变量都放到后端来 统一控制
+| 变量名称          |  备注   |
+| --------------------- | -------------- | ------ |
+| login_wx_appid| 微信登录appid | 
+| login_wx_key| 微信登录key | 
+| login_wx_host| 微信登录域名 | 
+| wxpay_file| 微信支付文件 | 
+| wxpay_host| 微信支付获取openid 使用域名 | 

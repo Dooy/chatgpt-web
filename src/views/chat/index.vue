@@ -67,12 +67,12 @@ dataSources.value.forEach((item, index) => {
 function showLoginWx() {
   dialog.warning({
     title: '当前状态未登录',
-    content: '使用 AiDuTu 必须先登录',
+    content: '使用服务必须先登录',
     positiveText: '去登录',
     negativeText: '取消',
     onPositiveClick: () => {
       // chatStore.clearChatByUuid(+uuid)
-      location.href = 'https://www.lingduquan.com/oauth/weixin?f=chat'
+      location.href = userInfo.value.wxLoginUrl // 'https://www.lingduquan.com/oauth/weixin?f=chat'
     },
   })
 }
@@ -919,7 +919,7 @@ function handleSelect(key: 'handleExport' | 'handleClear' | 'toggleUsingContext'
     </main>
     <footer :class="footerClass">
       <div class="w-full max-w-screen-xl m-auto"> 
-        <AiModel v-if="userInfo.isVip"/>
+        <AiModel v-if="userInfo.isGPT4"/>
         <div class="flex items-center justify-between space-x-2">
           <NDropdown
             :trigger="isMobile ? 'click' : 'hover'"
