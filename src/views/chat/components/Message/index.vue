@@ -20,6 +20,7 @@ interface Props {
 	prompt_tokens?:number
 	completion_tokens?:number
   model?:string
+  chat?:Chat.Chat
 }
 
 interface Emit {
@@ -134,6 +135,7 @@ function copy(){
           :text="text"
           :loading="loading"
           :as-raw-text="asRawText"
+          :chat="chat"
 
         />
         <div class="flex flex-col">

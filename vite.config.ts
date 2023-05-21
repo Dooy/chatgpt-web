@@ -33,8 +33,8 @@ export default defineConfig((env) => {
     },
     plugins: setupPlugins(viteEnv),
     server: {
-      host: '0.0.0.0',
-      port: 4102,
+      host: 'wmj.aidutu.cn',
+      port: 4103,
       open: false,
       proxy: {
 				'/api/cg': {

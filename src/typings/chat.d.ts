@@ -11,6 +11,9 @@ declare namespace Chat {
 		prompt_tokens?:number
 		completion_tokens?:number
 		model?:string //模型
+		mj_id?:number //数据库的id
+		uri?:string //图片地址
+		uri_base64?:string //图片本地base64
 	}
 
 	interface History {

@@ -9,6 +9,7 @@ import { t } from '@/locales'
 //import { copyText3} from '@/utils/format'
 import AiMsg from "@/views/aidutu/aiMsg.vue";
 import { copyToClip } from '@/utils/copy'
+import { NButtonGroup ,NButton, NSpace } from "naive-ui"
 
 interface Props {
   inversion?: boolean
@@ -16,6 +17,7 @@ interface Props {
   text?: string
   loading?: boolean
   asRawText?: boolean
+  chat?:Chat.Chat
 }
 
 const props = defineProps<Props>()
@@ -120,8 +122,35 @@ onUnmounted(() => {
   <div class="text-black" :class="wrapClass">
     <div ref="textRef" class="leading-relaxed break-words">
       <div v-if="!inversion" class="flex items-end">
+        <div v-if="chat?.uri" class="w-full markdown-body"  >
+          <img :src="chat.uri" style="max-width: 400px;max-height: 400px;"> 
+          <div style="padding: 10px 0 0 0px;">
+          <!-- <n-button-group size="small"> -->
+           
+           <n-space>风格：
+            <n-button type="success"  size="small">U1</n-button>
+            <n-button type="success"  size="small">U2</n-button>
+            <n-button type="success"  size="small">U3</n-button>
+            <n-button type="success"  size="small">U4</n-button>
+            </n-space>
+         <!--  </n-button-group> -->
+          </div>
+          <div style="padding: 10px 0 0 0px;">
+           
+            <n-space>扩大：
+            <n-button type="info"  size="small"> V1 </n-button>
+            <n-button type="info"  size="small"> V2 </n-button>
+            <n-button type="info" size="small" > V3 </n-button>
+            <n-button type="info"  size="small"> V4 </n-button>
+           
+          </n-space>
+          </div>
+        </div>
+        <template v-else> 
         <div v-if="!asRawText" class="w-full markdown-body" v-html="guolv(text)" />
         <div v-else class="w-full whitespace-pre-wrap" v-text="text" />
+        </template>
+
         <span v-if="loading" class="dark:text-white w-[4px] h-[20px] block animate-blink" />
       </div>
       <div v-else class="whitespace-pre-wrap" v-text="text" />

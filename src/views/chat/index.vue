@@ -24,7 +24,8 @@ import AiFirst from '@/views/aidutu/aiFirst.vue'
 import AiOpenVip from '@/views/aidutu/aiOpenVip.vue'
 import { copyText3 } from '@/utils/format'
 import { useIconRender } from '@/hooks/useIconRender'
-import AiModel from '@/views/aidutu/aiModel.vue' 
+import { mjDraw } from '../aidutu/mj'
+//import AiModel from '@/views/aidutu/aiModel.vue' 
 
 let controller = new AbortController()
 
@@ -58,6 +59,8 @@ const promptStore = usePromptStore()
 // 使用storeToRefs，保证store修改后，联想部分能够重新渲染
 const { promptList: promptTemplate } = storeToRefs<any>(promptStore)
 
+//mj 相关设置
+const mj = ref({mj_id:''});
 // 未知原因刷新页面，loading 状态不会重置，手动重置
 dataSources.value.forEach((item, index) => {
   if (item.loading)
@@ -67,7 +70,7 @@ dataSources.value.forEach((item, index) => {
 function showLoginWx() {
   dialog.warning({
     title: '当前状态未登录',
-    content: '使用 AiDuTu 必须先登录',
+    content: '使用服务必须先登录',
     positiveText: '去登录',
     negativeText: '取消',
     onPositiveClick: () => {
@@ -76,6 +79,8 @@ function showLoginWx() {
     },
   })
 }
+
+
 function handleSubmit() {
   // 就是在这个地方需要去请求是用户是否有权限
   // console.log('提交之前 做下过滤 检查是否登录了');
@@ -92,7 +97,7 @@ const serverInfo = ref({
 	 dtz: '',
 	 api: 'process',
 })
-function getToken(str: string, func = () => {}) {
+function getToken(str: string, func = (dd:any) => {}) {
  //msgRef.value.showError('请稍后')
  const currentChat = getChatByUuidAndIndex(+uuid, dataSources.value.length - 1)
  //console.log('currentChat', currentChat);
@@ -133,7 +138,7 @@ function getToken(str: string, func = () => {}) {
     if (d.data && d.data.info)
       serverInfo.value = d.data.info
 
-    func()
+    func( d.data )
 
     if (d.data && d.data.info && d.data.info.zan)
       show2.value = true
@@ -245,7 +250,10 @@ const goOnAd = (str: string) => {
   prompt.value = ''
   loading.value = false
 }
-async function onConversation() {
+
+async function onConversation(server:any) {
+  mj.value.mj_id= server.mj.mj_id
+  //console.log( 'server', server );
   let message = prompt.value
 
   if (loading.value)
@@ -265,6 +273,7 @@ async function onConversation() {
       error: false,
       conversationOptions: null,
       requestOptions: { prompt: message, options: null },
+      mj_id:server.mj.mj_id
     },
   )
   scrollToBottom()
@@ -278,7 +287,7 @@ async function onConversation() {
   if (lastContext && usingContext.value && serverInfo.value.stk == 0)
     options = { ...lastContext }
 
-  const think = 'Thinking...'
+  const think = 'Drawing...'
   addChat(
     +uuid,
     {
@@ -289,98 +298,30 @@ async function onConversation() {
       error: false,
       conversationOptions: null,
       requestOptions: { prompt: message, options: { ...options } },
+      mj_id:server.mj.mj_id
     },
   )
   scrollToBottom()
 
   try {
-    adFun(+uuid, dataSources.value.length - 1)
-    let lastText = ''
-
-    if (serverInfo.value.sleep > 0)
-      await sleep(serverInfo.value.sleep)
-
-    const fetchChatAPIOnce = async () => {
-      await fetchChatAPIProcess<Chat.ConversationResponse>({
-        prompt: message,
-        options,
-        signal: controller.signal,
-        onDownloadProgress: ({ event }) => {
-          const xhr = event.target
-          const { responseText } = xhr
-          // Always process the final line
-          const lastIndex = responseText.lastIndexOf('\n', responseText.length - 2)
-          let chunk = responseText
-          if (lastIndex !== -1)
-            chunk = responseText.substring(lastIndex)
-          try {
-            const data = JSON.parse(chunk)
-            updateChat(
-              +uuid,
-              dataSources.value.length - 1,
-              {
-                dateTime: new Date().toLocaleString(),
-                text: fingler(lastText + data.text ?? ''),
-                inversion: false,
-                error: false,
-                loading: true,
-                conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
-                requestOptions: { prompt: message, options: { ...options } },
-              },
-            )
-
-            if (openLongReply && data.detail.choices[0].finish_reason === 'length') {
-              options.parentMessageId = data.id
-              lastText = data.text
-              message = ''
-              return fetchChatAPIOnce()
-            }
-
-            scrollToBottomIfAtBottom()
-          }
-          catch (error) {
-            //
-          }
-        },
-      })
-      updateChatSome(+uuid, dataSources.value.length - 1, { loading: false })
+    
+    const index= dataSources.value.length - 1;
+    const cchat:Chat.Chat={
+      dateTime: new Date().toLocaleString(),
+      text: think,
+      loading: true,
+      inversion: false,
+      error: false,
+      conversationOptions: null,
+      requestOptions: { prompt: message, options: { ...options } },
+      mj_id:server.mj.mj_id
     }
-    if (serverInfo.value.api == 'me' ||  serverInfo.value.api == 'v4'  )
-      await fetchChatAPIOnceV2(message, options, dataSources.value.length - 1, +uuid)
-    else await fetchChatAPIOnce()
+    await mjDraw(+uuid,index ,cchat);
+    scrollToBottomIfAtBottom()
   }
   catch (error: any) {
     let errorMessage = error?.message ?? t('common.wrong')
-    // if( ! userInfo.value.isVip) errorMessage= "抱歉，用户太多，余额耗尽了，站长正在充值的路上，请收藏下网址，等会再试试吧。欢迎给我们打赏帮我们分担一些成本。\n\n" + errorMessage;
-    // else errorMessage ="稍后尝试\n\n"+ errorMessage;
-    if (serverInfo.value.error)
-      errorMessage = serverInfo.value.error + errorMessage
-    if (error.message === 'canceled') {
-      updateChatSome(
-        +uuid,
-        dataSources.value.length - 1,
-        {
-          loading: false,
-        },
-      )
-      scrollToBottomIfAtBottom()
-      return
-    }
-
-    const currentChat = getChatByUuidAndIndex(+uuid, dataSources.value.length - 1)
-
-    if (currentChat?.text && currentChat.text !== '') {
-      updateChatSome( // 这个地方要去过滤下
-        +uuid,
-        dataSources.value.length - 1,
-        {
-          text: `${currentChat.text}\n[${errorMessage}]`,
-          error: false,
-          loading: false,
-        },
-      )
-      return
-    }
+     
 
     updateChat(
       +uuid,
@@ -400,7 +341,7 @@ async function onConversation() {
   finally {
     // 当前过滤
     // console.log('当前过滤' , dataSources.value.length - 1 );
-    daanFinglerV2(+uuid, dataSources.value.length - 1)
+    //daanFinglerV2(+uuid, dataSources.value.length - 1)
     loading.value = false
   }
 }
@@ -897,6 +838,7 @@ function handleSelect(key: 'handleExport' | 'handleClear' | 'toggleUsingContext'
                 :completion_tokens="item.completion_tokens"
                 :prompt_tokens="item.prompt_tokens"
                 :model="item.model"
+                :chat="item"
                 @regenerate="onRegenerateD(index)"
                 @delete="handleDelete(index)"
               />
@@ -919,7 +861,7 @@ function handleSelect(key: 'handleExport' | 'handleClear' | 'toggleUsingContext'
     </main>
     <footer :class="footerClass">
       <div class="w-full max-w-screen-xl m-auto">
-        <AiModel v-if="userInfo.isVip"/>
+        <!-- <AiModel v-if="userInfo.isVip"/> -->
         <div class="flex items-center justify-between space-x-2">
           <NDropdown
             :trigger="isMobile ? 'click' : 'hover'"

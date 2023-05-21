@@ -29,7 +29,7 @@ export default {
   },
   chat: {
     newChatButton: '新建聊天',
-    placeholder: '粘贴或输入你的需求，如: 请帮我看看文章有没有问题，附上文章的内容 （Shift + Enter = 换行）',
+    placeholder: '粘贴或输入你想想都物体，如:  sketch Bird view mahiong   （Shift + Enter = 换行）',
     placeholderMobile: '来说点什么...',
     copy: '复制',
     copied: '复制成功',

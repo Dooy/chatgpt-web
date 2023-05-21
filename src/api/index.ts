@@ -94,7 +94,7 @@ export function fetchUser(q:string,isVip:number,data:any={})
   data.q=q;
   data.iam= getIam();
   data.isVip= isVip;
-	return ajax({url:'/chatgpt/user/info?v=1.7',method:'POST',data })
+	return ajax({url:'/chatgpt/mj/info?v=1.7',method:'POST',data })
 }
 
 export function ajax({ url="",method='GET',data={}}): Promise<Response<any>> {

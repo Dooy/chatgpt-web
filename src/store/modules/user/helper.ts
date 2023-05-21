@@ -23,7 +23,7 @@ export function defaultSetting(): UserState {
       avatar: 'https://cdn.aidutu.cn/res/head/ai.png',
       name: 'AiDuTu',
       description: '友链 <a href="https://123.lingduquan.com" class="text-blue-500" target="_blank" >AI网站导航</a>',
-			isVip:( location.href.indexOf('localhost')>-1 || location.href.indexOf('vip.aidutu.cn')>-1 ||  location.href.indexOf('vip')>-1 )?1:0 //
+			isVip:1 //( location.href.indexOf('localhost')>-1 || location.href.indexOf('vip.aidutu.cn')>-1 ||  location.href.indexOf('vip')>-1 )?1:0 //
 			,doLogin:0
       ,model: 'GPT3.5'
       ,tokens: '1000'
