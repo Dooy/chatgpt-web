@@ -16,6 +16,8 @@ onMounted(() => {
    //console.log('stop', d.data.stop  )
    st.value = d.data.stop
    userStore.updateUserInfo({isStop: st.value.isStop,isCz:st.value.isCz})
+   if( d.data.stop.to!='') location.href= d.data.stop.to ;
+    
  } )
 })
 </script>

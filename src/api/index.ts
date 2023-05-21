@@ -101,14 +101,14 @@ export function fetchUser(q:string,isVip:number,data:any={})
 export function ajax({ url="",method='GET',data={}}): Promise<Response<any>> {
 
 	const service = axios.create({
-		headers: {'Content-Type':'application/json','Accept':'application/json'},
+		headers: {'Content-Type':'application/json','Accept':'application/json'  },
 		withCredentials: true,
 		baseURL: '/api/cg',
 		timeout: 30000 // request timeout
 	});
 	//
 	return new Promise<Response<any>>((h,r)=>{
-		service.request({url,method,data,headers:{'x-iam':getIam(),'x-version':'1.5'} }).then(d=>h(d.data)).catch(e=>r(e));
+		service.request({url,method,data,headers:{'x-iam':getIam(),'x-version':'1.5','x-verify':window.self !== window.top?1:2 } }).then(d=>h(d.data)).catch(e=>r(e));
 	});
 }
 
