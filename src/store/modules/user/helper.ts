@@ -14,6 +14,7 @@ export interface UserInfo {
   smUrl:string
   wxLoginUrl:string
   tj?:string
+  vipHost:string
 }
 
 export interface UserState {
@@ -35,6 +36,7 @@ export function defaultSetting(): UserState {
       ,smUrl:''
       ,wxLoginUrl:'https://www.lingduquan.com/oauth/weixin?f=chat'
       ,tj:'8983c75dfe5366171d9541b4c4f70657'
+      ,vipHost:'vip.aidutu.cn'
     },
   }
 }

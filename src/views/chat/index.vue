@@ -211,7 +211,7 @@ const adFun = (uuid: number, index: number) => {
       updateChatSome(
         uuid, index,
         {
-          text: 'Thinking...[慢？可尝试我们的VIP通道，快速出答案](https://vip.aidutu.cn/?tk) ',
+          text: 'Thinking...[慢？可尝试我们的VIP通道，快速出答案](https://'+userInfo.value.vipHost+'/?tk) ',
         })
     }
   }, serverInfo.value.tm ? serverInfo.value.tm : 3000)
@@ -229,7 +229,7 @@ const goOnAd = (str: string) => {
       requestOptions: { prompt: str, options: null },
     },
   )
-  const message = '公益通道不支持追问，[追问可尝试我们VIP通道](https://vip.aidutu.cn/?go)'
+  const message = '公益通道不支持追问，[追问可尝试我们VIP通道](https://'+userInfo.value.vipHost+'/?go)'
   addChat(
     +uuid,
     {

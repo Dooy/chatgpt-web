@@ -9,6 +9,9 @@ import { t } from '@/locales'
 //import { copyText3} from '@/utils/format'
 import AiMsg from "@/views/aidutu/aiMsg.vue";
 import { copyToClip } from '@/utils/copy'
+import { useUserStore } from '@/store'
+const userStore = useUserStore()
+const userInfo = computed(() => userStore.userInfo)
 
 interface Props {
   inversion?: boolean
@@ -67,7 +70,7 @@ function highlightBlock(str: string, lang?: string) {
 
 const guolv= (txt:string)=>{
 	//console.log( 'abc==>',txt );
-	if(txt.indexOf('vip.aidutu.cn')>-1) return txt;
+	if(txt.indexOf( userInfo.value.vipHost )>-1) return txt;
 	txt = txt.replace(/href="([^"]*)"/ig, 'href="https://www.aidutu.cn/info/link?url=$1"');
 	txt = txt.replace(/href='([^']*)'/ig, 'href="https://www.aidutu.cn/info/link?url=$1"');
 	return txt;
