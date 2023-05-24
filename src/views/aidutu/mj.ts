@@ -27,7 +27,7 @@ export function mjDraw(uuid:number,index:number,chat:Chat.Chat )
                     chat.dateTime=  new Date().toLocaleString();
                     chat.uri=mj.uri;
                     chat.text=`完成![完成](${chat.uri})`;
-                    chat.loading= false ;
+                    chat.loading= false ; 
                     updateChat( +uuid, index,   chat   );
                     h(1)
                 }else{

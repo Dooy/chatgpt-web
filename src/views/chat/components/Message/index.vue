@@ -9,6 +9,7 @@ import { useIconRender } from '@/hooks/useIconRender'
 import { t } from '@/locales'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import AiMsg from "@/views/aidutu/aiMsg.vue";
+import { argv } from 'process'
 //import { copyToClip } from '@/utils/copy'
 
 interface Props {
@@ -26,6 +27,7 @@ interface Props {
 interface Emit {
   (ev: 'regenerate'): void
   (ev: 'delete'): void
+  (ev: 'imageSend'): void
 }
 
 const props = defineProps<Props>()
@@ -94,6 +96,12 @@ function copy(){
 	copyText3( props.text ?? '').then(()=>msgRef.value.showMsg('复制成功！'));
 
 }
+ 
+function sent( a:any ){
+  //emits('imageSend', argv)
+  emit('imageSend', a  )
+}
+const st = ref({is:false});
 </script>
 
 <template>
@@ -136,9 +144,10 @@ function copy(){
           :loading="loading"
           :as-raw-text="asRawText"
           :chat="chat"
+          @image-send="sent"
 
         />
-        <div class="flex flex-col">
+        <div class="flex flex-col" v-if="st.is" >
           <button
             v-if="!inversion"
             class="mb-2 transition text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-300"
@@ -150,7 +159,7 @@ function copy(){
             :trigger="isMobile ? 'click' : 'hover'"
             :placement="!inversion ? 'right' : 'left'"
             :options="options"
-            @select="handleSelect"
+            @select="handleSelect" 
           >
             <button class="transition text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-200">
               <SvgIcon icon="ri:more-2-fill" />

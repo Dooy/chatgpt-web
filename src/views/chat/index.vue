@@ -97,7 +97,7 @@ const serverInfo = ref({
 	 dtz: '',
 	 api: 'process',
 })
-function getToken(str: string, func = (dd:any) => {}) {
+function getToken(str: string, func = (dd:any) => {},opt?:any) {
  //msgRef.value.showError('请稍后')
  const currentChat = getChatByUuidAndIndex(+uuid, dataSources.value.length - 1)
  //console.log('currentChat', currentChat);
@@ -111,8 +111,9 @@ function getToken(str: string, func = (dd:any) => {}) {
     return
   }
   const data={'model':userInfo.value.model,tokens:userInfo.value.tokens,usingContext:usingContext.value
-    ,completion_tokens:currentChat?.completion_tokens,prompt_tokens:currentChat?.prompt_tokens
+    ,completion_tokens:currentChat?.completion_tokens,prompt_tokens:currentChat?.prompt_tokens,opt
      };
+   
   fetchUser(str, userInfo.value.isVip, data ).then((d: any) => {
     console.log('vip', d)
     if (d.error == 317) {
@@ -138,7 +139,7 @@ function getToken(str: string, func = (dd:any) => {}) {
     if (d.data && d.data.info)
       serverInfo.value = d.data.info
 
-    func( d.data )
+    func( d.data ,opt )
 
     if (d.data && d.data.info && d.data.info.zan)
       show2.value = true
@@ -159,24 +160,7 @@ function fingler(str: string): string {
    }
 	 return str.replace(/openai/ig, 'duTuAi').replace(/ChatGPT/ig, 'AI')
 }
-// 答案过滤
-/* function daanFingler( data:any,uuid:any,index:any,chat:any) {
-	if(data.detail.choices[0].finish_reason === 'stop'){
-		console.log('daanFingler stop');
-		//chat.text= " daanFingler stop ";
-		ajax({
-			url:'/chatgpt/word/check',
-			method:"POST"
-			,data:{q:chat.text}
-		}).then(d=>{
-			console.log('stop', d ); //data.rz
-			if(d.data.rz){
-				chat.text= d.data.rz;
-				updateChat(uuid, index, chat)
-			}
-		});
-	}
-} */
+
 // 答案过滤V2
 function daanFinglerV2(uuid: number, index: number) {
   const currentChat = getChatByUuidAndIndex(uuid, index) // +uuid, dataSources.value.length - 1
@@ -251,7 +235,7 @@ const goOnAd = (str: string) => {
   loading.value = false
 }
 
-async function onConversation(server:any) {
+async function onConversation(server:any, opt?:any) {
   mj.value.mj_id= server.mj.mj_id
   //console.log( 'server', server );
   let message = prompt.value
@@ -259,23 +243,24 @@ async function onConversation(server:any) {
   if (loading.value)
     return
 
-  if (!message || message.trim() === '')
-    return
+  // if (!message || message.trim() === '')
+  //   return
 
   controller = new AbortController()
-
-  addChat(
-    +uuid,
-    {
-      dateTime: new Date().toLocaleString(),
-      text: message,
-      inversion: true,
-      error: false,
-      conversationOptions: null,
-      requestOptions: { prompt: message, options: null },
-      mj_id:server.mj.mj_id
-    },
-  )
+  if( message!=''){
+    addChat(
+      +uuid,
+      {
+        dateTime: new Date().toLocaleString(),
+        text: message,
+        inversion: true,
+        error: false,
+        conversationOptions: null,
+        requestOptions: { prompt: message, options: null },
+        mj_id:server.mj.mj_id
+      },
+    )
+  }
   scrollToBottom()
 
   loading.value = true
@@ -314,7 +299,9 @@ async function onConversation(server:any) {
       error: false,
       conversationOptions: null,
       requestOptions: { prompt: message, options: { ...options } },
-      mj_id:server.mj.mj_id
+      mj_id:server.mj.mj_id,
+      mj_type:opt?opt.t:'C'
+      ,mj_opt:opt
     }
     await mjDraw(+uuid,index ,cchat);
     scrollToBottomIfAtBottom()
@@ -790,6 +777,12 @@ function handleSelect(key: 'handleExport' | 'handleClear' | 'toggleUsingContext'
       handleClear()
   }
 }
+
+function imageSend(a:any ){
+  //console.log('imageSend>>', a );
+  if (loading.value)  return
+  getToken('', onConversation, {t:a.t,v:a.v,mj_id:a.chat.mj_id})
+}
 </script>
 
 <template>
@@ -841,6 +834,7 @@ function handleSelect(key: 'handleExport' | 'handleClear' | 'toggleUsingContext'
                 :chat="item"
                 @regenerate="onRegenerateD(index)"
                 @delete="handleDelete(index)"
+                @image-send="imageSend"
               />
 
               <div class="sticky bottom-0 left-0 flex justify-center">

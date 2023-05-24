@@ -31,7 +31,7 @@ const isAd=ref(true);
         {{ userInfo.name ?? 'AiDuTu' }}
       </h2>
       <p class="overflow-hidden text-xs text-gray-500 text-ellipsis whitespace-nowrap" v-if="isAd">
-				<span>友链 <a href="https://123.lingduquan.com" class="text-blue-500" target="_blank" >AI网站导航</a></span>
+				<span v-html="userInfo.description"> </span>
       </p>
 			<p class="overflow-hidden text-xs text-gray-500 text-ellipsis whitespace-nowrap" v-else>
         <span

@@ -10,6 +10,11 @@ export interface UserInfo {
 	doLogin:number
   model: string
   tokens: string
+  isGPT4:boolean
+  smUrl:string
+  wxLoginUrl:string
+  tj?:string
+  vipHost:string
 }
 
 export interface UserState {
@@ -19,14 +24,19 @@ export interface UserState {
 export function defaultSetting(): UserState {
   return {
     userInfo: {
-      //avatar: 'https://raw.githubusercontent.com/Chanzhaoyu/chatgpt-web/main/src/assets/avatar.jpg',
-      avatar: 'https://cdn.aidutu.cn/res/head/ai.png',
-      name: 'AiDuTu',
-      description: '友链 <a href="https://123.lingduquan.com" class="text-blue-500" target="_blank" >AI网站导航</a>',
-			isVip:1 //( location.href.indexOf('localhost')>-1 || location.href.indexOf('vip.aidutu.cn')>-1 ||  location.href.indexOf('vip')>-1 )?1:0 //
+      avatar: 'https://raw.githubusercontent.com/Chanzhaoyu/chatgpt-web/main/src/assets/avatar.jpg',
+      //avatar: 'https://cdn.aidutu.cn/res/head/ai.png',
+      name: 'User',
+      description: '',//'友链 <a href="https://123.lingduquan.com" class="text-blue-500" target="_blank" >AI网站导航</a>',
+			isVip:( location.href.indexOf('localhost')>-1   ||  location.href.indexOf('vip')>-1 )?1:0 //
 			,doLogin:0
       ,model: 'GPT3.5'
       ,tokens: '1000'
+      ,isGPT4:true
+      ,smUrl:''
+      ,wxLoginUrl:'https://www.lingduquan.com/oauth/weixin?f=chat'
+      ,tj:'8983c75dfe5366171d9541b4c4f70657'
+      ,vipHost:'vip.aidutu.cn'
     },
   }
 }

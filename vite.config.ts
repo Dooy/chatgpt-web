@@ -33,7 +33,7 @@ export default defineConfig((env) => {
     },
     plugins: setupPlugins(viteEnv),
     server: {
-      host: 'wmj.aidutu.cn',
+      host: 'wmj.aidutu.cn', //wmj.aidutu.cn
       port: 4103,
       open: false,
       proxy: {

@@ -115,6 +115,9 @@ onUpdated(() => {
 onUnmounted(() => {
   removeCopyEvents()
 })
+
+const st = ref( {fg:[1,2,3,4],big:[1,2,3,4] })
+const emits = defineEmits(['imageSend'])
 </script>
 
 <template>
@@ -123,28 +126,28 @@ onUnmounted(() => {
     <div ref="textRef" class="leading-relaxed break-words">
       <div v-if="!inversion" class="flex items-end">
         <div v-if="chat?.uri" class="w-full markdown-body"  >
-          <img :src="chat.uri" style="max-width: 400px;max-height: 400px;"> 
-          <div style="padding: 10px 0 0 0px;">
-          <!-- <n-button-group size="small"> -->
-           
-           <n-space>风格：
-            <n-button type="success"  size="small">U1</n-button>
-            <n-button type="success"  size="small">U2</n-button>
-            <n-button type="success"  size="small">U3</n-button>
-            <n-button type="success"  size="small">U4</n-button>
-            </n-space>
-         <!--  </n-button-group> -->
+          <div style="position: relative;">
+            <img :src="chat.uri" style="max-width: 600px;max-height: 600px;"> 
+            <div style="position: absolute;bottom: 10px;right: 20px;;"><n-button   type="primary"   size="small" ><a :href="chat?.uri" target="_blank" style="color: #333;">查看</a></n-button></div>
           </div>
-          <div style="padding: 10px 0 0 0px;">
-           
+          <template v-if="chat?.mj_type!='U'">
+            <div style="padding: 10px 0 0 0px;" >
+            <!-- <n-button-group size="small"> -->
+            
             <n-space>扩大：
-            <n-button type="info"  size="small"> V1 </n-button>
-            <n-button type="info"  size="small"> V2 </n-button>
-            <n-button type="info" size="small" > V3 </n-button>
-            <n-button type="info"  size="small"> V4 </n-button>
-           
-          </n-space>
-          </div>
+              <n-button type="success"  size="small" v-for="a in st.fg" @click="emits('imageSend',{t:'U',v:a,chat})">U{{ a }}</n-button>
+              </n-space>
+          <!--  </n-button-group> -->
+            </div>
+            <div style="padding: 10px 0 0 0px;">
+            
+              <n-space>风格：
+              <n-button type="info"  size="small" v-for="a in st.big" @click="emits('imageSend',{t:'V',v:a,chat})" > V{{ a }} 
+              </n-button>
+            
+            </n-space>
+            </div>
+          </template>
         </div>
         <template v-else> 
         <div v-if="!asRawText" class="w-full markdown-body" v-html="guolv(text)" />

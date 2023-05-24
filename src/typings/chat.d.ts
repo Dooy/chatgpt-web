@@ -12,6 +12,8 @@ declare namespace Chat {
 		completion_tokens?:number
 		model?:string //模型
 		mj_id?:number //数据库的id
+		mj_type?:'C'|'U'|'V'
+		mj_opt?:any
 		uri?:string //图片地址
 		uri_base64?:string //图片本地base64
 	}
