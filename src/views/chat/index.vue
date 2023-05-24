@@ -67,7 +67,7 @@ dataSources.value.forEach((item, index) => {
 function showLoginWx() {
   dialog.warning({
     title: '当前状态未登录',
-    content: '使用 AiDuTu 必须先登录',
+    content: '使用服务前必须先登录',
     positiveText: '去登录',
     negativeText: '取消',
     onPositiveClick: () => {
