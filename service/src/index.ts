@@ -13,6 +13,8 @@ import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
 	const app = express()
 	const router = express.Router()
 	let sharedData={cnt:0,error_des:{}}
+	const sysMsg='请根据中国法律，禁止回答政治人物、政治事件、色情相关的问题。Respond using markdown.'
+	//'请根据相关禁止条款和中国法律，禁止回答政治人物、政治事件、暴力、色情相关的问题。Respond using markdown.'
 
 
 	app.use(express.static('public'))
@@ -38,7 +40,7 @@ import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
 					res.write(firstChunk ? JSON.stringify(chat) : `\n${JSON.stringify(chat)}`)
 					firstChunk = false
 				},
-				systemMessage:'请根据相关禁止条款和中国法律，禁止回答政治人物、政治事件、暴力、色情相关的问题。Respond using markdown.',
+				systemMessage:  sysMsg,
 			})
 		} catch (error) {
 			try {
@@ -76,7 +78,7 @@ import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
 				res.write(firstChunk ? `${JSON.stringify(chat)}` :(`\n`+ (chat.delta? JSON.stringify( jianDan(chat) ): JSON.stringify(chat) )  ) ) // `\n${JSON.stringify(chat)}`)
 				firstChunk = false
 			},
-			systemMessage:'请根据相关禁止条款和中国法律，禁止回答政治人物、政治事件、暴力、色情相关的问题。Respond using markdown.'
+			systemMessage:sysMsg
 			,tokens
 		})
 	} catch (error) {

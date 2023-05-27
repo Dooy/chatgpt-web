@@ -57,3 +57,9 @@ pointer-events: none;
 z-index: 200;
 }
 </style>
+<style>
+.dark .fls{
+    color: #fff;
+    opacity: 0.2;
+}
+</style>
