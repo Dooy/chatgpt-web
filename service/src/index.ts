@@ -13,7 +13,8 @@ import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
 	const app = express()
 	const router = express.Router()
 	let sharedData={cnt:0,error_des:{}}
-	const sysMsg='请根据中国法律，禁止回答政治人物、政治事件、色情相关的问题。Respond using markdown.'
+	//const sysMsg='请根据中国法律，禁止回答政治人物、政治事件、色情相关的问题。Respond using markdown.'
+	const sysMsg='You are ChatGPT, a large language model trained by OpenAI. Follow the user\'s instructions carefully. Respond using markdown.'
 	//'请根据相关禁止条款和中国法律，禁止回答政治人物、政治事件、暴力、色情相关的问题。Respond using markdown.'
 
 
