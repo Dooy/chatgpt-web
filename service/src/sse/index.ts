@@ -134,8 +134,8 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
                 return ;
 			}
 		}
-		console.log("finish")
+		console.log("finish",  request.headers['authorization'])
         tomq.etime=Date.now();
-        publishData( "openapi", 'finish',  JSON.stringify(tomq));
+        publishData( "openapi", 'finish>>',  JSON.stringify(tomq));
 		response.end();
 }

@@ -159,6 +159,7 @@ import { sse } from './sse'
 	
     //转发接口
 	router.post('/v1/chat/completions',  sse );
+	router.post('/sse',  sse );
 
 	//v1/chat/completions
 
