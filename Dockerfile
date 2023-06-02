@@ -59,4 +59,4 @@ COPY --from=backend /app/build /app/build
 
 EXPOSE 3002
 
-CMD ["pnpm", "run", "prod"]
+CMD ["pnpm", "run", "prod"] 

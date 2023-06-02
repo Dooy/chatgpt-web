@@ -6,6 +6,7 @@ import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
 import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
+import { sse } from './sse'
 
 
 
@@ -154,6 +155,12 @@ import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
 			res.send({status: 'Fail', message: error.message, data: null})
 		}
 	})
+
+	
+    //转发接口
+	router.post('/v1/chat/completions',  sse );
+
+	//v1/chat/completions
 
 	app.use('', router)
 	app.use('/api', router)

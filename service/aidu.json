@@ -1,0 +1,8 @@
+{
+  "cnt": 2,
+  "error_des": {
+    "message": "ChatGPT error 429: {\n    \"error\": {\n        \"message\": \"You exceeded your current quota, please check your plan and billing details.\",\n        \"type\": \"insufficient_quota\",\n        \"param\": null,\n        \"code\": null\n    }\n}\n",
+    "data": null,
+    "status": "Fail"
+  }
+}
