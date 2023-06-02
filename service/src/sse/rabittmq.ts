@@ -1,4 +1,4 @@
-import Connection, { Channel } from 'rabbitmq-client'
+ import { Channel,Connection } from 'rabbitmq-client'
 let  rabbit:Connection, ch:Channel;
 async function createRabbitMQChannel() {
     rabbit = createRabbitMQ();
