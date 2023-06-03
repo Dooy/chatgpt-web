@@ -24,11 +24,11 @@ x-uri 要转发的路径 可以转由NGINX 过来
 ```
 docker rm -f sse3064
 docker run --name sse3064 -d -p 3064:3002  --restart=always \
- --env OPENAI_API_KEY=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  \
+ --env OPENAI_API_KEY=hk-wXiL2SMN4D7GBqFhBsYdT3BlbkFJhwEHGXbU5RzCM8dS3lrn  \
  --env TIMEOUT_MS=60000 -e SSE_API_BASE_URL=http://43.154.202.174:6008 \
 -e SSE_REDIS_URL=redis://172.17.0.1:6379 \
--e SSE_MQ_SERVER=amqp://mj:mj2023@www.aidutu.cn:5672 \
+-e SSE_MQ_SERVER=amqp://mj:mj2023@172.17.0.1:5672 \
 -e SSE_HTTP_SERVER=https://www.aidutu.cn \
-ydlhero/chatui:sse64 
+ydlhero/chatui:sse65
 
 ```

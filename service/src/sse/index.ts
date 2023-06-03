@@ -7,7 +7,7 @@ import { createRedis } from './redis';
 import { publishData } from './rabittmq';
 import fetch from 'node-fetch';
 import { RedisClientType } from 'redis';
-import { mError } from './utils';
+import { generateRandomCode, mError } from './utils';
 
 
 async function getMyKey(authorization:string,body:any):Promise<string> {
@@ -75,7 +75,7 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
 		
 		
 		let isGo=false;
-		const clientId = Date.now();
+		const clientId =  generateRandomCode(16);
 		const newClient = {
 			id: clientId,response
 		};
@@ -84,7 +84,7 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
 			//clients = clients.filter(client => client.id !== clientId);
 		});
 
-		let tomq={header: request.headers,request:request.body,response:'',status:200,myKey:'', stime:Date.now(),etime:0 }
+		let tomq={header: request.headers,request:request.body,response:'',reqid: clientId ,status:200,myKey:'', stime:Date.now(),etime:0 }
         let endStr = null;
 		//console.log( 'request.headers',  request.headers );
 		//console.log( 'request.body',  request.body );
@@ -136,6 +136,6 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
 		}
 		console.log("finish",  request.headers['authorization'])
         tomq.etime=Date.now();
-        publishData( "openapi", 'finish>>',  JSON.stringify(tomq));
+        publishData( "openapi", 'finish',  JSON.stringify(tomq));
 		response.end();
 }

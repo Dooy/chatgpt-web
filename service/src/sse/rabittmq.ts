@@ -23,6 +23,7 @@ function createRabbitMQ(){
 export async function publishData( exchange:string,routingKey:string, data:string) {
     await createRabbitMQChannel();
     //await ch.queueDeclare({queue , exclusive: true}) 
+    console.log('publishData>>',exchange,routingKey )
     await ch.basicPublish({routingKey,exchange}, data) 
     await closeMq();
 }
