@@ -90,10 +90,12 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
 		//console.log( 'request.body',  request.body );
 		const url= isNotEmptyString( process.env.SSE_API_BASE_URL)? process.env.SSE_API_BASE_URL: 'https://api.openai.com';
 		const uri= request.headers['x-uri']??'/v1/chat/completions'
+       
 		try{
             const mykey=await getMyKey( request.headers['authorization'], request.body);
             tomq.myKey=mykey.key ;
             tomq.user= mykey.user;
+             console.log('请求>>', uri,  mykey.user?.uid, mykey.user?.fen,tomq.myKey );
 		    await fetchSSE( url+uri,{
                 method: 'POST',
                 headers:{
