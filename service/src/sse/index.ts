@@ -10,7 +10,7 @@ import { RedisClientType } from 'redis';
 import { generateRandomCode, mError } from './utils';
 
 
-async function getMyKey(authorization:string,body:any):Promise<string> {
+async function getMyKey(authorization:string,body:any):Promise<any> {
     //if(authorization)
     const arr = authorization.split('-');
 
@@ -44,7 +44,7 @@ async function getMyKey(authorization:string,body:any):Promise<string> {
     //console.log('test redis>>',  mvar , body.model ,await getKeyFromPool(redis,+mvar.uid,body.model) );
     //await redis.set('abc','time:'+ Date.now() );
     redis.disconnect();
-    return 'Bearer '+poolkey;
+    return {key:'Bearer '+poolkey, user:mvar };
 }
 async function getKeyFromPool(redis:RedisClientType, uid:number, model:string,oldkey?:string):Promise<string> {
     let key='pool:3k';
@@ -84,7 +84,7 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
 			//clients = clients.filter(client => client.id !== clientId);
 		});
 
-		let tomq={header: request.headers,request:request.body,response:'',reqid: clientId ,status:200,myKey:'', stime:Date.now(),etime:0 }
+		let tomq={header: request.headers,request:request.body,response:'',reqid: clientId ,status:200,myKey:'', stime:Date.now(),etime:0,user:{} }
         let endStr = null;
 		//console.log( 'request.headers',  request.headers );
 		//console.log( 'request.body',  request.body );
@@ -92,12 +92,13 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
 		const uri= request.headers['x-uri']??'/v1/chat/completions'
 		try{
             const mykey=await getMyKey( request.headers['authorization'], request.body);
-            tomq.myKey=mykey;
+            tomq.myKey=mykey.key ;
+            tomq.user= mykey.user;
 		    await fetchSSE( url+uri,{
                 method: 'POST',
                 headers:{
                 'Content-Type': 'application/json',
-                Authorization: mykey
+                Authorization:  tomq.myKey
 		},
 			onMessage(data) {
 				if(!isGo) response.writeHead(200, headers);

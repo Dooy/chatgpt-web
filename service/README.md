@@ -32,3 +32,7 @@ docker run --name sse3064 -d -p 3064:3002  --restart=always \
 ydlhero/chatui:sse65
 
 ```
+
+## 消费 
+
+> https://github.com/Dooy/midjourney-discord/tree/main/mq-consumer
