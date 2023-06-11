@@ -22,6 +22,7 @@ interface Props {
 	completion_tokens?:number
   model?:string
   chat?:Chat.Chat
+  index?:number
 }
 
 interface Emit {
@@ -99,7 +100,8 @@ function copy(){
  
 function sent( a:any ){
   //emits('imageSend', argv)
-  emit('imageSend', a  )
+  a.index=props.index;
+  emit('imageSend', a   )
 }
 const st = ref({is:false});
 </script>
@@ -121,7 +123,7 @@ const st = ref({is:false});
       <p class="text-xs text-[#b4bbc4]" :class="[inversion ? 'text-right' : 'text-left']">
 				<span v-if="inversion" style="cursor: pointer" @click="copy()">复制 </span>
         {{ dateTime }}
-				<span v-if="!inversion" style="cursor: pointer" @click="copy()"> 复制</span>
+				<!-- <span v-if="!inversion" style="cursor: pointer" @click="copy()"> 复制</span> -->
 
 					<n-tooltip trigger="hover" v-if="!inversion  &&model=='GPT4.0' && ((prompt_tokens??0)+(completion_tokens??0))>0 " >
 						<template #trigger>

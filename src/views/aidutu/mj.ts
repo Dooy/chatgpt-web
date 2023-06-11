@@ -26,7 +26,14 @@ export function mjDraw(uuid:number,index:number,chat:Chat.Chat )
                 if( process ==100){
                     chat.dateTime=  new Date().toLocaleString();
                     chat.uri=mj.uri;
-                    chat.text=`完成![完成](${chat.uri})`;
+                    chat.text= mj.content ;
+                    chat.loading= false ; 
+                    updateChat( +uuid, index,   chat   );
+                    h(1)
+                }else if( process ==-100){
+                    chat.dateTime=  new Date().toLocaleString();
+                    chat.uri=mj.uri;
+                    chat.text= '-100';
                     chat.loading= false ; 
                     updateChat( +uuid, index,   chat   );
                     h(1)
@@ -42,8 +49,10 @@ export function mjDraw(uuid:number,index:number,chat:Chat.Chat )
                             loading: true,
                             conversationOptions: chat.conversationOptions,
                             requestOptions:  chat.requestOptions,
+                            mj_id:chat.mj_id 
                         })
                     }
+                   
                     // chat.dateTime=  new Date().toLocaleString()
                     // chat.text=`进度...${mj.progress}%`
                     // chat.loading= true ;

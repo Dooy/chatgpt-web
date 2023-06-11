@@ -1,5 +1,5 @@
-<script lang="ts" setup>
-import { computed, onMounted, onUnmounted, onUpdated, ref } from 'vue'
+<script lang="ts" setup >
+import { computed, onMounted, onUnmounted, onUpdated, ref,watch } from 'vue'
 import MarkdownIt from 'markdown-it'
 import mdKatex from '@traptitech/markdown-it-katex'
 import mila from 'markdown-it-link-attributes'
@@ -57,6 +57,7 @@ const wrapClass = computed(() => {
 
 const text = computed(() => {
   const value = props.text ?? ''
+
   if (!props.asRawText)
     return mdi.render(value)
   return value
@@ -116,8 +117,31 @@ onUnmounted(() => {
   removeCopyEvents()
 })
 
-const st = ref( {fg:[1,2,3,4],big:[1,2,3,4] })
-const emits = defineEmits(['imageSend'])
+const st = ref( {fg:[1,2,3,4],big:[1,2,3,4] ,isLoadImg:true})
+const emits = defineEmits(['imageSend'  ])
+
+function loadImage(){
+  //chat.uri+'?imageMogr2/format/webp'
+  if( props.chat?.uri){
+    const img = new Image();
+    img.onload=()=>{
+      st.value.isLoadImg=false;
+      emits('imageSend', {t:'loadImage',chat :props.chat})
+    }
+    img.src =  props.chat.uri+'?imageMogr2/format/webp';
+  }else{
+    // st.value.isLoadImg=false;
+  }
+}
+loadImage()
+
+
+//const chatUri = computed(() =>  props.chat?.uri );
+watch(() =>  props.text, (newValue, oldValue) => {
+      //console.log('props updated!', newValue, oldValue)
+      loadImage()
+      emits('imageSend', {t:'loadImage',chat :props.chat})
+},{ deep: true})
 </script>
 
 <template>
@@ -126,9 +150,16 @@ const emits = defineEmits(['imageSend'])
     <div ref="textRef" class="leading-relaxed break-words">
       <div v-if="!inversion" class="flex items-end">
         <div v-if="chat?.uri" class="w-full markdown-body"  >
-          <div style="position: relative;">
-            <img :src="chat.uri" style="max-width: 600px;max-height: 600px;"> 
-            <div style="position: absolute;bottom: 10px;right: 20px;;"><n-button   type="primary"   size="small" ><a :href="chat?.uri" target="_blank" style="color: #333;">查看</a></n-button></div>
+          <div v-text="props.text"></div>
+          <div v-if="st.isLoadImg" style="text-align: center; padding: 60px 20px;">
+            <div  @click="loadImage">正在载入图片...</div> 
+            <div  style="margin-top: 10px;text-align: center;"><n-button   type="primary"   size="small" ><a :href="chat?.uri+'?imageMogr2/format/webp'" target="_blank" style="color: #333;">查看原图</a></n-button></div> 
+          </div>
+          <div style="position: relative; margin-top: 15px; " v-else>
+            <a :href="chat?.uri+'?imageMogr2/format/webp'" target="_blank" >
+              <img :src="chat.uri+'?imageMogr2/format/webp'" :class="{'maxCss':!isMobile}" style="border-radius: 3px;"> 
+            </a>
+            <!-- <div style="position: absolute;bottom: 10px;right: 20px;;"><n-button   type="primary"   size="small" ><a :href="chat?.uri+'?imageMogr2/format/webp'" target="_blank" style="color: #333;">查看</a></n-button></div> -->
           </div>
           <template v-if="chat?.mj_type!='U'">
             <div style="padding: 10px 0 0 0px;" >
@@ -150,8 +181,19 @@ const emits = defineEmits(['imageSend'])
           </template>
         </div>
         <template v-else> 
-        <div v-if="!asRawText" class="w-full markdown-body" v-html="guolv(text)" />
-        <div v-else class="w-full whitespace-pre-wrap" v-text="text" />
+          <template  v-if="!asRawText" >
+            <div v-if="!loading" class="w-full markdown-body" >
+              <div v-if="props.text=='-100'">
+                发生错误！请重新生成！
+              </div>
+              <div v-else style=" padding: 20px; text-align: center;width: 200px;">
+                <div style="width: 100%; margin-bottom: 20px;">未存储图片，请重新获取</div>
+                <div style="width: 100%;"><n-button type="warning"  @click="emits('imageSend', {t:'reload',chat})">重新获取图片</n-button></div>
+              </div>
+            </div>
+            <div class="w-full markdown-body" v-html="guolv(text)" v-else />
+          </template>
+          <div v-else class="w-full whitespace-pre-wrap" v-text="text" />
         </template>
 
         <span v-if="loading" class="dark:text-white w-[4px] h-[20px] block animate-blink" />
@@ -163,4 +205,5 @@ const emits = defineEmits(['imageSend'])
 
 <style lang="less">
 @import url(./style.less);
+.markdown-body img.maxCss{ max-width: 400px;}
 </style>

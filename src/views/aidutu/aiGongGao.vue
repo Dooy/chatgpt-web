@@ -64,6 +64,6 @@ z-index: 200;
 <style>
 .dark .fls{
     color: #fff;
-    opacity: 0.2;
+    opacity: 0.09;
 }
 </style>

@@ -111,6 +111,50 @@ export function ajax({ url="",method='GET',data={}}): Promise<Response<any>> {
 	});
 }
 
+export function myTranslate(str:string, system?:string){
+  //my/translate
+  const service = axios.create({
+		headers: {'Content-Type':'application/json','Accept':'application/json'},
+		withCredentials: true,
+		baseURL: '/',
+		timeout: 300000 // request timeout
+	});
+	
+  const url = '/my/translate',method='POST'
+  //const system ="Translate into English in any language, No explanation required"
+  const st = system??"Translate into English in any language, No explanation required"
+  let data= {
+    "max_tokens": 1200,
+    "model": "gpt-3.5-turbo",
+    "temperature": 1,
+    "top_p": 1,
+    "presence_penalty": 1,
+    "messages": [
+        {
+            "role": "system",
+            "content": st
+        }, 
+        {
+            "role": "user",
+            "content": str
+        }
+    ]
+};
+	return new Promise<Response<any>>((h,r)=>{
+		service.request({url,method,data:JSON.stringify( data) }).then(d=>{
+    //h(d.data)
+    //choices[0].message.content
+    if(d.data?.choices[0]?.message?.content ){
+     h(  d.data?.choices[0]?.message)
+    }
+    else{
+      console.log( d.data );
+      r('发生错误' )
+    } 
+  }).catch(e=>r(e));
+	});
+}
+
 export function countTokens(data:any){
   //{prompt_tokens:number, completion_tokens:number,id:string }
   return ajax({url:'/chatgpt/gpt4/tokens',method:'POST',data })

@@ -57,6 +57,11 @@ export default defineConfig((env) => {
           changeOrigin: true, // 允许跨域
           rewrite: path => path.replace('/api/', '/'),
         },
+        '/my/translate': {
+					target: viteEnv.VITE_CG_API_BASE_URL,
+					changeOrigin: true, // 允许跨域
+					//rewrite: path => path.replace('/api/cg', '/'),
+				},
 
       },
     },

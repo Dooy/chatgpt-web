@@ -25,6 +25,7 @@ import AiOpenVip from '@/views/aidutu/aiOpenVip.vue'
 import { copyText3 } from '@/utils/format'
 import { useIconRender } from '@/hooks/useIconRender'
 import { mjDraw } from '../aidutu/mj'
+import AiMj from '../aidutu/aiMj.vue'
 //import AiModel from '@/views/aidutu/aiModel.vue' 
 
 let controller = new AbortController()
@@ -112,6 +113,7 @@ function getToken(str: string, func = (dd:any) => {},opt?:any) {
   }
   const data={'model':userInfo.value.model,tokens:userInfo.value.tokens,usingContext:usingContext.value
     ,completion_tokens:currentChat?.completion_tokens,prompt_tokens:currentChat?.prompt_tokens,opt
+    ,drawText:mjConfig.value.drawText
      };
    
   fetchUser(str, userInfo.value.isVip, data ).then((d: any) => {
@@ -778,10 +780,35 @@ function handleSelect(key: 'handleExport' | 'handleClear' | 'toggleUsingContext'
   }
 }
 
-function imageSend(a:any ){
+async function imageSend(a:any  ){
   //console.log('imageSend>>', a );
   if (loading.value)  return
-  getToken('', onConversation, {t:a.t,v:a.v,mj_id:a.chat.mj_id})
+  if( a.t=='reload' ){
+     console.log( '从新载入'  ,a.index,  a.chat );
+     loading.value =true;
+     a.chat.loading =true;
+     await mjDraw(+uuid, a.index , a.chat);
+     scrollToBottom()
+      loading.value =false;
+  }
+  else if('loadImage'== a.t ){
+     //console.log('loadImage>>', a.index  );
+     scrollToBottom();
+     setTimeout( ()=>scrollToBottom() , 1000);
+  }
+  else getToken('', onConversation, {t:a.t,v:a.v,mj_id:a.chat.mj_id})
+}
+
+const mjConfig= ref({isClose:false,drawText:''});
+function mjClose(){
+  console.log('close') 
+  mjConfig.value.isClose=true;
+}
+function drawSent(e:any){
+  console.log('drawSent', e ) 
+  prompt.value=e.prompt;
+  mjConfig.value.drawText=e.drawText;
+  handleSubmit();
 }
 </script>
 
@@ -813,7 +840,7 @@ function imageSend(a:any ){
           :class="[isMobile ? 'p-2' : 'p-4']"
         >
           <template v-if="!dataSources.length">
-            <AiFirst @go="go" />
+            <AiFirst @go="go"  />
           </template>
           <template v-else>
             <NModal v-model:show="isOpenVip" style=" width: 550px;" preset="card" title="会员充值续费" :on-after-enter="vipClose">
@@ -832,12 +859,15 @@ function imageSend(a:any ){
                 :prompt_tokens="item.prompt_tokens"
                 :model="item.model"
                 :chat="item"
+                :index="index"
                 @regenerate="onRegenerateD(index)"
                 @delete="handleDelete(index)"
                 @image-send="imageSend"
               />
 
-              <div class="sticky bottom-0 left-0 flex justify-center">
+              
+              <div class="sticky bottom-0 left-0 flex justify-center" style="display: none;">
+              
                 <NButton v-if="loading" type="warning" @click="handleStop">
                   <template #icon>
                     <SvgIcon icon="ri:stop-circle-line" />
@@ -854,7 +884,10 @@ function imageSend(a:any ){
       </div>
     </main>
     <footer :class="footerClass">
-      <div class="w-full max-w-screen-xl m-auto">
+      <div class="w-full max-w-screen-xl m-auto" v-if="!mjConfig.isClose">
+          <AiMj @close="mjClose" @drawSent="drawSent" :button-disabled="loading"/> 
+      </div>
+      <div class="w-full max-w-screen-xl m-auto"  v-else>
         <!-- <AiModel v-if="userInfo.isVip"/> -->
         <div class="flex items-center justify-between space-x-2">
           <NDropdown
@@ -868,24 +901,13 @@ function imageSend(a:any ){
             </HoverButton>
           </NDropdown>
 
-          <!--
-          <HoverButton @click="handleClear">
-            <span class="text-xl text-[#4f555e] dark:text-white">
-              <SvgIcon icon="ri:delete-bin-line" />
-            </span>
-          </HoverButton>
-
-          <HoverButton v-if="!isMobile" @click="handleExport">
-            <span class="text-xl text-[#4f555e] dark:text-white">
-              <SvgIcon icon="ri:download-2-line" />
-            </span>
-          </HoverButton>
-          -->
+          
           <HoverButton v-if="!isMobile" @click="toggleUsingContext">
             <span class="text-xl" :class="{ 'text-[#4b9e5f]': usingContext, 'text-[#a8071a]': !usingContext }">
               <SvgIcon icon="ri:chat-history-line" />
             </span>
           </HoverButton>
+
           <NAutoComplete v-model:value="prompt" :options="searchOptions" :render-label="renderOption">
             <template #default="{ handleInput, handleBlur, handleFocus }">
               <NInput
