@@ -1,5 +1,5 @@
 <script   setup lang='ts'>
-import { NDivider ,NInput,NButton,NTabs,NTabPane} from 'naive-ui'
+import { NDivider ,NInput,NButton,NTabs,NTabPane,NSpace,NTag,NModal} from 'naive-ui'
 import {  ref , computed} from 'vue'
 import {  SvgIcon } from '@/components/common'
 import AiMsg from '@/views/aidutu/aiMsg.vue' 
@@ -24,9 +24,16 @@ const st= ref({
     , {t:'山水画',v:' Tradition Chinese Ink Painting '}
     , {t:'二次元',v:'ACGN'}
     ]
+    ,example:[
+        {n:'示例:icon包',e:'Vintage microphon Vector icon pack , 16 syle per pack ,hi-tech ,Minimal style, 3D minimal ,Them black --s 250 --v 5.1 --style raw',z:'复古micropon Vector图标包，每包16 syle，高科技，简约风格，3D简约，黑色'}
+        ,{n:'示例:游戏图',e:'RPG game, pixel style, an island, a village, trees, lake, river. --s 750 --v 5 ',z:'RPG游戏，像素风格，一个岛，一个村庄，树木，湖泊，河流。'}
+        ,{n:'示例:室内设计',e:'Imagine an industrial-style, minimalist reinforced concrete country house in an area of 7 meters wide by 14 meters long. A double height room with a chester style brown leather sofa, a golden rug and a floor lamp ',z:'想象一下，在7米宽*14米长的地区，一座工业风格的、极简主义的钢筋混凝土乡间别墅。一个有两个高度的房间，里面有一张切斯特风格的棕色皮革沙发、一块金色地毯和一盏地灯'}
+    ]
     ,styleKey:-1
-    ,text:'漂亮女孩头像'
+    ,text:''
     ,isLoad:false
+    ,show:false
+    ,exampleKey:0
 })
 const msgRef = ref()
 const $emit=defineEmits(['drawSent','close']);
@@ -37,6 +44,7 @@ function create( ){
     const ps = createPrompt(st.value.text.trim());
     const rz={ prompt: ps, drawText: ps }
     if( rz.prompt  ) $emit('drawSent', rz )
+    st.value.text=''
 }
 function createPrompt(rz:string){
     if( rz =='') {
@@ -76,6 +84,7 @@ async function train(){
     const ps = createPrompt( abd );
     const rz={ prompt:  st.value.text.trim() , drawText: ps }
     if( rz.prompt  ) $emit('drawSent', rz )
+    st.value.text=''
    
    
 }
@@ -91,18 +100,44 @@ function loadConfig(){
   } )
 }
 loadConfig();
-    
+
+function example(k:number){
+    //console.log('example>> ', e );
+    st.value.show = true;
+    st.value.exampleKey=k ;
+} 
+function exampleGo( ){
+    st.value.show = false;
+    const obj= st.value.example[st.value.exampleKey]
+    const rz={ prompt:  obj.z  , drawText: obj.e }
+    $emit('drawSent', rz )
+}  
 </script>
 <template>
 <AiMsg ref="msgRef" />
-<div> 
+<NModal v-model:show="st.show" :auto-focus="false" preset="card" :title="st.example[st.exampleKey].n" style="width: 95%; max-width: 540px">
+    <div class="space-y-6">
+        <div v-html="st.example[st.exampleKey].z"></div>
+        <div  style="font-size: 12px;border-bottom: 1px solid #dddddd15;height: 2px;line-height: 0;padding: 0;margin: 10px 0 0 0;"></div>
+        <div v-html="st.example[st.exampleKey].e" style="margin-top: 10px;"></div>
+        <div style="text-align: right;;">
+            <n-button type="primary"    @click="exampleGo()">示例会扣除一次额度，我很确定去绘图</n-button>
+        </div>
+    </div>
+</NModal>
+<div style="position: relative;;"> 
   <!-- <n-form  ref="formRef"    :label-width="180"     size="small" >
   </n-form> -->
-   <n-divider title-placement="left" style="cursor: pointer;" @click="$emit('close')">
+   <n-divider title-placement="left" style="cursor: pointer;"  >
    绘画描述
    <!-- -收起 <span><SvgIcon icon="fluent-mdl2:drill-expand" /></span> -->
    </n-divider>
-   <n-input    type="textarea"  v-model:value="st.text"   placeholder="请输入生成图片的提示词" round clearable maxlength="500" show-count 
+   <div style="position: absolute; right: 0px; top:20px; z-index: 10;">
+   <n-space>
+    <n-tag type="success" round size="small" :bordered="false" v-for="(v,k) in st.example" :key="k" v-text="v.n" @click="example(k )"></n-tag>
+   </n-space>
+   </div>
+   <n-input    type="textarea"  v-model:value="st.text"   placeholder="提示词 推荐:【画面场景】+【镜头视角】+【风格参考】+【渲染方式】, 关键词之间用“,”隔开" round clearable maxlength="500" show-count 
       :autosize="{   minRows:3 }" />
 
     <n-tabs  type="line" size="small">
@@ -125,6 +160,9 @@ loadConfig();
       </n-tabs> 
     
     <div style="display: flex;">
+         <div style=" padding: 10px;">
+         <n-button type="primary" :block="true" :disabled="isDisabled"  @click="create()"><SvgIcon icon="mingcute:send-plane-fill" /> 直接生成图片</n-button>
+        </div>
         <div style="flex: 1; padding:  10px ;">
         <n-button type="primary" :block="true" :disabled="isDisabled"  @click="train()">
         <SvgIcon icon="ri:translate" /> 
@@ -133,9 +171,7 @@ loadConfig();
         
         </n-button>
         </div>
-        <div style=" padding: 10px;">
-         <n-button type="primary" :block="true" :disabled="isDisabled"  @click="create()"><SvgIcon icon="mingcute:send-plane-fill" /> 直接生成图片</n-button>
-        </div>
+       
     </div>
 
 </div>

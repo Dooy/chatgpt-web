@@ -90,8 +90,9 @@ const checkCz = () => {
 
 }
 
-const active= ref(   userStore.userInfo.model )
-watch( active ,initStart)
+//const active= ref(   userStore.userInfo.model )
+//watch( active ,initStart)
+const active = ref('GPT3.5')
 </script>
 
 
@@ -103,13 +104,14 @@ watch( active ,initStart)
             <span class="ml-2">会员</span>
           </template>
           <div class="min-h-[100px]">
-				<div v-if="uvip.isOver<=-1">
+
+				<!-- <div v-if="uvip.isOver<=-1">
 					你未开通会员  (UID:{{uvip.user_id}})
 				</div>
 				<template v-else-if="uvip.dsEnd">
 				<div v-if="uvip.isOver">你的会员已到期 (UID:{{uvip.user_id}})</div>
 					<div v-else>你的会员不足<b>{{uvip.dsTs}}</b>, 将在 <b >{{uvip.dsEnd}}</b> 到期  (UID:{{uvip.user_id}})</div>
-				</template>
+				</template> -->
 				<div  v-html="info.msg"></div>
 
 
@@ -122,7 +124,7 @@ watch( active ,initStart)
           </div>
         </NTabPane>
 
-		<NTabPane name="GPT4.0" tab="GPT4.0">
+		<!-- <NTabPane name="GPT4.0" tab="GPT4.0">
           <template #tab>
             <SvgIcon class="text-lg" icon="ic:outline-token" />
             <span class="ml-2">GPT4.0(Tokens)</span>
@@ -138,7 +140,7 @@ watch( active ,initStart)
 				<div v-else>Loading....</div>
 
 		  </div>
-		</NTabPane>
+		</NTabPane> -->
 	</NTabs>
 	
 
