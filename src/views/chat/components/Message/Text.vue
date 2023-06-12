@@ -147,7 +147,7 @@ watch(() =>  props.text, (newValue, oldValue) => {
 <template>
 	<ai-msg ref="childRef"></ai-msg>
   <div class="text-black" :class="wrapClass">
-    <div ref="textRef" class="leading-relaxed break-words">
+    <div ref="textRef" class="leading-relaxed break-words" :class="{'mmWidth':!isMobile}">
       <div v-if="!inversion" class="flex items-end">
         <div v-if="chat?.uri" class="w-full markdown-body"  >
           <div v-text="props.text"></div>
@@ -206,4 +206,5 @@ watch(() =>  props.text, (newValue, oldValue) => {
 <style lang="less">
 @import url(./style.less);
 .markdown-body img.maxCss{ max-width: 400px;}
+.mmWidth{ max-width: 600px;}
 </style>

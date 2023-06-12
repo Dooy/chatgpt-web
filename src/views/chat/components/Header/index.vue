@@ -71,7 +71,8 @@ const userInfo = computed(() => userStore.userInfo)
         {{ currentChatHistory?.title ?? '' }}
       </h1>
       <div class="flex items-center space-x-2">
-        <HoverButton @click="toggleUsingContext">
+
+        <!-- <HoverButton @click="toggleUsingContext">
           <span class="text-xl" :class="{ 'text-[#4b9e5f]': usingContext, 'text-[#a8071a]': !usingContext }">
             <SvgIcon icon="ri:chat-history-line" />
           </span>
@@ -80,9 +81,10 @@ const userInfo = computed(() => userStore.userInfo)
           <span class="text-xl text-[#4f555e] dark:text-white">
             <SvgIcon icon="ri:download-2-line" />
           </span>
-        </HoverButton>
+        </HoverButton> -->
+
 				<HoverButton @click="goCz" v-if="userInfo.isVip">
-				<span class="text-xl text-[#f0a020] dark:text-white" style="font-size: 16px;font-weight: 600">
+				<span class="text-xl text-[#f0a020] dark:text-red" style="font-size: 16px;font-weight: 600">
             充值
 				</span>
 				</HoverButton>

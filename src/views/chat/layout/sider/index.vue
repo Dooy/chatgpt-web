@@ -70,7 +70,7 @@ const { uuid } = route.params as { uuid: string }
 const dataSources = computed(() => chatStore.getChatByUuid(+uuid))
 onMounted(()=>{
 	const len= dataSources.value.length;
-	if(len>100) handleAdd() //进来先新建主题
+	if(len>5) handleAdd() //进来先新建主题
 })
 
 </script>

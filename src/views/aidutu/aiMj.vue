@@ -129,12 +129,12 @@ function exampleGo( ){
   <!-- <n-form  ref="formRef"    :label-width="180"     size="small" >
   </n-form> -->
    <n-divider title-placement="left" style="cursor: pointer;"  >
-   绘画描述
+   <span class="gradient-text">绘画描述</span>
    <!-- -收起 <span><SvgIcon icon="fluent-mdl2:drill-expand" /></span> -->
    </n-divider>
    <div style="position: absolute; right: 0px; top:20px; z-index: 10;">
    <n-space>
-    <n-tag type="success" round size="small" :bordered="false" v-for="(v,k) in st.example" :key="k" v-text="v.n" @click="example(k )"></n-tag>
+    <n-tag type="success" round size="small" style="cursor: pointer;" :bordered="false" v-for="(v,k) in st.example" :key="k" v-text="v.n" @click="example(k )"></n-tag>
    </n-space>
    </div>
    <n-input    type="textarea"  v-model:value="st.text"   placeholder="提示词 推荐:【画面场景】+【镜头视角】+【风格参考】+【渲染方式】, 关键词之间用“,”隔开" round clearable maxlength="500" show-count 
@@ -199,4 +199,14 @@ function exampleGo( ){
     }
     .mitem.m2{justify-content: center; }
     .mimg{ width :24px ; margin-left: 2px;}
+   
+</style>
+<style>
+ body .gradient-text{
+    background: rgba(0,0,0,0) linear-gradient(235deg, #ff4800 0%, #da54d8 51%, #0092f4 100%) 0% 0% no-repeat padding-box;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: rgba(0,0,0,0);
+
+    }
 </style>

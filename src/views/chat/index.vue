@@ -782,7 +782,15 @@ function handleSelect(key: 'handleExport' | 'handleClear' | 'toggleUsingContext'
 
 async function imageSend(a:any  ){
   //console.log('imageSend>>', a );
-  if (loading.value)  return
+  if(  a.t=='loadImage'){
+    scrollToBottom();
+    setTimeout( ()=>scrollToBottom() , 1000);
+    return ;
+  }
+  if (loading.value  ){
+    msgRef.value.showMsg('请稍后，当前还有任务未完成')
+    return
+  }
   if( a.t=='reload' ){
      console.log( '从新载入'  ,a.index,  a.chat );
      loading.value =true;
@@ -790,11 +798,6 @@ async function imageSend(a:any  ){
      await mjDraw(+uuid, a.index , a.chat);
      scrollToBottom()
       loading.value =false;
-  }
-  else if('loadImage'== a.t ){
-     //console.log('loadImage>>', a.index  );
-     scrollToBottom();
-     setTimeout( ()=>scrollToBottom() , 1000);
   }
   else getToken('', onConversation, {t:a.t,v:a.v,mj_id:a.chat.mj_id})
 }

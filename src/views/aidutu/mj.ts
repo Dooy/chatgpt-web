@@ -14,7 +14,7 @@ export function mjDraw(uuid:number,index:number,chat:Chat.Chat )
     updateChat( +uuid, index,   chat   );
     const url ='/chatgpt/mj/check/'+chat.mj_id 
     //return ajax({url:'/chatgpt/mj/info?v=1.7' })
-    
+    let cnt=0;
     return new Promise( h=>{
         //h(1)
         function check(){
@@ -51,13 +51,26 @@ export function mjDraw(uuid:number,index:number,chat:Chat.Chat )
                             requestOptions:  chat.requestOptions,
                             mj_id:chat.mj_id 
                         })
+                    }else if( cnt>500){
+                        updateChat( +uuid,  index,
+                        {
+                            dateTime: new Date().toLocaleString(),
+                            text:  `timeout`,
+                            inversion: false,
+                            error: false,
+                            loading: false,
+                            conversationOptions: chat.conversationOptions,
+                            requestOptions:  chat.requestOptions,
+                            mj_id:chat.mj_id 
+                        })
+                        return ;
                     }
                    
                     // chat.dateTime=  new Date().toLocaleString()
                     // chat.text=`进度...${mj.progress}%`
                     // chat.loading= true ;
                     // updateChat( +uuid, index,   chat   )
-                    
+                    cnt++;
                     setTimeout( check, 1500 );
                 }
              }).catch(()=>h(0) );
