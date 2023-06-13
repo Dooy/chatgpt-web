@@ -39,8 +39,17 @@ const msgRef = ref()
 const $emit=defineEmits(['drawSent','close']);
 const props = defineProps({buttonDisabled:Boolean});
 
+function containsChinese(str:string ) {
+  var reg = /[\u4e00-\u9fa5]/g; // 匹配中文的正则表达式
+  return reg.test(str);
+}
 function create( ){
    
+    //const q= 
+    if( containsChinese( st.value.text.trim()) ){
+        train();
+        return ;
+    }
     const ps = createPrompt(st.value.text.trim());
     const rz={ prompt: ps, drawText: ps }
     if( rz.prompt  ) $emit('drawSent', rz )
@@ -160,14 +169,15 @@ function exampleGo( ){
       </n-tabs> 
     
     <div style="display: flex;">
-         <div style=" padding: 10px;">
-         <n-button type="primary" :block="true" :disabled="isDisabled"  @click="create()"><SvgIcon icon="mingcute:send-plane-fill" /> 直接生成图片</n-button>
-        </div>
+         <!-- <div style=" padding: 10px;">
+         <n-button type="primary" :block="true" :disabled="isDisabled"  @click="create()">
+         <SvgIcon icon="ri:translate" /> 直接生成图片</n-button>
+        </div> -->
         <div style="flex: 1; padding:  10px ;">
-        <n-button type="primary" :block="true" :disabled="isDisabled"  @click="train()">
-        <SvgIcon icon="ri:translate" /> 
-        <template v-if="st.isLoad">翻译中...</template>
-        <template v-else>翻译后生成图片</template>
+        <n-button type="primary" :block="true" :disabled="isDisabled"  @click="create()">
+        <SvgIcon icon="mingcute:send-plane-fill" />  
+        <template v-if="st.isLoad"> 翻译中...</template>
+        <template v-else> 生成图片</template>
         
         </n-button>
         </div>
