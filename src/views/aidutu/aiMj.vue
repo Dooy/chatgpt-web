@@ -27,7 +27,7 @@ const st= ref({
     ,example:[
         {n:'示例:icon包',e:'Vintage microphon Vector icon pack , 16 syle per pack ,hi-tech ,Minimal style, 3D minimal ,Them black --s 250 --v 5.1 --style raw',z:'复古micropon Vector图标包，每包16 syle，高科技，简约风格，3D简约，黑色'}
         ,{n:'示例:游戏图',e:'RPG game, pixel style, an island, a village, trees, lake, river. --s 750 --v 5 ',z:'RPG游戏，像素风格，一个岛，一个村庄，树木，湖泊，河流。'}
-        ,{n:'示例:室内设计',e:'Imagine an industrial-style, minimalist reinforced concrete country house in an area of 7 meters wide by 14 meters long. A double height room with a chester style brown leather sofa, a golden rug and a floor lamp ',z:'想象一下，在7米宽*14米长的地区，一座工业风格的、极简主义的钢筋混凝土乡间别墅。一个有两个高度的房间，里面有一张切斯特风格的棕色皮革沙发、一块金色地毯和一盏地灯'}
+        //,{n:'示例:室内设计',e:'Any CAD design drawings',z:'任何CAD设计图纸'}
     ]
     ,styleKey:-1
     ,text:''
@@ -106,6 +106,7 @@ function loadConfig(){
   ajax({  url: '/chatgpt/mj/config' })
   .then((d) => {
     st.value.style= d.data.style
+    st.value.example= d.data.example
   } )
 }
 loadConfig();
