@@ -185,6 +185,7 @@ watch(() =>  props.text, (newValue, oldValue) => {
             <div v-if="!loading" class="w-full markdown-body" >
               <div v-if="props.text=='-100'">
                 发生错误！请重新生成！
+                <div v-if="chat?.error_des" style="margin-top: 10px;" >错误信息：{{chat?.error_des}}</div>
               </div>
               <div v-else style=" padding: 20px; text-align: center;width: 200px;">
                 <div style="width: 100%; margin-bottom: 20px;">未存储图片，请重新获取</div>

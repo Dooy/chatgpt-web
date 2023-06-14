@@ -35,6 +35,7 @@ export function mjDraw(uuid:number,index:number,chat:Chat.Chat )
                     chat.uri=mj.uri;
                     chat.text= '-100';
                     chat.loading= false ; 
+                    chat.error_des= mj.error_des ; 
                     updateChat( +uuid, index,   chat   );
                     h(1)
                 }else{

@@ -16,6 +16,7 @@ declare namespace Chat {
 		mj_opt?:any
 		uri?:string //图片地址
 		uri_base64?:string //图片本地base64
+		error_des?:string //错误信息
 	}
 
 	interface History {
