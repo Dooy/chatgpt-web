@@ -128,6 +128,10 @@ function loadImage(){
       st.value.isLoadImg=false;
       emits('imageSend', {t:'loadImage',chat :props.chat})
     }
+    img.onerror=()=>{
+      console.log("载入失败 最好从新载入");
+      loadImage();
+    }
     img.src =  props.chat.uri+'?imageMogr2/format/webp';
   }else{
     // st.value.isLoadImg=false;

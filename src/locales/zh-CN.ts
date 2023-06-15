@@ -28,7 +28,7 @@ export default {
     unauthorizedTips: '未经授权，请先进行验证。',
   },
   chat: {
-    newChatButton: '新建聊天',
+    newChatButton: '新建任务',
     placeholder: '粘贴或输入你想想都物体，如:  sketch Bird view mahiong   （Shift + Enter = 换行）',
     placeholderMobile: '来说点什么...',
     copy: '复制',

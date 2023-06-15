@@ -125,7 +125,7 @@ export function myTranslate(str:string, system?:string){
   const st = system??"Translate into English in any language, No explanation required"
   let data= {
     "max_tokens": 1200,
-    "model": "gpt-3.5-turbo",
+    "model": "gpt-3.5-turbo-0613",
     "temperature": 1,
     "top_p": 1,
     "presence_penalty": 1,

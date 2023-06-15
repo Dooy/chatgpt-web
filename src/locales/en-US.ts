@@ -28,7 +28,7 @@ export default {
     unauthorizedTips: 'Unauthorized, please verify first.',
   },
   chat: {
-    newChatButton: 'New Chat',
+    newChatButton: 'New Task',
     placeholder: 'Ask me anything...(Shift + Enter = line break, "/" to trigger prompts)',
     placeholderMobile: 'Ask me anything...',
     copy: 'Copy',
