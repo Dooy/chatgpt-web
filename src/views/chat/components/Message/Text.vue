@@ -9,7 +9,8 @@ import { t } from '@/locales'
 //import { copyText3} from '@/utils/format'
 import AiMsg from "@/views/aidutu/aiMsg.vue";
 import { copyToClip } from '@/utils/copy'
-import { NButtonGroup ,NButton, NSpace } from "naive-ui"
+import { NButtonGroup ,NButton, NSpace,NImage } from "naive-ui"
+import { getImg } from '@/views/aidutu/mj'
 
 interface Props {
   inversion?: boolean
@@ -117,7 +118,7 @@ onUnmounted(() => {
   removeCopyEvents()
 })
 
-const st = ref( {fg:[1,2,3,4],big:[1,2,3,4] ,isLoadImg:true})
+const st = ref( {fg:[1,2,3,4],big:[1,2,3,4] ,isLoadImg:true, uri_base64:''})
 const emits = defineEmits(['imageSend'  ])
 
 function loadImage(){
@@ -137,7 +138,16 @@ function loadImage(){
     // st.value.isLoadImg=false;
   }
 }
+
+ 
+async function loadLocalImg(){
+    if(!props.chat?.uri_base64) return ;
+    const obj = JSON.parse( await getImg( props.chat?.uri_base64) );
+    st.value.uri_base64 = obj.img ; 
+    //console.log("uri_base64",  st.value.uri_base64 ); 
+}
 loadImage()
+loadLocalImg();
 
 
 //const chatUri = computed(() =>  props.chat?.uri );
@@ -160,9 +170,9 @@ watch(() =>  props.text, (newValue, oldValue) => {
             <div  style="margin-top: 10px;text-align: center;"><n-button   type="primary"   size="small" ><a :href="chat?.uri+'?imageMogr2/format/webp'" target="_blank" style="color: #333;">查看原图</a></n-button></div> 
           </div>
           <div style="position: relative; margin-top: 15px; " v-else>
-            <a :href="chat?.uri+'?imageMogr2/format/webp'" target="_blank" >
-              <img :src="chat.uri+'?imageMogr2/format/webp'" :class="{'maxCss':!isMobile}" style="border-radius: 3px;"> 
-            </a>
+            <a :href="chat?.uri+'?imageMogr2/format/webp'" target="_blank" ></a>
+              <n-image :src="chat.uri+'?imageMogr2/format/webp'" :class="{'maxCss':!isMobile}" style="border-radius: 3px;" /> 
+            
             <!-- <div style="position: absolute;bottom: 10px;right: 20px;;"><n-button   type="primary"   size="small" ><a :href="chat?.uri+'?imageMogr2/format/webp'" target="_blank" style="color: #333;">查看</a></n-button></div> -->
           </div>
           <template v-if="chat?.mj_type!='U'">
@@ -204,6 +214,9 @@ watch(() =>  props.text, (newValue, oldValue) => {
         <span v-if="loading" class="dark:text-white w-[4px] h-[20px] block animate-blink" />
       </div>
       <div v-else class="whitespace-pre-wrap" v-text="text" />
+      <div v-if="st.uri_base64" style="margin-top: 10px;">
+        <n-image :src="st.uri_base64" :class="{'maxCss':!isMobile}" style="border-radius: 3px;" /> 
+      </div>
     </div>
   </div>
 </template>

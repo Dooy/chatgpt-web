@@ -1,9 +1,10 @@
 <script   setup lang='ts'>
-import { NDivider ,NInput,NButton,NTabs,NTabPane,NSpace,NTag,NModal} from 'naive-ui'
+import { NDivider ,NInput,NButton,NTabs,NTabPane,NSpace,NTag,NModal,NPopover} from 'naive-ui'
 import {  ref , computed} from 'vue'
 import {  SvgIcon } from '@/components/common'
 import AiMsg from '@/views/aidutu/aiMsg.vue' 
 import { ajax, myTranslate } from '@/api' 
+//import { saveImg } from './mj'
 
 const st= ref({
     size:[
@@ -34,8 +35,10 @@ const st= ref({
     ,isLoad:false
     ,show:false
     ,exampleKey:0
+    ,fileBase64:""
 })
 const msgRef = ref()
+const fsRef= ref()
 const $emit=defineEmits(['drawSent','close']);
 const props = defineProps({buttonDisabled:Boolean});
 
@@ -52,8 +55,16 @@ function create( ){
     }
     const ps = createPrompt(st.value.text.trim());
     const rz={ prompt: ps, drawText: ps }
-    if( rz.prompt  ) $emit('drawSent', rz )
+    if( rz.prompt  ) drawSent(rz)
     st.value.text=''
+}
+function drawSent(rz:any){
+    let rz2= rz;
+    if(st.value.fileBase64) {
+        rz2.fileBase64=st.value.fileBase64
+    }
+    $emit('drawSent', rz2 )
+    st.value.fileBase64='';
 }
 function createPrompt(rz:string){
     if( rz =='') {
@@ -92,7 +103,7 @@ async function train(){
 
     const ps = createPrompt( abd );
     const rz={ prompt:  st.value.text.trim() , drawText: ps }
-    if( rz.prompt  ) $emit('drawSent', rz )
+    if( rz.prompt  ) drawSent(rz)
     st.value.text=''
    
    
@@ -115,16 +126,39 @@ function example(k:number){
     //console.log('example>> ', e );
     st.value.show = true;
     st.value.exampleKey=k ;
+    //saveImg('test','god');
 } 
 function exampleGo( ){
     st.value.show = false;
     const obj= st.value.example[st.value.exampleKey]
     const rz={ prompt:  obj.z  , drawText: obj.e }
     $emit('drawSent', rz )
-}  
+}
+function selectFile(input:any){
+    //console.log('selectFile',input.target.files )
+    const file = input.target.files[0];
+    const filename = file.name;
+    //console.log('selectFile', file )
+    if(file.size>(1024*1024)){
+        msgRef.value.showError('图片大小不能超过1M');
+        return ;
+    }
+    if (! (filename.endsWith('.jpg') ||
+        filename.endsWith('.gif') ||
+        filename.endsWith('.png') ||
+        filename.endsWith('.jpeg') )) {
+        msgRef.value.showError('图片仅支持jpg,gif,png,jpeg格式');
+        return ;
+    }
+    const reader = new FileReader();
+    // 当读取操作完成时触发该事件
+    reader.onload = (e:any)=> st.value.fileBase64 = e.target.result;
+    reader.readAsDataURL(file);
+}
 </script>
 <template>
 <AiMsg ref="msgRef" />
+<input type="file"  @change="selectFile" ref="fsRef" style="display: none" accept="image/jpeg, image/jpg, image/png, image/gif"/>
 <NModal v-model:show="st.show" :auto-focus="false" preset="card" :title="st.example[st.exampleKey].n" style="width: 95%; max-width: 540px">
     <div class="space-y-6">
         <div v-html="st.example[st.exampleKey].z"></div>
@@ -144,6 +178,25 @@ function exampleGo( ){
    </n-divider>
    <div style="position: absolute; right: 0px; top:20px; z-index: 10;">
    <n-space>
+    <NPopover trigger="hover">
+      <template #trigger>
+    <n-tag type="error" round size="small" style="cursor: pointer; " :bordered="false" @click="fsRef.click()"   v-if="st.fileBase64">
+       <div style="display: flex;">  <SvgIcon icon="mdi:file-chart-check-outline" />含有垫图  </div>
+    </n-tag>
+     <n-tag type="warning" round size="small" style="cursor: pointer; " :bordered="false" @click="fsRef.click()"   v-else="st.fileBase64">
+       <div style="display: flex;">  <SvgIcon icon="mdi:file-document-plus-outline" /> 自传垫图  </div>
+    </n-tag>
+    </template>
+    <div>垫图说明：<br/>
+    1.垫图可使用自己的图片作为基础，让MJ来绘图<br/>
+    2.垫图耗时长所以会扣除<b style="color: green;">2张</b>图片的额度，请谨慎使用
+    <div v-if="st.fileBase64">
+        <img style="width: 200px; cursor: pointer;" :src="st.fileBase64">
+        <br/> 
+        <NButton size="small" @click="st.fileBase64=''" type="warning" >删除</NButton>
+    </div>
+    </div>
+    </NPopover>
     <n-tag type="success" round size="small" style="cursor: pointer;" :bordered="false" v-for="(v,k) in st.example" :key="k" v-text="v.n" @click="example(k )"></n-tag>
    </n-space>
    </div>

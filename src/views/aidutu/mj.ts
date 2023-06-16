@@ -2,6 +2,7 @@
 
 import { ajax } from '@/api';
 import { useChat } from '../chat/hooks/useChat'
+import localforage from "localforage"
 
 const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat()
 
@@ -78,4 +79,21 @@ export function mjDraw(uuid:number,index:number,chat:Chat.Chat )
         }
         check();
     });
+}
+
+localforage.config({
+    driver      : localforage.INDEXEDDB, // Force WebSQL; same as using setDriver()
+    name        : 'mj',
+    version     : 1.0,
+    size        : 4980736, // Size of database, in bytes. WebSQL-only for now.
+    storeName   : 'mjkv', // Should be alphanumeric, with underscores.
+    description : 'some description'
+});
+
+export async function saveImg( key:string, value:string ){
+   await localforage.setItem( key, value )
+}
+export async function getImg( key:string ): Promise<any>
+{
+   return await localforage.getItem( key )
 }

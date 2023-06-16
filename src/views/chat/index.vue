@@ -24,7 +24,7 @@ import AiFirst from '@/views/aidutu/aiFirst.vue'
 import AiOpenVip from '@/views/aidutu/aiOpenVip.vue'
 import { copyText3 } from '@/utils/format'
 import { useIconRender } from '@/hooks/useIconRender'
-import { mjDraw } from '../aidutu/mj'
+import { mjDraw, saveImg } from '../aidutu/mj'
 import AiMj from '../aidutu/aiMj.vue'
 //import AiModel from '@/views/aidutu/aiModel.vue' 
 
@@ -113,7 +113,7 @@ function getToken(str: string, func = (dd:any) => {},opt?:any) {
   }
   const data={'model':userInfo.value.model,tokens:userInfo.value.tokens,usingContext:usingContext.value
     ,completion_tokens:currentChat?.completion_tokens,prompt_tokens:currentChat?.prompt_tokens,opt
-    ,drawText:mjConfig.value.drawText
+    ,drawText:mjConfig.value.drawText,fileBase64:mjConfig.value.fileBase64
      };
    
   fetchUser(str, userInfo.value.isVip, data ).then((d: any) => {
@@ -250,18 +250,19 @@ async function onConversation(server:any, opt?:any) {
 
   controller = new AbortController()
   if( message!=''){
-    addChat(
-      +uuid,
-      {
-        dateTime: new Date().toLocaleString(),
-        text: message,
-        inversion: true,
-        error: false,
-        conversationOptions: null,
-        requestOptions: { prompt: message, options: null },
-        mj_id:server.mj.mj_id
-      },
-    )
+    // addChat(
+    //   +uuid,
+    //   {
+    //     dateTime: new Date().toLocaleString(),
+    //     text: message,
+    //     inversion: true,
+    //     error: false,
+    //     conversationOptions: null,
+    //     requestOptions: { prompt: message, options: null },
+    //     mj_id:server.mj.mj_id
+    //   },
+    // )
+    await addChatImg( message, mjConfig.value.fileBase64 )
   }
   scrollToBottom()
 
@@ -802,7 +803,30 @@ async function imageSend(a:any  ){
   else getToken('', onConversation, {t:a.t,v:a.v,mj_id:a.chat.mj_id})
 }
 
-const mjConfig= ref({isClose:false,drawText:''});
+async function addChatImg(message:string,fileBase64:string){
+
+  let key 
+
+  if (fileBase64 && fileBase64!='') {
+    key=  `local::${uuid}:${dataSources.value.length}`
+    await saveImg(key,JSON.stringify( {img:fileBase64}))
+  }
+  addChat(
+      +uuid,
+      {
+        dateTime: new Date().toLocaleString(),
+        text: message,
+        inversion: true,
+        error: false,
+        conversationOptions: null,
+        requestOptions: { prompt: message, options: null },
+        //mj_id:server.mj.mj_id
+        uri_base64: key
+      },
+    )
+}
+
+const mjConfig= ref({isClose:false,drawText:'',fileBase64:''});
 function mjClose(){
   console.log('close') 
   mjConfig.value.isClose=true;
@@ -811,6 +835,8 @@ function drawSent(e:any){
   console.log('drawSent', e ) 
   prompt.value=e.prompt;
   mjConfig.value.drawText=e.drawText;
+  mjConfig.value.fileBase64=e.fileBase64??'';
+  //addChatImg(prompt.value,  mjConfig.value.fileBase64 )
   handleSubmit();
 }
 </script>
