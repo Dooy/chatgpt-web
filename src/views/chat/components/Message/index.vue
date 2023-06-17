@@ -146,6 +146,7 @@ const st = ref({is:false});
           :loading="loading"
           :as-raw-text="asRawText"
           :chat="chat"
+          :index="index"
           @image-send="sent"
 
         />

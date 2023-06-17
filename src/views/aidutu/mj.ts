@@ -97,3 +97,15 @@ export async function getImg( key:string ): Promise<any>
 {
    return await localforage.getItem( key )
 }
+
+
+
+export function img2base64(img:any) {
+    let canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    let ctx = canvas.getContext('2d');
+    if( ! ctx) return "";
+    ctx.drawImage(img, 0, 0);
+    return canvas.toDataURL('image/jpeg');
+}

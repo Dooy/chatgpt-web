@@ -9,8 +9,16 @@ import { t } from '@/locales'
 //import { copyText3} from '@/utils/format'
 import AiMsg from "@/views/aidutu/aiMsg.vue";
 import { copyToClip } from '@/utils/copy'
-import { NButtonGroup ,NButton, NSpace,NImage } from "naive-ui"
-import { getImg } from '@/views/aidutu/mj'
+import {  NButton, NSpace,NImage } from "naive-ui"
+import { getImg,img2base64, saveImg } from '@/views/aidutu/mj'
+import { useRoute } from 'vue-router'
+import { useChat } from  '@/views/chat/hooks/useChat'
+
+const {  updateChat  } = useChat()
+const route = useRoute()
+const { uuid } = route.params as { uuid: string }
+
+
 
 interface Props {
   inversion?: boolean
@@ -19,6 +27,7 @@ interface Props {
   loading?: boolean
   asRawText?: boolean
   chat?:Chat.Chat
+  index?:number
 }
 
 const props = defineProps<Props>()
@@ -123,11 +132,27 @@ const emits = defineEmits(['imageSend'  ])
 
 function loadImage(){
   //chat.uri+'?imageMogr2/format/webp'
+   if(props.chat?.uri_base64){
+    loadLocalImg()
+    return ;
+   }
   if( props.chat?.uri){
     const img = new Image();
+    img.crossOrigin = "anonymous";
     img.onload=()=>{
       st.value.isLoadImg=false;
       emits('imageSend', {t:'loadImage',chat :props.chat})
+    
+      const img64 = img2base64(img) ; 
+      console.log('base64>>', img64 )
+      if( img64 ){
+        const kk=`server:${uuid}:${props.index}`;
+        saveImg( kk ,JSON.stringify( {img: img64}));
+        let cchat = props.chat;
+        if( !cchat || props.index==undefined) return ;
+        cchat.uri_base64= kk;
+        updateChat( +uuid,props.index,cchat );
+      }
     }
     img.onerror=()=>{
       console.log("载入失败 最好从新载入");
@@ -145,9 +170,10 @@ async function loadLocalImg(){
     const obj = JSON.parse( await getImg( props.chat?.uri_base64) );
     st.value.uri_base64 = obj.img ; 
     //console.log("uri_base64",  st.value.uri_base64 ); 
+    emits('imageSend', {t:'loadImage',chat :props.chat})
 }
 loadImage()
-loadLocalImg();
+//loadLocalImg();
 
 
 //const chatUri = computed(() =>  props.chat?.uri );
@@ -156,6 +182,8 @@ watch(() =>  props.text, (newValue, oldValue) => {
       loadImage()
       emits('imageSend', {t:'loadImage',chat :props.chat})
 },{ deep: true})
+
+console.log('uuid', uuid,props.index )
 </script>
 
 <template>
@@ -165,7 +193,10 @@ watch(() =>  props.text, (newValue, oldValue) => {
       <div v-if="!inversion" class="flex items-end">
         <div v-if="chat?.uri" class="w-full markdown-body"  >
           <div v-text="props.text"></div>
-          <div v-if="st.isLoadImg" style="text-align: center; padding: 60px 20px;">
+           <div v-if="st.uri_base64" style="margin-top: 10px;">
+            <n-image :src="st.uri_base64" :class="{'maxCss':!isMobile}" style="border-radius: 3px;" /> 
+          </div>
+          <div v-else-if="st.isLoadImg" style="text-align: center; padding: 60px 20px;">
             <div  @click="loadImage">正在载入图片...</div> 
             <div  style="margin-top: 10px;text-align: center;"><n-button   type="primary"   size="small" ><a :href="chat?.uri+'?imageMogr2/format/webp'" target="_blank" style="color: #333;">查看原图</a></n-button></div> 
           </div>
@@ -214,7 +245,7 @@ watch(() =>  props.text, (newValue, oldValue) => {
         <span v-if="loading" class="dark:text-white w-[4px] h-[20px] block animate-blink" />
       </div>
       <div v-else class="whitespace-pre-wrap" v-text="text" />
-      <div v-if="st.uri_base64" style="margin-top: 10px;">
+      <div v-if="st.uri_base64 &&  inversion" style="margin-top: 10px;">
         <n-image :src="st.uri_base64" :class="{'maxCss':!isMobile}" style="border-radius: 3px;" /> 
       </div>
     </div>
