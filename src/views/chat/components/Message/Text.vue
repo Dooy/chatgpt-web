@@ -130,11 +130,11 @@ onUnmounted(() => {
 const st = ref( {fg:[1,2,3,4],big:[1,2,3,4] ,isLoadImg:true, uri_base64:''})
 const emits = defineEmits(['imageSend'  ])
 
-function loadImage(){
+async function loadImage(){
   //chat.uri+'?imageMogr2/format/webp'
    if(props.chat?.uri_base64){
-    loadLocalImg()
-    return ;
+    let rz = await loadLocalImg();
+    if ( rz)return ;
    }
   if( props.chat?.uri){
     const img = new Image();
@@ -166,11 +166,18 @@ function loadImage(){
 
  
 async function loadLocalImg(){
-    if(!props.chat?.uri_base64) return ;
-    const obj = JSON.parse( await getImg( props.chat?.uri_base64) );
-    st.value.uri_base64 = obj.img ; 
+    if(!props.chat?.uri_base64) return true;
+    try{
+      const obj = JSON.parse( await getImg( props.chat?.uri_base64) );
+      st.value.uri_base64 = obj.img ; 
+      emits('imageSend', {t:'loadImage',chat :props.chat})
+    }catch(ee){
+      return false;
+    }
+    
     //console.log("uri_base64",  st.value.uri_base64 ); 
-    emits('imageSend', {t:'loadImage',chat :props.chat})
+  
+    return true;
 }
 loadImage()
 //loadLocalImg();
