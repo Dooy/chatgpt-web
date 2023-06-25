@@ -216,6 +216,7 @@ function selectFile(input:any){
                 <div class="mitem" v-for="(v,k) in  st.size" :key="k" :class="{select:k==st.skey}" @click="st.skey=k">
                 <img :src="v.img" class="mimg"/> <span v-html="v.t"></span>
                 </div>
+                 <div class="mitem m2"  @click="st.skey=-1"><SvgIcon icon="icon-park-outline:nuclear-plant" /> 清除</div>
             </div> 
         </NPopover>
 
@@ -231,6 +232,7 @@ function selectFile(input:any){
                 <div class="mitem m2" v-for="(v,k) in  st.style" :key="k" :class="{select:k==st.styleKey}" @click="st.styleKey=k">
                 <span v-html="v.t"></span>
                 </div>
+                <div class="mitem m2"  @click="st.styleKey=-1"><SvgIcon icon="icon-park-outline:nuclear-plant" /> 清除</div>
             </div> 
         </NPopover>
 

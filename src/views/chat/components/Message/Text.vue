@@ -144,7 +144,7 @@ async function loadImage(){
       emits('imageSend', {t:'loadImage',chat :props.chat})
     
       const img64 = img2base64(img) ; 
-      console.log('base64>>', img64 )
+      //console.log('base64>>', img64 )
       if( img64 ){
         const kk=`server:${uuid}:${props.index}:${ Date.now() }`;
         saveImg( kk ,JSON.stringify( {img: img64}));
