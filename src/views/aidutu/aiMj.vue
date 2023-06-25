@@ -187,7 +187,7 @@ function selectFile(input:any){
        <div style="display: flex;">  <SvgIcon icon="mdi:file-document-plus-outline" /> 自传垫图  </div>
     </n-tag>
     </template>
-    <div>垫图说明：<br/>
+    <div  style="max-width: 240px;">垫图说明：<br/>
     1.垫图可使用自己的图片作为基础，让MJ来绘图<br/>
     2.垫图耗时长所以会扣除<b style="color: green;">2张</b>图片的额度，请谨慎使用
     <div v-if="st.fileBase64">
@@ -203,6 +203,41 @@ function selectFile(input:any){
    <n-input    type="textarea"  v-model:value="st.text"   placeholder="提示词 推荐:【画面场景】+【镜头视角】+【风格参考】+【渲染方式】, 关键词之间用“,”隔开" round clearable maxlength="500" show-count 
       :autosize="{   minRows:3 }" />
 
+    <div style="margin: 7px 0;">
+    <n-space>
+        <NPopover trigger="hover">
+            <template #trigger>
+                <n-tag type="warning" round size="small" style="cursor: pointer; " :bordered="false" >
+                <div style="display: flex;" v-if="st.skey>-1">  <SvgIcon icon="gg:style" />画面: {{ st.size[st.skey].t }}</div>
+                <div style="display: flex;" v-else>  <SvgIcon icon="gg:style" />请选择画面比例</div>
+                </n-tag>
+            </template>
+            <div class="msize" style="max-width: 240px;">
+                <div class="mitem" v-for="(v,k) in  st.size" :key="k" :class="{select:k==st.skey}" @click="st.skey=k">
+                <img :src="v.img" class="mimg"/> <span v-html="v.t"></span>
+                </div>
+            </div> 
+        </NPopover>
+
+
+        <NPopover trigger="hover">
+            <template #trigger>
+                <n-tag type="warning" round size="small" style="cursor: pointer; " :bordered="false" >
+                <div style="display: flex;" v-if="st.styleKey>-1">  <SvgIcon icon="typcn:th-small-outline" />风格: {{ st.style[st.styleKey].t }}</div>
+                <div style="display: flex;" v-else>  <SvgIcon icon="typcn:th-small-outline" />请选择绘画风格</div>
+                </n-tag>
+            </template>
+            <div class="msize" style="max-width: 240px;">
+                <div class="mitem m2" v-for="(v,k) in  st.style" :key="k" :class="{select:k==st.styleKey}" @click="st.styleKey=k">
+                <span v-html="v.t"></span>
+                </div>
+            </div> 
+        </NPopover>
+
+    </n-space>
+    </div>
+
+    <!--
     <n-tabs  type="line" size="small">
       
       <n-tab-pane name="the beatles" tab="画面比例">
@@ -221,13 +256,14 @@ function selectFile(input:any){
       </n-tab-pane>
 
       </n-tabs> 
+      -->
     
     <div style="display: flex;">
          <!-- <div style=" padding: 10px;">
          <n-button type="primary" :block="true" :disabled="isDisabled"  @click="create()">
          <SvgIcon icon="ri:translate" /> 直接生成图片</n-button>
         </div> -->
-        <div style="flex: 1; padding:  10px ;">
+        <div style="flex: 1;">
         <n-button type="primary" :block="true" :disabled="isDisabled"  @click="create()">
         <SvgIcon icon="mingcute:send-plane-fill" />  
         <template v-if="st.isLoad"> 翻译中...</template>
