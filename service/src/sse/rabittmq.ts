@@ -29,7 +29,7 @@ export async function publishData( exchange:string,routingKey:string, data:strin
         await ch.basicPublish({routingKey,exchange}, data) 
         await closeMq();
     }catch(e ){
-         console.log('publishData 发生错误>>', e  )
+         console.error('publishData 发生错误>>', e  )
     }
 }
 async function closeMq(){
