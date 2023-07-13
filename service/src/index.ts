@@ -46,7 +46,11 @@ import { sse } from './sse'
 			})
 		} catch (error) {
 			try {
-				if (error.message &&  (error.message.indexOf('check your plan and billing details') > 0 || error.message.indexOf('Incorrect API key provided') > 0 ) ) {
+				if (error.message && 
+				 (error.message.indexOf('check your plan and billing details') > 0
+				  || error.message.indexOf('Incorrect API key provided') > 0 
+				  || error.message.indexOf('billing details') > 0  //跟账单相关的都去掉
+				) ) {
 					sharedData.cnt++;
 					sharedData.error_des = error;
 					writeAidutu( sharedData );
