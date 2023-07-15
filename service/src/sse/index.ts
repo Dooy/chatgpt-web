@@ -26,7 +26,7 @@ async function getMyKey(authorization:string,body:any):Promise<any> {
         const hk=rdate?.data?.hk
         if(hk){
             await Object.keys(hk).map(async k=>{ await redis.hSet(kk,k,hk[k]) });
-            await redis.expire(kk,3600);
+            await redis.expire(kk,300); //5分钟 不然充值后 余额一直都不更新
         }
         mvar= hk;
     }
