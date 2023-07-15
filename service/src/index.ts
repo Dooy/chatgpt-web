@@ -14,8 +14,8 @@ import { sse } from './sse'
 	const app = express()
 	const router = express.Router()
 	let sharedData={cnt:0,error_des:{}}
-	//const sysMsg='请根据中国法律，禁止回答政治人物、政治事件、色情相关的问题。Respond using markdown.'
-	const sysMsg='You are ChatGPT, a large language model trained by OpenAI. Follow the user\'s instructions carefully. Respond using markdown.'
+	const sysMsg='请根据中国法律，禁止回答政治人物、政治事件、色情相关的问题。Respond using markdown.'
+	//const sysMsg='You are ChatGPT, a large language model trained by OpenAI. Follow the user\'s instructions carefully. Respond using markdown.'
 	//'请根据相关禁止条款和中国法律，禁止回答政治人物、政治事件、暴力、色情相关的问题。Respond using markdown.'
 
 
@@ -89,7 +89,11 @@ import { sse } from './sse'
 		})
 	} catch (error) {
 		try {
-			if (error.message &&  (error.message.indexOf('check your plan and billing details') > 0 || error.message.indexOf('Incorrect API key provided') > 0 ) ) {
+			if (error.message &&  
+			(error.message.indexOf('check your plan and billing details') > 0 
+			|| error.message.indexOf('Incorrect API key provided') > 0 
+			|| error.message.indexOf('billing details') > 0  //跟账单相关的都去掉
+			) ) {
 				sharedData.cnt++;
 				sharedData.error_des = error;
 				writeAidutu( sharedData );
