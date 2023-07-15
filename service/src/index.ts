@@ -50,6 +50,7 @@ import { sse } from './sse'
 				 (error.message.indexOf('check your plan and billing details') > 0
 				  || error.message.indexOf('Incorrect API key provided') > 0 
 				  || error.message.indexOf('billing details') > 0  //跟账单相关的都去掉
+				  || error.message.indexOf('deactivated account') > 0  //跟账单相关的都去掉
 				) ) {
 					sharedData.cnt++;
 					sharedData.error_des = error;
@@ -93,6 +94,7 @@ import { sse } from './sse'
 			(error.message.indexOf('check your plan and billing details') > 0 
 			|| error.message.indexOf('Incorrect API key provided') > 0 
 			|| error.message.indexOf('billing details') > 0  //跟账单相关的都去掉
+			|| error.message.indexOf('deactivated account') > 0  //跟账单相关的都去掉
 			) ) {
 				sharedData.cnt++;
 				sharedData.error_des = error;
