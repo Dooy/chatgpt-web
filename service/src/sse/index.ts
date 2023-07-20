@@ -18,7 +18,7 @@ async function getMyKey(authorization:string,body:any):Promise<any> {
     const kk= `hk:${arr[1]}`;
     const redis= await createRedis();
     let mvar:any =  await redis.hGetAll(kk);
-    if(!mvar || Object.keys(mvar).length==0){
+    if(!mvar || Object.keys(mvar).length==0 ||  !mvar.uid ||  +mvar.uid<=0  ){
         let res= await fetch(`${process.env.SSE_HTTP_SERVER}/openai/client/hk/${arr[1]}` )
         const rdate:any =await res.json()  
         console.log('服务端获取用户信息>>',rdate?.data?.hk );
@@ -32,7 +32,7 @@ async function getMyKey(authorization:string,body:any):Promise<any> {
     }
     const fen= +(mvar?.fen??0);
     if( !mvar.uid ||  +mvar.uid<=0 ) {
-        console.log( authorization, 'HK key error , is no exit  ! HK key 不存在！' );
+        console.log( authorization, 'HK key error , is no exit  ! HK key 不存在！', kk );
         throw  new mError('HK key error , is no exit  ! HK key 不存在！') ;
     }
     if( fen<=0) {
