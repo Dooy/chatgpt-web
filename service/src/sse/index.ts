@@ -21,7 +21,7 @@ async function getMyKey(authorization:string,body:any):Promise<any> {
     if(!mvar || Object.keys(mvar).length==0 ||  !mvar.uid ||  +mvar.uid<=0  ){
         let res= await fetch(`${process.env.SSE_HTTP_SERVER}/openai/client/hk/${arr[1]}` )
         const rdate:any =await res.json()  
-        console.log('服务端获取用户信息2>>',rdate?.data?.hk, authorization );
+        console.log('服务端获取用户信息>>',rdate?.data?.hk, authorization );
         //await redis.HSET(kk, );
         const hk=rdate?.data?.hk
         if(hk){
@@ -40,12 +40,20 @@ async function getMyKey(authorization:string,body:any):Promise<any> {
         throw  new mError('Insufficient points, please recharge 积分不足，请充值');
     }
     const poolkey= await getKeyFromPool(redis,+mvar.uid,body.model); //从卡池中获取key
+    const parr = poolkey.split('||');
+
 
     //console.log('test redis>>',  mvar , body.model ,await getKeyFromPool(redis,+mvar.uid,body.model) );
     //await redis.set('abc','time:'+ Date.now() );
     redis.disconnect();
-    return {key:'Bearer '+poolkey, user:mvar };
+    return {key:'Bearer '+parr[0], user:mvar,apiUrl:parr[1]??'' };
 }
+
+//取 0到 max-1随机数
+function getRandomInt(max: number): number {
+    return Math.floor(Math.random() * max);
+}
+
 async function getKeyFromPool(redis:RedisClientType, uid:number, model:string,oldkey?:string):Promise<string> {
     let key='pool:3k';
     if(model?.indexOf('gpt-4')>=0) key='pool:4k';
@@ -56,10 +64,13 @@ async function getKeyFromPool(redis:RedisClientType, uid:number, model:string,ol
         if(oldkey) return oldkey;
         throw new mError('pools no key');
     }
-    if(oldkey && kesy.indexOf(oldkey)>=0){
-         return oldkey;
-    }
-    return kesy[ uid %kesy.length];
+    const ik= getRandomInt(kesy.length);
+    //console.log('test redis>>',  kesy.length  );
+    return kesy[ ik ];
+    // if(oldkey && kesy.indexOf(oldkey)>=0){
+    //      return oldkey;
+    // }
+    // return kesy[ uid %kesy.length];
 
 }
 
@@ -89,14 +100,17 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
 		//console.log( 'request.headers',  request.headers );
 		//console.log( 'request.body',  request.body );
 		const url= isNotEmptyString( process.env.SSE_API_BASE_URL)? process.env.SSE_API_BASE_URL: 'https://api.openai.com';
+
 		const uri= request.headers['x-uri']??'/v1/chat/completions'
        
 		try{
             const mykey=await getMyKey( request.headers['authorization'], request.body);
             tomq.myKey=mykey.key ;
             tomq.user= mykey.user;
-             console.log('请求>>', uri,  mykey.user?.uid, mykey.user?.fen,tomq.myKey );
-		    await fetchSSE( url+uri,{
+            // console.log('请求>>', uri,  mykey.user?.uid, mykey.user?.fen,tomq.myKey , mykey.apiUrl );
+            const rqUrl= mykey.apiUrl==''? url+uri: mykey.apiUrl+uri;
+             console.log('请求>>', rqUrl,  mykey.user?.uid, mykey.user?.fen,tomq.myKey   );
+		    await fetchSSE( rqUrl ,{
                 method: 'POST',
                 headers:{
                 'Content-Type': 'application/json',
