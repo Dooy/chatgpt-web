@@ -18,7 +18,8 @@ const avatar = computed(() => userStore.userInfo.avatar)
 const userInfo = computed(() => userStore.userInfo)
 function getIcon(){
   if( userInfo.value.modelConfig){
-    const index= userInfo.value.modelConfig.findIndex(v=>v.key==pp.model )
+     const md= pp.model?pp.model:userInfo.value.model; 
+    const index= userInfo.value.modelConfig.findIndex(v=>v.key== md )
     if(index>-1 && userInfo.value.modelConfig[index].icon ) return  userInfo.value.modelConfig[index].icon;
   }
   return 'simple-icons:openaigym'
