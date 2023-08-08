@@ -15,6 +15,7 @@ export interface UserInfo {
   wxLoginUrl:string
   tj?:string
   vipHost:string
+  modelConfig?:any[]
 }
 
 export interface UserState {

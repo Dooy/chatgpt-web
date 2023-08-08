@@ -3,6 +3,7 @@ import { ref ,computed } from 'vue'
 import { NButton, NModal, NRadioButton, NRadioGroup,useDialog ,NInputNumber  } from 'naive-ui'
 import { useUserStore } from '@/store'
 import  AiMsg  from '@/views/aidutu/aiMsg.vue'
+import {SvgIcon}  from '@/components/common'
 const userStore = useUserStore()
 const userInfo = computed(() => userStore.userInfo)
 
@@ -42,13 +43,22 @@ function cg2( ){
     toggleUsingContext()
   }
 }
+
+ 
+const getIcon=  computed(() => {
+    if( userInfo.value.modelConfig){
+      const index= userInfo.value.modelConfig.findIndex(v=>v.key==userInfo.value.model )
+      if(index>-1   ) return  userInfo.value.modelConfig[index];
+    }
+    return {name:'GPT3.5',key:'GPT3.5',icon:'simple-icons:openaigym'}
+}) 
 //console.log('userInfo', userInfo.value )
 </script>
 
 <template>
   <AiMsg ref="msgRef" />
   <div style="color: #cccccc">
-    当前模型：{{ userInfo.model??'GPT3.5' }} ,上下文:{{ (usingContext?'连续':'断开') }}   
+    当前模型：{{ getIcon.name }} ,上下文:{{ (usingContext?'连续':'断开') }}   
     <span style="color: #1f6feb;cursor: pointer" @click="st.show = !st.show">点这里切换<a v-if="userInfo.model!='GPT4.0'">4.0</a></span>
   </div>
   <NModal v-model:show="st.show" :auto-focus="false" preset="card" title="模型切换" style="width: 95%; max-width: 540px">
@@ -57,12 +67,19 @@ function cg2( ){
         <span class="flex-shrink-0 w-[100px]">模型</span>
         <div class="w-[200px]">
           <NRadioGroup v-model:value="fm.model" name="radiogroup2"  @change="cg2">
+          <NRadioButton :value="v2.key" v-for="(v2 ,k2) of  userInfo.modelConfig" :key="k2" >
+                  <div style="display: flex; align-items: center; justify-content: center;">  <span style="margin-left: 5px;"><SvgIcon :icon="v2.icon" /></span> {{ v2.name }}</div>
+          </NRadioButton>
+           <!-- <NRadioButton value="baidu">
+              百度文心
+            </NRadioButton>
             <NRadioButton value="GPT3.5">
               GPT3.5
             </NRadioButton>
             <NRadioButton value="GPT4.0">
               GPT4.0
-            </NRadioButton>
+            </NRadioButton>  -->
+
           </NRadioGroup>
         </div>
          
