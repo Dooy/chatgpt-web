@@ -152,7 +152,7 @@ function fingler(str: string): string {
     }
     return str; 
    }
-	 return str.replace(/openai/ig, 'ChinaAi').replace(/ChatGPT/ig, 'ChinaGPT')
+	 return str.replace(/openai/ig, 'ChinaAi').replace(/ChatGPT/ig, 'ChinaAIG').replace(/GPT/ig, 'AIG')
 }
 // 答案过滤
 /* function daanFingler( data:any,uuid:any,index:any,chat:any) {

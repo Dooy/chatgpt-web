@@ -12,7 +12,7 @@ const emit =defineEmits(['toLogin','success']);
 const stVip=ref([]);
 const stG4=ref([]);
 const dfSelect=ref(0)
-const st=ref({pay:{ds:'',url:'',info:''},start:0})
+const st=ref({pay:{ds:'',url:'',info:''},start:0,isShowPay:true})
 const uvip= ref({'dsEnd':'',isOver:0,'dsTs':'',user_id:0,last_order_id:0})
 const isWechat = ref( /MicroMessenger/i.test(navigator.userAgent) ); //是否在微信内
 const { isMobile } = useBasicLayout()
@@ -47,7 +47,9 @@ onMounted(()=>{
 });
 function initStart(){
 	const obj= active.value=='GPT4.0'?stG4.value:stVip.value;
-	go(obj[st.value.start]);
+	st.value.isShowPay= true;
+	if( obj.length>0  ) go(obj[st.value.start]);
+	else st.value.isShowPay= false;
 }
 
 const go = (v2:any ) => {
@@ -118,14 +120,14 @@ watch( active ,initStart)
 						<div v-html="v2.info"></div>
 					</n-card>
 				</div>
-				<div v-else>Loading....</div>	
+				<div v-else-if="st.isShowPay">Loading....</div>	
           </div>
         </NTabPane>
 
 		<NTabPane name="GPT4.0" tab="GPT4.0">
           <template #tab>
             <SvgIcon class="text-lg" icon="ic:outline-token" />
-            <span class="ml-2">GPT4.0(Tokens)</span>
+            <span class="ml-2">G4.0(Tokens)</span>
           </template>
           <div class="min-h-[100px]">
 		     <div v-html="info.msg4g"></div>
@@ -135,14 +137,14 @@ watch( active ,initStart)
 						<div v-html="v2.info"></div>
 					</n-card>
 				</div>
-				<div v-else>Loading....</div>
+				<div v-else-if="st.isShowPay">Loading....</div>	
 
 		  </div>
 		</NTabPane>
 	</NTabs>
 	
 
-	<div style="display: flex; justify-content: center; margin-top: 20px" >
+	<div style="display: flex; justify-content: center; margin-top: 20px" v-if="st.isShowPay">
 		<div v-if="isWechat">
 			<n-button type="info" @click="goUrl(st.pay.url )">点我微信支付</n-button>
 		</div>

@@ -91,7 +91,7 @@ const getIcon=  computed(() => {
           <NInputNumber v-model:value="fm.tokens" placeholder="最大tokens" :min="50" :step="50" :max="8192"  :disabled="fm.model === 'GPT3.5'" />
         </div>
         <div class="w-[100px]" style="color: #cccccc; font-size: 12px;;">
-          仅支持GPT4.0<br>最大8k即8192
+          仅支持4.0<br>最大8k即8192
         </div>
       </div>
       
