@@ -20,7 +20,7 @@ function save(){
   if(userInfo.value.model!='GPT4.0' && fm.value.model=='GPT4.0'){
      dialog.success({
        title: '再次确认',
-       content: '您当前正在切换为GPT-4 会话模式，切换后将失去当前上下文，GPT-4将会消耗大量Token, 成本大概为GPT-3.5的15-30倍，且速度很慢，建议组织好问题后再使用。',
+       content: '您当前正在切换为4.0 会话模式，切换后将失去当前上下文，4.0将会消耗大量Token, 成本大概为3.5的15-30倍，且速度很慢，建议组织好问题后再使用。',
           positiveText: '切换',
           negativeText: '取消',
           maskClosable: false,

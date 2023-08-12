@@ -127,7 +127,7 @@ watch( active ,initStart)
 		<NTabPane name="GPT4.0" tab="GPT4.0">
           <template #tab>
             <SvgIcon class="text-lg" icon="ic:outline-token" />
-            <span class="ml-2">G4.0(Tokens)</span>
+            <span class="ml-2">4.0(Tokens)</span>
           </template>
           <div class="min-h-[100px]">
 		     <div v-html="info.msg4g"></div>
