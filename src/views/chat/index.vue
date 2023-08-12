@@ -345,9 +345,11 @@ async function onConversation() {
       })
       updateChatSome(+uuid, dataSources.value.length - 1, { loading: false })
     }
-    if (serverInfo.value.api == 'me' ||  serverInfo.value.api == 'v4'  )
-      await fetchChatAPIOnceV2(message, options, dataSources.value.length - 1, +uuid)
-    else await fetchChatAPIOnce()
+    // if (serverInfo.value.api == 'me' ||  serverInfo.value.api == 'v4'  )
+    //   await fetchChatAPIOnceV2(message, options, dataSources.value.length - 1, +uuid)
+    // else await fetchChatAPIOnce()
+    if (serverInfo.value.api == 'process'  ) await fetchChatAPIOnce()
+    else await fetchChatAPIOnceV2(message, options, dataSources.value.length - 1, +uuid)
   }
   catch (error: any) {
     let errorMessage = error?.message ?? t('common.wrong')
