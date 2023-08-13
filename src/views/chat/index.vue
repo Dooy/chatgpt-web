@@ -372,7 +372,10 @@ async function onConversation() {
     const currentChat = getChatByUuidAndIndex(+uuid, dataSources.value.length - 1)
 
     if (currentChat?.text && currentChat.text !== '' ) {
-      if( errorMessage!=t('common.wrong')  ) return ; //正对百度文心 出错
+      if( errorMessage!=t('common.wrong') &&  !currentChat.text.startsWith('Thinking...') ) {
+        console.log('error',currentChat.text  );
+        return ; //正对百度文心 出错
+      }
       updateChatSome( // 这个地方要去过滤下
         +uuid,
         dataSources.value.length - 1,

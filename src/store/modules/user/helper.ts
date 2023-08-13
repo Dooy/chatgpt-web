@@ -16,6 +16,7 @@ export interface UserInfo {
   tj?:string
   vipHost:string
   modelConfig?:any[]
+  action?:string
 }
 
 export interface UserState {

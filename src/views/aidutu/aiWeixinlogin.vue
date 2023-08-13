@@ -27,11 +27,12 @@ import QRCodeVue3 from "qrcode-vue3";
 import {ajax} from "@/api";
 import {useBasicLayout} from "@/hooks/useBasicLayout";
 import {NButton} from "naive-ui";
+import {useUserStore} from "@/store";
 //import AiMsg from "@/views/aidutu/aiMsg.vue";
 import {copyText} from "@/utils/format";
 import {onMounted, onUnmounted, ref} from "vue";
 const { isMobile } = useBasicLayout()
-
+const userStore = useUserStore()
 const $emit=defineEmits(['success','copy']);
 
 const qr =  ref({"url": "", 'checkUrl':''});
@@ -42,6 +43,7 @@ const copy= ()=>{
 }
 
 const loadQr= ()=>{
+	userStore.updateUserInfo({action:''})
 	ajax({url:'/oauth/weixin/chat'}).then(d=> {
 		console.log('wx',d )
 		qr.value.url= d.data.rz.url //data.rz.url
@@ -52,12 +54,14 @@ const loadQr= ()=>{
 }
 const check = ()=>{
 	if( st.value.timeout ) return ;
+	
 	ajax({url: qr.value.checkUrl}).then(d=>{
 		console.log('check', st.value.cnt  ); //djj/user/logout
 		st.value.cnt++;
 		if(d.data.rz.user_id){
 			$emit('success');
 			console.log('登录成功') //djj/user/logout 登出
+			userStore.updateUserInfo({action:'loginSuccess'})
 			return;
 		}
 		if( st.value.cnt>60 ) {

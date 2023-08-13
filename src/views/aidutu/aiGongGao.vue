@@ -1,21 +1,25 @@
 <script setup lang="ts">
 import { ajax } from '@/api';
 import { useUserStore } from '@/store';
-import { onMounted , ref} from 'vue'
+import { onMounted , ref ,watch ,computed} from 'vue'
 const userStore = useUserStore()
+//const st= ref({ isBaidu:false });
+const st = ref({mark:'',arr:[],isBaidu:false}); //UID:239923
 
 function load(){
     ajax({url:'/chatgpt/config/gonggao'}).then(d=>  {
        // console.log('gonggao',d.data.cf ); 
         userStore.updateUserInfo(d.data.cf)
         document.title = d.data.cf.name
-        baidu(  d.data.cf.tj);
+        if(!st.value.isBaidu) baidu(  d.data.cf.tj);
         st.value.mark= d.data.cf.mark;
     }
     );
 }
 
 function baidu( id:string ){
+    st.value.isBaidu=true;
+    console.log('baidu' ); 
     var hm = document.createElement("script");
 		hm.src = "https://hm.baidu.com/hm.js?"+id;
 		var s = document.getElementsByTagName("script")[0];
@@ -35,10 +39,19 @@ function createWatermark() {
      
 
 }
-const st = ref({mark:'',arr:[]}); //UID:239923
+
 onMounted(()=>{
     createWatermark();
 });
+const active= computed(()=>userStore.userInfo.action);
+watch( active ,(n)=>{
+    //console.log('active', n);
+    if(n=='loginSuccess') {
+         console.warn('gogo loadactive');
+        load()
+    }
+})
+
 load();
 </script>
 <template>
