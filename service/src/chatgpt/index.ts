@@ -117,7 +117,7 @@ async function chatReplyProcess(options: RequestOptions) {
         options = { ...lastContext }
     }
    
-		console.log('debug >> ', message,options );
+		//console.log('debug >> ', message,options );
     
     const response = await api.sendMessage(message, {
       ...options,
