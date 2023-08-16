@@ -23,8 +23,12 @@ const ErrorCodeMessage: Record<string, string> = {
   500: '[OpenAI] 服务器繁忙，请稍后再试 | Internal Server Error',
 }
 
-const timeoutMs: number = !isNaN(+process.env.TIMEOUT_MS) ? +process.env.TIMEOUT_MS : 100 * 1000
+const timeoutMs: number = isNaN(+process.env.TIMEOUT_MS) ? 100 * 1000 : +process.env.TIMEOUT_MS
 const disableDebug: boolean = process.env.OPENAI_API_DISABLE_DEBUG === 'true'
+const maxChatTime: number =  isNaN(+process.env.OPENAI_MAX_CHAT_TIME) ? 0 : +process.env.OPENAI_MAX_CHAT_TIME
+const sys_message: string =  isNotEmptyString(process.env.SYS_MESSAGE) ? process.env.SYS_MESSAGE : ''
+
+   
 
 let apiModel: ApiModel
 //let model = 'gpt-3.5-turbo'
@@ -63,6 +67,7 @@ let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
 
     if (isNotEmptyString(OPENAI_API_BASE_URL))
       options.apiBaseUrl = `${OPENAI_API_BASE_URL}/v1`
+      
 
     setupProxy(options)
 
@@ -93,13 +98,16 @@ async function chatReplyProcess(options: RequestOptions) {
   if(tokens2<50 ) tokens2=50;
   if(tokens2>15000 ) tokens2= 15000; //最大 15k
 
+   
+
   try {
     let options: SendMessageOptions = { timeoutMs }
-
+    if (maxChatTime>0)   options.maxChatTime=maxChatTime; //历史对话限制
     if (apiModel === 'ChatGPTAPI') {
       if (isNotEmptyString(systemMessage))
         options.systemMessage = systemMessage
       options.completionParams = { model, temperature, top_p,max_tokens:tokens2 }
+      if( sys_message && sys_message!='')options.systemMessage = sys_message
     }
 
     if (lastContext != null) {
@@ -108,7 +116,9 @@ async function chatReplyProcess(options: RequestOptions) {
       else
         options = { ...lastContext }
     }
-		//console.log('debug >> ', message,options );
+   
+		console.log('debug >> ', message,options );
+    
     const response = await api.sendMessage(message, {
       ...options,
       onProgress: (partialResponse) => {
