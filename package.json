@@ -21,6 +21,7 @@
     "lint:fix": "eslint . --fix",
     "bootstrap": "pnpm install && pnpm run common:prepare",
     "common:cleanup": "rimraf node_modules && rimraf pnpm-lock.yaml",
+    "git": "git add ./ && git commit -m \"mj\" && git push",
     "common:prepare": "husky install"
   },
   "dependencies": {
