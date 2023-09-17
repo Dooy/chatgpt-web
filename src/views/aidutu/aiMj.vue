@@ -203,77 +203,59 @@ function selectFile(input:any){
    <n-input    type="textarea"  v-model:value="st.text"   placeholder="提示词 推荐:【画面场景】+【镜头视角】+【风格参考】+【渲染方式】, 关键词之间用“,”隔开" round clearable maxlength="500" show-count 
       :autosize="{   minRows:3 }" />
 
-    <div style="margin: 7px 0;">
-    <n-space>
-        <NPopover trigger="hover">
-            <template #trigger>
-                <n-tag type="warning" round size="small" style="cursor: pointer; " :bordered="false" >
-                <div style="display: flex;" v-if="st.skey>-1">  <SvgIcon icon="gg:style" />画面: {{ st.size[st.skey].t }}</div>
-                <div style="display: flex;" v-else>  <SvgIcon icon="gg:style" />请选择画面比例</div>
-                </n-tag>
-            </template>
-            <div class="msize" style="max-width: 240px;">
-                <div class="mitem" v-for="(v,k) in  st.size" :key="k" :class="{select:k==st.skey}" @click="st.skey=k">
-                <img :src="v.img" class="mimg"/> <span v-html="v.t"></span>
-                </div>
-                 <div class="mitem m2"  @click="st.skey=-1"><SvgIcon icon="icon-park-outline:nuclear-plant" /> 清除</div>
-            </div> 
-        </NPopover>
+    <div class=" flex justify-between items-center">
+        <div style="margin: 7px 0;">
+        <n-space>
+            <NPopover trigger="hover">
+                <template #trigger>
+                    <n-tag type="warning" round size="small" style="cursor: pointer; " :bordered="false" >
+                    <div style="display: flex;" v-if="st.skey>-1">  <SvgIcon icon="gg:style" />画面: {{ st.size[st.skey].t }}</div>
+                    <div style="display: flex;" v-else>  <SvgIcon icon="gg:style" />请选择画面比例</div>
+                    </n-tag>
+                </template>
+                <div class="msize" style="max-width: 240px;">
+                    <div class="mitem" v-for="(v,k) in  st.size" :key="k" :class="{select:k==st.skey}" @click="st.skey=k">
+                    <img :src="v.img" class="mimg"/> <span v-html="v.t"></span>
+                    </div>
+                    <div class="mitem m2"  @click="st.skey=-1"><SvgIcon icon="icon-park-outline:nuclear-plant" /> 清除</div>
+                </div> 
+            </NPopover>
 
 
-        <NPopover trigger="hover">
-            <template #trigger>
-                <n-tag type="warning" round size="small" style="cursor: pointer; " :bordered="false" >
-                <div style="display: flex;" v-if="st.styleKey>-1">  <SvgIcon icon="typcn:th-small-outline" />风格: {{ st.style[st.styleKey].t }}</div>
-                <div style="display: flex;" v-else>  <SvgIcon icon="typcn:th-small-outline" />请选择绘画风格</div>
-                </n-tag>
-            </template>
-            <div class="msize" style="max-width: 240px;">
-                <div class="mitem m2" v-for="(v,k) in  st.style" :key="k" :class="{select:k==st.styleKey}" @click="st.styleKey=k">
-                <span v-html="v.t"></span>
-                </div>
-                <div class="mitem m2"  @click="st.styleKey=-1"><SvgIcon icon="icon-park-outline:nuclear-plant" /> 清除</div>
-            </div> 
-        </NPopover>
+            <NPopover trigger="hover">
+                <template #trigger>
+                    <n-tag type="warning" round size="small" style="cursor: pointer; " :bordered="false" >
+                    <div style="display: flex;" v-if="st.styleKey>-1">  <SvgIcon icon="typcn:th-small-outline" />风格: {{ st.style[st.styleKey].t }}</div>
+                    <div style="display: flex;" v-else>  <SvgIcon icon="typcn:th-small-outline" />请选择绘画风格</div>
+                    </n-tag>
+                </template>
+                <div class="msize" style="max-width: 240px;">
+                    <div class="mitem m2" v-for="(v,k) in  st.style" :key="k" :class="{select:k==st.styleKey}" @click="st.styleKey=k">
+                    <span v-html="v.t"></span>
+                    </div>
+                    <div class="mitem m2"  @click="st.styleKey=-1"><SvgIcon icon="icon-park-outline:nuclear-plant" /> 清除</div>
+                </div> 
+            </NPopover>
 
-    </n-space>
-    </div>
-
-    <!--
-    <n-tabs  type="line" size="small">
-      
-      <n-tab-pane name="the beatles" tab="画面比例">
-        <div class="msize">
-            <div class="mitem" v-for="(v,k) in  st.size" :key="k" :class="{select:k==st.skey}" @click="st.skey=k">
-            <img :src="v.img" class="mimg"/> <span v-html="v.t"></span>
-            </div>
+        </n-space>
         </div>
-      </n-tab-pane>
-      <n-tab-pane name="oasis" tab="绘画风格">
-        <div class="msize">
-            <div class="mitem m2" v-for="(v,k) in  st.style" :key="k" :class="{select:k==st.styleKey}" @click="st.styleKey=k">
-            <span v-html="v.t"></span>
-            </div>
-        </div>
-      </n-tab-pane>
 
-      </n-tabs> 
-      -->
     
-    <div style="display: flex;">
-         <!-- <div style=" padding: 10px;">
-         <n-button type="primary" :block="true" :disabled="isDisabled"  @click="create()">
-         <SvgIcon icon="ri:translate" /> 直接生成图片</n-button>
-        </div> -->
-        <div style="flex: 1;">
-        <n-button type="primary" :block="true" :disabled="isDisabled"  @click="create()">
-        <SvgIcon icon="mingcute:send-plane-fill" />  
-        <template v-if="st.isLoad"> 翻译中...</template>
-        <template v-else> 生成图片</template>
+        <div style="display: flex;">
+            <!-- <div style=" padding: 10px;">
+            <n-button type="primary" :block="true" :disabled="isDisabled"  @click="create()">
+            <SvgIcon icon="ri:translate" /> 直接生成图片</n-button>
+            </div> -->
+            <div style="flex: 1;">
+            <n-button type="primary" :block="true" :disabled="isDisabled"  @click="create()">
+            <SvgIcon icon="mingcute:send-plane-fill" />  
+            <template v-if="st.isLoad"> 翻译中...</template>
+            <template v-else> 生成图片</template>
+            
+            </n-button>
+            </div>
         
-        </n-button>
         </div>
-       
     </div>
 
 </div>

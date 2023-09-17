@@ -13,6 +13,7 @@ import {  NButton, NSpace,NImage } from "naive-ui"
 import { getImg,img2base64, saveImg } from '@/views/aidutu/mj'
 import { useRoute } from 'vue-router'
 import { useChat } from  '@/views/chat/hooks/useChat'
+import { SvgIcon } from '@/components/common'
 
 const {  updateChat  } = useChat()
 const route = useRoute()
@@ -222,14 +223,33 @@ console.log('uuid', uuid,props.index )
               </n-space>
           <!--  </n-button-group> -->
             </div>
-            <div style="padding: 10px 0 0 0px;">
+            <div style="padding: 10px 0 0 0px;  ">
             
-              <n-space>风格：
+              <n-space >风格：
               <n-button type="info"  size="small" v-for="a in st.big" @click="emits('imageSend',{t:'V',v:a,chat})" > V{{ a }} 
-              </n-button>
+             </n-button>
+              <n-button type="info"  size="small"   @click="emits('imageSend',{t:'V',v: 10,chat})" > <SvgIcon icon="ci:arrows-reload-01"/> 重绘</n-button>
             
             </n-space>
             </div>
+          </template>
+          <template v-else >
+            <n-space style="margin-top: 10px;">
+               <n-button type="warning"  size="small"  @click="emits('imageSend',{t:'V',v: 21,chat})"><SvgIcon icon="fa-solid:magic"/> 强变化</n-button>
+               <n-button type="warning"  size="small"  @click="emits('imageSend',{t:'V',v: 22,chat})"><SvgIcon icon="fa:magic"/> 弱变化</n-button>
+               <n-button type="warning"  size="small"  @click="emits('imageSend',{t:'V',v: 23,chat})"><SvgIcon icon="el:magic"/> 局部重绘</n-button>
+            </n-space>
+             <n-space style="margin-top: 10px;">
+               <n-button type="info"  size="small"  @click="emits('imageSend',{t:'V',v: 31,chat})"><SvgIcon icon="cil:search"/> 2倍视角</n-button>
+               <n-button type="info"  size="small"  @click="emits('imageSend',{t:'V',v: 32,chat})"><SvgIcon icon="cil:search"/> 1.5倍视角</n-button>
+             </n-space>
+              <n-space style="margin-top: 10px;">
+               <n-button type="success"  size="small"  @click="emits('imageSend',{t:'V',v: 41,chat})"><SvgIcon icon="icon-park-outline:left-two"/> 视角左移</n-button>
+               <n-button type="success"  size="small"  @click="emits('imageSend',{t:'V',v: 42,chat})"><SvgIcon icon="icon-park-outline:right-two"/> 视角右移</n-button>
+               <n-button type="success"  size="small"  @click="emits('imageSend',{t:'V',v: 43,chat})"><SvgIcon icon="icon-park-outline:up-two"/> 视角上移</n-button>
+               <n-button type="success"  size="small"  @click="emits('imageSend',{t:'V',v: 44,chat})"><SvgIcon icon="icon-park-outline:down-two"/> 视角下移</n-button>
+             </n-space>
+
           </template>
         </div>
         <template v-else> 
