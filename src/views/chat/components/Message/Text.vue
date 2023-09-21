@@ -226,6 +226,7 @@ const isDo= (act:string)=>{
 const maskOk=(d:any)=>{
   //console.log('maskOk',d  );
   imageSend({t:'V',v: 23,chat:props?.chat,  data:{ mask:d.mask} })
+   st.value.isShow= false;
 }
 //st.isShow=true
 const goCanvan=()=>{
