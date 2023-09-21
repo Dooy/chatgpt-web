@@ -328,7 +328,7 @@ const goCanvan=()=>{
     </div>
   </div>
 
-  <NModal v-model:show="st.isShow"   preset="card"  title="局部重绘编辑" style="max-width: 600px;" @close="st.isShow=false" >
+  <NModal v-model:show="st.isShow"   preset="card"  title="局部重绘编辑" style="max-width: 800px;" @close="st.isShow=false" >
 		   <aiCanvas :chat="chat" :base64="st.uri_base64" v-if="st.isShow" @success="maskOk" />
 	</NModal>
 </template>
