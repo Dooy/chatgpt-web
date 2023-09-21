@@ -800,7 +800,10 @@ async function imageSend(a:any  ){
      scrollToBottom()
       loading.value =false;
   }
-  else getToken('', onConversation, {t:a.t,v:a.v,mj_id:a.chat.mj_id})
+  else {
+    //console.log('数据是啊', a );
+    getToken('', onConversation, {t:a.t,v:a.v,mj_id:a.chat.mj_id, data:a.data??null})
+  }
 }
 
 async function addChatImg(message:string,fileBase64:string){

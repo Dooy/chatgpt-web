@@ -8,10 +8,9 @@ const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat()
 
 export function mjDraw(uuid:number,index:number,chat:Chat.Chat )
 {
-    //let text = '![CSDN图标](https://cdn.aidutu.cn/res/aidutu/wx.jpg "这是CSDN的图标")';
+   
     chat.dateTime=  new Date().toLocaleString();
     chat.text='等等开始...' ;
-    //chat.uri= 'https://cdn.aidutu.cn/res/aidutu/wx.jpg'
     updateChat( +uuid, index,   chat   );
     const url ='/chatgpt/mj/check/'+chat.mj_id 
     //return ajax({url:'/chatgpt/mj/info?v=1.7' })
@@ -29,6 +28,7 @@ export function mjDraw(uuid:number,index:number,chat:Chat.Chat )
                     chat.uri=mj.uri;
                     chat.text= mj.content ;
                     chat.loading= false ; 
+                    chat.mj_bt = mj.bt ;
                     updateChat( +uuid, index,   chat   );
                     h(1)
                 }else if( process ==-100){

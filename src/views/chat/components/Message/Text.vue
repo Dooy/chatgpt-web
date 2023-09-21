@@ -9,11 +9,12 @@ import { t } from '@/locales'
 //import { copyText3} from '@/utils/format'
 import AiMsg from "@/views/aidutu/aiMsg.vue";
 import { copyToClip } from '@/utils/copy'
-import {  NButton, NSpace,NImage } from "naive-ui"
+import {  NButton, NSpace,NImage,NModal } from "naive-ui"
 import { getImg,img2base64, saveImg } from '@/views/aidutu/mj'
 import { useRoute } from 'vue-router'
 import { useChat } from  '@/views/chat/hooks/useChat'
 import { SvgIcon } from '@/components/common'
+import { aiCanvas } from "@/views/aidutu";
 
 const {  updateChat  } = useChat()
 const route = useRoute()
@@ -128,7 +129,7 @@ onUnmounted(() => {
   removeCopyEvents()
 })
 
-const st = ref( {fg:[1,2,3,4],big:[1,2,3,4] ,isLoadImg:true, uri_base64:''})
+const st = ref( {fg:[1,2,3,4],big:[1,2,3,4] ,isLoadImg:true, uri_base64:'', bts:[],isShow:false})
 const emits = defineEmits(['imageSend'  ])
 
 async function loadImage(){
@@ -147,6 +148,7 @@ async function loadImage(){
       const img64 = img2base64(img) ; 
       //console.log('base64>>', img64 )
       if( img64 ){
+        st.value.uri_base64= img64;
         const kk=`server:${uuid}:${props.index}:${ Date.now() }`;
         saveImg( kk ,JSON.stringify( {img: img64}));
         let cchat = props.chat;
@@ -191,7 +193,48 @@ watch(() =>  props.text, (newValue, oldValue) => {
       emits('imageSend', {t:'loadImage',chat :props.chat})
 },{ deep: true})
 
-console.log('uuid', uuid,props.index )
+const getBts= ()=>{
+   //props.chat?.mj_id? localStorage.getItem('mj_'+props.chat?.mj_id):[];
+   if( !props.chat?.mj_id) return [];
+   const str= localStorage.getItem('mj_'+props.chat?.mj_id);
+   if(!str) return [];
+    
+   return JSON.parse(str)??[]; 
+}
+
+//console.log('uuid', uuid,props.index )
+st.value.bts =getBts();
+
+const checkBt  = (act:string)=>{
+  if(! props.chat?.mj_bt) {
+    if(['v34'].indexOf(act)>-1 ) return false;
+    return true;
+  }
+  //console.log('act', act );
+  return props.chat.mj_bt.indexOf(act)>-1;
+  //return false;
+}
+const imageSend= ( act:any)=>{
+  let cbt= st.value.bts;
+  cbt.push( act.t + act.v );
+  emits('imageSend',act );
+  localStorage.setItem( 'mj_'+props.chat?.mj_id, JSON.stringify(cbt)); 
+}
+const isDo= (act:string)=>{
+  return st.value.bts.indexOf(act)>-1;
+}
+const maskOk=(d:any)=>{
+  //console.log('maskOk',d  );
+  imageSend({t:'V',v: 23,chat:props?.chat,  data:{ mask:d.mask} })
+}
+//st.isShow=true
+const goCanvan=()=>{
+  if(st.value.uri_base64==''){
+    childRef.value.showMsg("还在载入图片...请稍等");
+    return ;
+  }
+  st.value.isShow= true;
+}
 </script>
 
 <template>
@@ -218,36 +261,43 @@ console.log('uuid', uuid,props.index )
             <div style="padding: 10px 0 0 0px;" >
             <!-- <n-button-group size="small"> -->
             
-            <n-space>扩大：
-              <n-button type="success"  size="small" v-for="a in st.fg" @click="emits('imageSend',{t:'U',v:a,chat})">U{{ a }}</n-button>
+            <n-space>
+              <template  v-for="a in st.fg">
+               <n-button :type="isDo('U'+a)? 'error':'success'"  size="small" @click="imageSend( {t:'U',v:a,chat})" v-if="checkBt(`u`+a )">U{{ a }}</n-button>
+              </template>
               </n-space>
           <!--  </n-button-group> -->
             </div>
             <div style="padding: 10px 0 0 0px;  ">
             
-              <n-space >风格：
-              <n-button type="info"  size="small" v-for="a in st.big" @click="emits('imageSend',{t:'V',v:a,chat})" > V{{ a }} 
-             </n-button>
-              <n-button type="info"  size="small"   @click="emits('imageSend',{t:'V',v: 10,chat})" > <SvgIcon icon="ci:arrows-reload-01"/> 重绘</n-button>
+              <n-space >
+              <template   v-for="a in st.big" >
+                <n-button :type="isDo('V'+a)? 'error':'info'"  size="small" @click="imageSend({t:'V',v:a,chat})"  v-if="checkBt(`v`+a )"> V{{ a }} 
+                </n-button>
+             </template>
+              <!-- -->
+              <n-button :type="isDo('V10')? 'error':'info'"  size="small"   @click="imageSend({t:'V',v: 10,chat})"   v-if="checkBt(`v10` )"> <SvgIcon icon="ci:arrows-reload-01"/> 重绘</n-button>
             
             </n-space>
             </div>
           </template>
           <template v-else >
             <n-space style="margin-top: 10px;">
-               <n-button type="warning"  size="small"  @click="emits('imageSend',{t:'V',v: 21,chat})"><SvgIcon icon="fa-solid:magic"/> 强变化</n-button>
-               <n-button type="warning"  size="small"  @click="emits('imageSend',{t:'V',v: 22,chat})"><SvgIcon icon="fa:magic"/> 弱变化</n-button>
-               <n-button type="warning"  size="small"  @click="emits('imageSend',{t:'V',v: 23,chat})"><SvgIcon icon="el:magic"/> 局部重绘</n-button>
+               <n-button  :type="isDo('V21')? 'error':'warning'"  size="small"  @click="imageSend({t:'V',v: 21,chat})"  v-if="checkBt(`v21` )"><SvgIcon icon="fa-solid:magic"/> 强变化</n-button>
+               <n-button  :type="isDo('V22')? 'error':'warning'"  size="small"  @click="imageSend({t:'V',v: 22,chat})"  v-if="checkBt(`v22` )"><SvgIcon icon="fa:magic"/> 弱变化</n-button>
+                  <!-- @click="imageSend({t:'V',v: 23,chat})"  -->
+               <n-button  :type="isDo('V23')? 'error':'warning'"  size="small"  @click="goCanvan()" v-if="checkBt(`v23` )"><SvgIcon icon="el:magic"/> 局部重绘</n-button>
             </n-space>
              <n-space style="margin-top: 10px;">
-               <n-button type="info"  size="small"  @click="emits('imageSend',{t:'V',v: 31,chat})"><SvgIcon icon="cil:search"/> 2倍视角</n-button>
-               <n-button type="info"  size="small"  @click="emits('imageSend',{t:'V',v: 32,chat})"><SvgIcon icon="cil:search"/> 1.5倍视角</n-button>
+               <n-button :type="isDo('V31')? 'error':'info'"  size="small"  @click="imageSend({t:'V',v: 31,chat})"  v-if="checkBt(`v31` )"><SvgIcon icon="cil:search"/> 2倍视角</n-button>
+               <n-button :type="isDo('V32')? 'error':'info'"  size="small"  @click="imageSend({t:'V',v: 32,chat})"  v-if="checkBt(`v32` )"><SvgIcon icon="cil:search"/> 1.5倍视角</n-button>
+               <n-button :type="isDo('V34')? 'error':'info'"  size="small"  @click="imageSend({t:'V',v: 34,chat})"  v-if="checkBt(`v34` )"><SvgIcon icon="icons8:resize-four-directions"/> 方正拓展</n-button>
              </n-space>
               <n-space style="margin-top: 10px;">
-               <n-button type="success"  size="small"  @click="emits('imageSend',{t:'V',v: 41,chat})"><SvgIcon icon="icon-park-outline:left-two"/> 视角左移</n-button>
-               <n-button type="success"  size="small"  @click="emits('imageSend',{t:'V',v: 42,chat})"><SvgIcon icon="icon-park-outline:right-two"/> 视角右移</n-button>
-               <n-button type="success"  size="small"  @click="emits('imageSend',{t:'V',v: 43,chat})"><SvgIcon icon="icon-park-outline:up-two"/> 视角上移</n-button>
-               <n-button type="success"  size="small"  @click="emits('imageSend',{t:'V',v: 44,chat})"><SvgIcon icon="icon-park-outline:down-two"/> 视角下移</n-button>
+               <n-button :type="isDo('V41')? 'error':'success'"  size="small"  @click="imageSend({t:'V',v: 41,chat})"  v-if="checkBt(`v41` )"><SvgIcon icon="icon-park-outline:left-two"/> 视角左移</n-button>
+               <n-button :type="isDo('V42')? 'error':'success'"  size="small"  @click="imageSend({t:'V',v: 42,chat})"  v-if="checkBt(`v42` )"><SvgIcon icon="icon-park-outline:right-two"/> 视角右移</n-button>
+               <n-button :type="isDo('V43')? 'error':'success'"  size="small"  @click="imageSend({t:'V',v: 43,chat})"  v-if="checkBt(`v43` )"><SvgIcon icon="icon-park-outline:up-two"/> 视角上移</n-button>
+               <n-button :type="isDo('V44')? 'error':'success'"  size="small"  @click="imageSend({t:'V',v: 44,chat})"  v-if="checkBt(`v44` )"><SvgIcon icon="icon-park-outline:down-two"/> 视角下移</n-button>
              </n-space>
 
           </template>
@@ -277,6 +327,10 @@ console.log('uuid', uuid,props.index )
       </div>
     </div>
   </div>
+
+  <NModal v-model:show="st.isShow"   preset="card"  title="局部重绘编辑" style="max-width: 600px;" @close="st.isShow=false" >
+		   <aiCanvas :chat="chat" :base64="st.uri_base64" v-if="st.isShow" @success="maskOk" />
+	</NModal>
 </template>
 
 <style lang="less">
