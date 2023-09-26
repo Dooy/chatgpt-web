@@ -16,6 +16,7 @@ declare namespace Chat {
 		mj_opt?:any
 		mj_bt?:string[]
 		uri?:string //图片地址
+		uri_tem?:string //图片地址过程性地址
 		uri_base64?:string //图片本地base64
 		error_des?:string //错误信息
 	}

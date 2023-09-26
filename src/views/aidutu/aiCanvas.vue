@@ -18,7 +18,7 @@ onMounted( ()=>{
       prompt: pp.chat?.text , // 按实际传入
       img_type: 'png'// 按实际传入
      // ,img_info:''
-      ,img_info: JSON.stringify({"image_url":  '' ,"prompt":"good news"})  // 按实际传入
+      ,img_info: JSON.stringify({"image_url":  '' ,"prompt":"sunglasses"})  // 按实际传入
       }
     st.value.q=  Object.keys(data).map(key =>key + '=' + encodeURIComponent(data[key])).join('&')
     window.addEventListener('message', messageFun )
@@ -26,6 +26,8 @@ onMounted( ()=>{
 onUnmounted(()=>{
    window.removeEventListener('message', messageFun )
 })
+
+//收到iframe的消息
 const messageFun=(e:MessageEvent)=>{
    //console.log('我收到消息了', e.data );
    if( !e?.data) return ;
@@ -35,7 +37,7 @@ const messageFun=(e:MessageEvent)=>{
 const loadOk= (e:Event)=>{
    //console.log('loadOk','good news' );
     const iframe= e.target as HTMLIFrameElement;
-    iframe.contentWindow && iframe.contentWindow.postMessage( JSON.stringify({act:'go',img_info: {"image_url":  pp.base64==''?pp.chat?.uri : pp.base64 ,"prompt": pp.chat?.text }  }), '*');
+    iframe.contentWindow && iframe.contentWindow.postMessage( JSON.stringify({act:'go',img_info: {"image_url":  pp.base64==''?pp.chat?.uri : pp.base64 ,"prompt":'' }  }), '*');// pp.chat?.text
 }
 </script>
 <template>

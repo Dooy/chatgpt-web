@@ -9,7 +9,7 @@ import { t } from '@/locales'
 //import { copyText3} from '@/utils/format'
 import AiMsg from "@/views/aidutu/aiMsg.vue";
 import { copyToClip } from '@/utils/copy'
-import {  NButton, NSpace,NImage,NModal } from "naive-ui"
+import {  NButton, NSpace,NImage,NModal ,NTooltip } from "naive-ui"
 import { getImg,img2base64, saveImg } from '@/views/aidutu/mj'
 import { useRoute } from 'vue-router'
 import { useChat } from  '@/views/chat/hooks/useChat'
@@ -225,7 +225,7 @@ const isDo= (act:string)=>{
 }
 const maskOk=(d:any)=>{
   //console.log('maskOk',d  );
-  imageSend({t:'V',v: 23,chat:props?.chat,  data:{ mask:d.mask} })
+  imageSend({t:'V',v: 23,chat:props?.chat,  data:{ mask:d.mask,prompt:d.prompt} })
    st.value.isShow= false;
 }
 //st.isShow=true
@@ -246,7 +246,8 @@ const goCanvan=()=>{
         <div v-if="chat?.uri" class="w-full markdown-body"  >
           <div v-text="props.text"></div>
            <div v-if="st.uri_base64" style="margin-top: 10px;">
-            <n-image :src="st.uri_base64" :class="{'maxCss':!isMobile}" style="border-radius: 3px;" /> 
+            <n-image :src="st.uri_base64" class="maxCss" style="border-radius: 3px;" /> 
+            <!-- :class="{'maxCss':!isMobile}" -->
           </div>
           <div v-else-if="st.isLoadImg" style="text-align: center; padding: 60px 20px;">
             <div  @click="loadImage">正在载入图片...</div> 
@@ -254,8 +255,8 @@ const goCanvan=()=>{
           </div>
           <div style="position: relative; margin-top: 15px; " v-else>
             <a :href="chat?.uri+'?imageMogr2/format/webp'" target="_blank" ></a>
-              <n-image :src="chat.uri+'?imageMogr2/format/webp'" :class="{'maxCss':!isMobile}" style="border-radius: 3px;" /> 
-            
+              <n-image :src="chat.uri+'?imageMogr2/format/webp'" style="border-radius: 3px;"  class="maxCss"  /> 
+             <!-- :class="{'maxCss':!isMobile}" -->
             <!-- <div style="position: absolute;bottom: 10px;right: 20px;;"><n-button   type="primary"   size="small" ><a :href="chat?.uri+'?imageMogr2/format/webp'" target="_blank" style="color: #333;">查看</a></n-button></div> -->
           </div>
           <template v-if="chat?.mj_type!='U'">
@@ -264,7 +265,12 @@ const goCanvan=()=>{
             
             <n-space>
               <template  v-for="a in st.fg">
+              <n-tooltip trigger="hover">
+               <template #trigger> 
                <n-button :type="isDo('U'+a)? 'error':'success'"  size="small" @click="imageSend( {t:'U',v:a,chat})" v-if="checkBt(`u`+a )">U{{ a }}</n-button>
+                </template>高清单张：可局部重绘、变焦、强(弱)变化和各种视角
+              
+              </n-tooltip>
               </template>
               </n-space>
           <!--  </n-button-group> -->
@@ -290,8 +296,8 @@ const goCanvan=()=>{
                <n-button  :type="isDo('V23')? 'error':'warning'"  size="small"  @click="goCanvan()" v-if="checkBt(`v23` )"><SvgIcon icon="el:magic"/> 局部重绘</n-button>
             </n-space>
              <n-space style="margin-top: 10px;">
-               <n-button :type="isDo('V31')? 'error':'info'"  size="small"  @click="imageSend({t:'V',v: 31,chat})"  v-if="checkBt(`v31` )"><SvgIcon icon="cil:search"/> 2倍视角</n-button>
-               <n-button :type="isDo('V32')? 'error':'info'"  size="small"  @click="imageSend({t:'V',v: 32,chat})"  v-if="checkBt(`v32` )"><SvgIcon icon="cil:search"/> 1.5倍视角</n-button>
+               <n-button :type="isDo('V31')? 'error':'info'"  size="small"  @click="imageSend({t:'V',v: 31,chat})"  v-if="checkBt(`v31` )"><SvgIcon icon="cil:search"/> 2倍变焦</n-button>
+               <n-button :type="isDo('V32')? 'error':'info'"  size="small"  @click="imageSend({t:'V',v: 32,chat})"  v-if="checkBt(`v32` )"><SvgIcon icon="cil:search"/> 1.5倍变焦</n-button>
                <n-button :type="isDo('V34')? 'error':'info'"  size="small"  @click="imageSend({t:'V',v: 34,chat})"  v-if="checkBt(`v34` )"><SvgIcon icon="icons8:resize-four-directions"/> 方正拓展</n-button>
              </n-space>
               <n-space style="margin-top: 10px;">
@@ -315,16 +321,23 @@ const goCanvan=()=>{
                 <div style="width: 100%;"><n-button type="warning"  @click="emits('imageSend', {t:'reload',chat})">重新获取图片</n-button></div>
               </div>
             </div>
-            <div class="w-full markdown-body" v-html="guolv(text)" v-else />
+            
+            <div class="w-full markdown-body" v-else >
+               <n-image :src="chat?.uri_tem+'?imageMogr2/format/webp'" class="maxCss" style="border-radius: 3px;" v-if="chat?.uri_tem" /> 
+               <span v-html="text"></span>
+            </div>
           </template>
           <div v-else class="w-full whitespace-pre-wrap" v-text="text" />
+         
+         
         </template>
 
         <span v-if="loading" class="dark:text-white w-[4px] h-[20px] block animate-blink" />
       </div>
       <div v-else class="whitespace-pre-wrap" v-text="text" />
       <div v-if="st.uri_base64 &&  inversion" style="margin-top: 10px;">
-        <n-image :src="st.uri_base64" :class="{'maxCss':!isMobile}" style="border-radius: 3px;" /> 
+        <n-image :src="st.uri_base64" style="border-radius: 3px;" class="maxCss" /> 
+        <!-- :class="{'maxCss':!isMobile}"  -->
       </div>
     </div>
   </div>
@@ -336,6 +349,6 @@ const goCanvan=()=>{
 
 <style lang="less">
 @import url(./style.less);
-.markdown-body img.maxCss{ max-width: 400px;}
+.markdown-body img.maxCss,img.maxCss, .n-image img{ max-width: 400px!important; max-height: 400px!important;}
 .mmWidth{ max-width: 600px;}
 </style>

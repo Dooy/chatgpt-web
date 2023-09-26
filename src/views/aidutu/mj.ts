@@ -19,7 +19,7 @@ export function mjDraw(uuid:number,index:number,chat:Chat.Chat )
         //h(1)
         function check(){
              ajax({url  }).then(d=>{
-                console.log('d',d );
+                //console.log('d',d );
                 const mj:any= d.data.mj;
                 let process =  +mj.progress;
                 //console.log('mj',process,mj.progress   , mj );
@@ -51,7 +51,8 @@ export function mjDraw(uuid:number,index:number,chat:Chat.Chat )
                             loading: true,
                             conversationOptions: chat.conversationOptions,
                             requestOptions:  chat.requestOptions,
-                            mj_id:chat.mj_id 
+                            mj_id:chat.mj_id ,
+                            uri_tem:mj.uri_tem 
                         })
                     }else if( cnt>500){
                         updateChat( +uuid,  index,
