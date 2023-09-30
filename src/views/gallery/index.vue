@@ -70,7 +70,7 @@ loadImg();
 </script>
 <template>
 <ai-msg ref="msgRef"></ai-msg>
- <Waterfall :list="list" :breakpoints="breakpoints" style="--1d5a2b91:transparent;">
+ <Waterfall :list="list" :breakpoints="breakpoints"  class=" !bg-transparent">
   <template #item="{ item, url, index }">
     <div class="bg-white dark:bg-[#24272e] rounded-md   overflow-hidden cursor-pointer group/item relative">
       <LazyImg :url="item.image_url"  @success="item.isLoad=1" @click="goShow(item )" />
