@@ -3,7 +3,7 @@ import { NDivider ,NInput,NButton,NTabs,NTabPane,NSpace,NTag,NModal,NPopover} fr
 import {  ref , computed} from 'vue'
 import {  SvgIcon } from '@/components/common'
 import AiMsg from '@/views/aidutu/aiMsg.vue' 
-import { ajax, myTranslate } from '@/api' 
+import { ajax, train } from '@/api' 
 //import { saveImg } from './mj'
 
 const st= ref({
@@ -42,21 +42,29 @@ const fsRef= ref()
 const $emit=defineEmits(['drawSent','close']);
 const props = defineProps({buttonDisabled:Boolean});
 
-function containsChinese(str:string ) {
-  var reg = /[\u4e00-\u9fa5]/g; // 匹配中文的正则表达式
-  return reg.test(str);
-}
+ 
 function create( ){
    
     //const q= 
+    /*
     if( containsChinese( st.value.text.trim()) ){
         train();
         return ;
     }
     const ps = createPrompt(st.value.text.trim());
-    const rz={ prompt: ps, drawText: ps }
-    if( rz.prompt  ) drawSent(rz)
-    st.value.text=''
+    */
+    st.value.isLoad=true
+    train( st.value.text.trim()).then(ps=>{
+        const rz={ prompt: ps, drawText: createPrompt( ps) }
+        if( rz.prompt  ) drawSent(rz)
+        st.value.text=''
+         st.value.isLoad=false
+    }).catch(err=>{
+        msgRef.value.showError(err)
+        st.value.isLoad=false
+    })
+
+    
 }
 function drawSent(rz:any){
     let rz2= rz;
@@ -78,7 +86,7 @@ function createPrompt(rz:string){
     console.log('rz',rz );
     return rz ;
 }
-
+/* 
 async function train(){
      //msgRef.value.showMsg('开发中。。。');
     if( st.value.text.trim()  =='') {
@@ -107,7 +115,7 @@ async function train(){
     st.value.text=''
    
    
-}
+} */
 
 const isDisabled = computed(() => {
     return props.buttonDisabled || st.value.isLoad || st.value.text.trim()==''

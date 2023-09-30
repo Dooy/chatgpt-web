@@ -246,7 +246,7 @@ const goCanvan=()=>{
         <div v-if="chat?.uri" class="w-full markdown-body"  >
           <div v-text="props.text"></div>
            <div v-if="st.uri_base64" style="margin-top: 10px;">
-            <n-image :src="st.uri_base64" class="maxCss" style="border-radius: 3px;" /> 
+            <n-image :src="st.uri_base64" :class="{'maxCss':!isMobile}" style="border-radius: 3px;" /> 
             <!-- :class="{'maxCss':!isMobile}" -->
           </div>
           <div v-else-if="st.isLoadImg" style="text-align: center; padding: 60px 20px;">
@@ -255,8 +255,8 @@ const goCanvan=()=>{
           </div>
           <div style="position: relative; margin-top: 15px; " v-else>
             <a :href="chat?.uri+'?imageMogr2/format/webp'" target="_blank" ></a>
-              <n-image :src="chat.uri+'?imageMogr2/format/webp'" style="border-radius: 3px;"  class="maxCss"  /> 
-             <!-- :class="{'maxCss':!isMobile}" -->
+              <n-image :src="chat.uri+'?imageMogr2/format/webp'" style="border-radius: 3px;"  :class="{'maxCss':!isMobile}"  /> 
+             
             <!-- <div style="position: absolute;bottom: 10px;right: 20px;;"><n-button   type="primary"   size="small" ><a :href="chat?.uri+'?imageMogr2/format/webp'" target="_blank" style="color: #333;">查看</a></n-button></div> -->
           </div>
           <template v-if="chat?.mj_type!='U'">
@@ -323,7 +323,7 @@ const goCanvan=()=>{
             </div>
             
             <div class="w-full markdown-body" v-else >
-               <n-image :src="chat?.uri_tem+'?imageMogr2/format/webp'" class="maxCss" style="border-radius: 3px;" v-if="chat?.uri_tem" /> 
+               <n-image :src="chat?.uri_tem+'?imageMogr2/format/webp'" :class="{'maxCss':!isMobile}" style="border-radius: 3px;" v-if="chat?.uri_tem" /> 
                <span v-html="text"></span>
             </div>
           </template>
@@ -336,8 +336,8 @@ const goCanvan=()=>{
       </div>
       <div v-else class="whitespace-pre-wrap" v-text="text" />
       <div v-if="st.uri_base64 &&  inversion" style="margin-top: 10px;">
-        <n-image :src="st.uri_base64" style="border-radius: 3px;" class="maxCss" /> 
-        <!-- :class="{'maxCss':!isMobile}"  -->
+        <n-image :src="st.uri_base64" style="border-radius: 3px;" :class="{'maxCss':!isMobile}" /> 
+        <!--   -->
       </div>
     </div>
   </div>
@@ -349,6 +349,6 @@ const goCanvan=()=>{
 
 <style lang="less">
 @import url(./style.less);
-.markdown-body img.maxCss,img.maxCss, .n-image img{ max-width: 400px!important; max-height: 400px!important;}
+.markdown-body img.maxCss,img.maxCss ,.maxCss img  { max-width: 400px!important; max-height: 400px!important;}
 .mmWidth{ max-width: 600px;}
 </style>

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, nextTick,ref } from 'vue'
 import { HoverButton, SvgIcon } from '@/components/common'
-import {useAppStore, useChatStore, useUserStore} from '@/store'
+import {homeStore, useAppStore, useChatStore, useUserStore} from '@/store'
 import AiDasan from "@/views/aidutu/aiDasan.vue";
 import {NModal } from 'naive-ui'
 interface Props {
@@ -54,7 +54,7 @@ const userInfo = computed(() => userStore.userInfo)
   <header
     class="sticky top-0 left-0 right-0 z-30 border-b dark:border-neutral-800 bg-white/80 dark:bg-black/20 backdrop-blur"
   >
-    <div class="relative flex items-center justify-between min-w-0 overflow-hidden h-14">
+    <div class="relative flex items-center justify-between min-w-0 overflow-hidden h-12">
       <div class="flex items-center">
         <button
           class="flex items-center justify-center w-11 h-11"
@@ -83,11 +83,17 @@ const userInfo = computed(() => userStore.userInfo)
           </span>
         </HoverButton> -->
 
-				<HoverButton @click="goCz" v-if="userInfo.isVip">
+				<!-- <HoverButton @click="goCz" v-if="userInfo.isVip">
 				<span class="text-xl text-[#f0a020] dark:text-red" style="font-size: 16px;font-weight: 600">
             充值
 				</span>
+				</HoverButton> -->
+        <HoverButton @click="homeStore.setMyData({act:'newtask'})" v-if="userInfo.isVip">
+				<span class="text-xl text-[#f0a020] dark:text-red" style="font-size: 16px;font-weight: 600">
+            新建
+				</span>
 				</HoverButton>
+
 				<HoverButton @click="show2=true" v-else>
 				<span class="text-xl text-[#18a058] dark:text-white" style="font-size: 16px;font-weight: 600">
             打赏

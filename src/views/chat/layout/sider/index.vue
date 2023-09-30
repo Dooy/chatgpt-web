@@ -13,11 +13,11 @@ import {useRoute} from "vue-router";
 const appStore = useAppStore()
 const chatStore = useChatStore()
 
-const { isMobile } = useBasicLayout()
+const { isMobile,isMD } = useBasicLayout()
 const show = ref(false)
 const show2 = ref(false)
 
-const collapsed = computed(() => appStore.siderCollapsed)
+const collapsed = computed(() => appStore.siderCollapsed || isMD.value)
 
 function handleAdd() {
   chatStore.addHistory({ title: 'New Task', uuid: Date.now(), isEdit: false })
@@ -76,13 +76,14 @@ onMounted(()=>{
 </script>
 
 <template>
+<!-- position="absolute" -->
   <NLayoutSider
     :collapsed="collapsed"
     :collapsed-width="0"
     :width="260"
     :show-trigger="isMobile ? false : 'arrow-circle'"
     collapse-mode="transform"
-    position="absolute"
+   
     bordered
     :style="getMobileClass"
     @update-collapsed="handleUpdateCollapsed"
@@ -111,7 +112,7 @@ onMounted(()=>{
 					<!-- <div style="text-align: center;padding-top: 10px"> <a href="https://docs.qq.com/doc/DWHFYamFkV1RPTkxi" target="_blank" style="color: #1f6feb">免责申明</a> </div> -->
         </div>
       </main>
-      <Footer />
+      <!-- <Footer /> -->
     </div>
   </NLayoutSider>
   <template v-if="isMobile">

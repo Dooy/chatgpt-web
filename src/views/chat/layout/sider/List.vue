@@ -67,7 +67,7 @@ function isActive(uuid: number) {
             @click="handleSelect(item)"
           >
             <span>
-              <SvgIcon icon="ri:message-3-line" />
+              <SvgIcon icon="ic:outline-palette" />
             </span>
             <div class="relative flex-1 overflow-hidden break-all text-ellipsis whitespace-nowrap">
               <NInput

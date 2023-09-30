@@ -1,10 +1,12 @@
 
 
 import { ajax } from '@/api';
-import { useChat } from '../chat/hooks/useChat'
+//import { useChat } from '../chat/hooks/useChat'
+import { useChat } from '@/views/chat/hooks/useChat'
 import localforage from "localforage"
 
-const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat()
+//const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat()
+const {   updateChat  } = useChat()
 
 export function mjDraw(uuid:number,index:number,chat:Chat.Chat )
 {
@@ -110,3 +112,4 @@ export function img2base64(img:any) {
     ctx.drawImage(img, 0, 0);
     return canvas.toDataURL('image/jpeg');
 }
+

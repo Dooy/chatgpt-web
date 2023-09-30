@@ -26,6 +26,8 @@ import { copyText3 } from '@/utils/format'
 import { useIconRender } from '@/hooks/useIconRender'
 import { mjDraw, saveImg } from '../aidutu/mj'
 import AiMj from '../aidutu/aiMj.vue'
+import AiSiderInput from '../aidutu/aiSiderInput.vue'
+//import Sider from './layout/sider/index.vue'
 //import AiModel from '@/views/aidutu/aiModel.vue' 
 
 let controller = new AbortController()
@@ -682,7 +684,7 @@ const buttonDisabled = computed(() => {
 })
 
 const footerClass = computed(() => {
-  let classes = ['p-4']
+  let classes = ['p-0','h-full']
   if (isMobile.value)
     classes = ['sticky', 'left-0', 'bottom-0', 'right-0', 'p-2', 'pr-3', 'overflow-hidden']
   return classes
@@ -856,8 +858,8 @@ function drawSent(e:any){
   <NModal v-model:show="serverMsg.is" style=" width: 450px;" preset="card">
     <div v-html="serverMsg.des" />
   </NModal>
-
-  <div class="flex flex-col w-full h-full">
+  
+  <div class="flex  w-full h-full" :class="isMobile?['flex-col']:['flex-row-reverse']">
     <HeaderComponent
       v-if="isMobile"
       :using-context="usingContext"
@@ -916,8 +918,9 @@ function drawSent(e:any){
       </div>
     </main>
     <footer :class="footerClass">
-      <div class="w-full max-w-screen-xl m-auto" v-if="!mjConfig.isClose">
-          <AiMj @close="mjClose" @drawSent="drawSent" :button-disabled="loading"/> 
+      <div class="w-full h-full" v-if="!mjConfig.isClose">
+          <!-- <AiMj @close="mjClose" @drawSent="drawSent" :button-disabled="loading"/>  -->
+          <AiSiderInput @close="mjClose" @drawSent="drawSent" :button-disabled="loading"/> 
       </div>
       <div class="w-full max-w-screen-xl m-auto"  v-else>
         <!-- <AiModel v-if="userInfo.isVip"/> -->

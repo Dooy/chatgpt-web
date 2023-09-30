@@ -5,7 +5,7 @@ import { NButton, NCard, NModal } from 'naive-ui'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import AiWeixin from '@/views/aidutu/aiWeixin.vue'
 import { SvgIcon } from '@/components/common'
-import { useUserStore } from '@/store'
+import { homeStore, useUserStore } from '@/store'
 import { ajax } from '@/api'
 import AiOpenVip from '@/views/aidutu/aiOpenVip.vue'
 
@@ -89,6 +89,8 @@ watch(userInfo, (val, o) => {
         </div>
         <div style="padding-top: 10px;" v-html="stvip.msg" />
       </template>
+
+        <div class="mt-4" v-if="isMobile"><NButton type="primary" @click="homeStore.setMyData({act:'newtask'})" >新建绘画</NButton></div>
     </div>
   </div>
   <template v-else>
