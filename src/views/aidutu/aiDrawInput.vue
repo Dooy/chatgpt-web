@@ -168,11 +168,9 @@ watch( ()=>homeStore.myData.act, (n)=>{
 
 </div>
 </template>
-<style lang="scss">
-    .aspect-item.active{
+<style>
+    .aspect-item.active, .aspect-item.active .aspect-box{
         border-color:#86dfba ;
-        .aspect-box{
-         border-color:#86dfba ;
-        }
+         
     }
 </style>
