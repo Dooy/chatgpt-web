@@ -26,13 +26,13 @@ RUN pnpm config set registry https://registry.npm.taobao.org
 
 WORKDIR /app
 
-COPY /data/app/midjourney/chatgpt-web/package.json /app
+COPY ./midjourney/chatgpt-web/package.json /app
 
-COPY /data/app/midjourney/chatgpt-web/pnpm-lock.yaml /app
+COPY ./midjourney/chatgpt-web/chatgpt-web/pnpm-lock.yaml /app
 
 RUN pnpm install
 
-COPY /data/app/midjourney/chatgpt-web /app
+COPY ./midjourney/chatgpt-web/chatgpt-web /app
 
 RUN pnpm run build
 
