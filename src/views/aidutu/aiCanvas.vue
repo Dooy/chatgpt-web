@@ -41,6 +41,6 @@ const loadOk= (e:Event)=>{
 }
 </script>
 <template>
-    <iframe @load="loadOk" ref="ifdiv" :src="`/mitf/index.html?${st.q}`"  class=" h-[80vh] w-full" style="border-width: 0px; border-style: none; overflow: hidden;" v-if="st.q"></iframe>
+    <iframe @load="loadOk" ref="ifdiv" :src="`./mitf/index.html?${st.q}`"  class=" h-[80vh] w-full" style="border-width: 0px; border-style: none; overflow: hidden;" v-if="st.q"></iframe>
 
 </template>

@@ -1,12 +1,11 @@
 <script setup lang="ts">
 //boy, Cyberpunk , Top view , Face Shot (VCU) , Warm light  --style raw  --ar 3:4 --q 0.5 --v 5.2
-import { ref,computed ,watch} from "vue";
+import { ref,computed } from "vue";
 import config from "./draw.json";
-import {  NSelect,NInput,NButton,NTag,NPopover,NModal} from 'naive-ui'; 
+import {  NSelect,NInput,NButton,NTag,NPopover} from 'naive-ui'; 
 import {  SvgIcon } from '@/components/common'
 import AiMsg from '@/views/aidutu/aiMsg.vue' 
 import { train,upImg } from '@/api' 
-import { homeStore } from "@/store";
 //import { upImg } from "./mj";
 
 const vf=[{s:'width: 100%; height: 100%;',label:'1:1'}
@@ -90,17 +89,7 @@ function selectFile(input:any){
     upImg(input.target.files[0]).then(d=>st.value.fileBase64 =d ).catch(e=>msgRef.value.showError(e))
 }
 
-watch( ()=>homeStore.myData.act, (n)=>{
-    console.log('home', n );
-    if(n=='same'){
-        const actData = homeStore.myData.actData;
-        //console.log('actData', actData.prompt );
-        if( actData.prompt ){
-           drawSent( { prompt: actData.prompt , drawText:actData.prompt });
-          //console.log( { prompt: actData.prompt , drawText:actData.prompt });
-        }
-    }
-})
+
 //const config=
 </script>
 <template>

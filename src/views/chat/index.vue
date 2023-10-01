@@ -27,6 +27,7 @@ import { useIconRender } from '@/hooks/useIconRender'
 import { mjDraw, saveImg } from '../aidutu/mj'
 import AiMj from '../aidutu/aiMj.vue'
 import AiSiderInput from '../aidutu/aiSiderInput.vue'
+import { homeStore } from "@/store";
 //import Sider from './layout/sider/index.vue'
 //import AiModel from '@/views/aidutu/aiModel.vue' 
 
@@ -844,6 +845,17 @@ function drawSent(e:any){
   //addChatImg(prompt.value,  mjConfig.value.fileBase64 )
   handleSubmit();
 }
+
+watch( ()=>homeStore.myData.act, (n)=>{
+    //console.log('home', n );
+    if(n=='same'){
+        const actData = homeStore.myData.actData; 
+        if( actData.prompt ){
+           drawSent( { prompt: actData.prompt , drawText:actData.prompt }); 
+        }
+    }
+})
+
 </script>
 
 <template>
