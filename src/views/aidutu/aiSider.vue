@@ -31,7 +31,7 @@ loadMenu()
             <a href="/"  class="router-link-active router-link-exact-active h-12 w-12 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
                 <n-tooltip placement="right" trigger="hover">
                   <template #trigger> 
-                    <div  class="flex h-full justify-center items-center ">
+                    <div  class="flex h-full justify-center items-center active">
                     <SvgIcon icon="ri:wechat-line" class="text-3xl"></SvgIcon>
                     </div>
                  </template>
