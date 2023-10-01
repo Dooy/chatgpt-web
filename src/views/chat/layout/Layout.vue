@@ -63,6 +63,7 @@ const getContainerClass = computed(() => {
       <div class="h-full overflow-hidden" :class="getMobileClass" >
         <NLayout class="z-40 transition" :class="getContainerClass" has-sider :sider-placement="isMobile?'left': 'right'">
           
+          <!-- 这个左侧栏目 -->
           <aiSider v-if="!isMobile"/>
          
           <NLayoutContent class="h-full">

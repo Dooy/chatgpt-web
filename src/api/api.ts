@@ -97,6 +97,7 @@ export function fetchUser(q:string,isVip:number,data:any={})
 	return ajax({url:'/chatgpt/mj/info?v=3',method:'POST',data })
 }
 
+
 export function ajax({ url="",method='GET',data={}}): Promise<Response<any>> {
 
 	const service = axios.create({

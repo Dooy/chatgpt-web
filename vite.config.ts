@@ -35,6 +35,8 @@ export default defineConfig((env) => {
   const viteEnv = loadEnv(env.mode, process.cwd()) as unknown as ImportMetaEnv
 
   return {
+    base: '/draw',
+    
     resolve: {
       alias: {
         '@': path.resolve(process.cwd(), 'src'),
@@ -80,6 +82,7 @@ export default defineConfig((env) => {
       commonjsOptions: {
         ignoreTryCatch: false,
       },
+      outDir:'dist/draw'
 
     }
   }

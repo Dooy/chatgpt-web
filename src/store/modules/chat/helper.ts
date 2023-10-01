@@ -1,6 +1,6 @@
 import { ss } from '@/utils/storage'
 
-const LOCAL_NAME = 'chatStorage'
+const LOCAL_NAME = 'drawChatStorage'
 
 export function defaultState(): Chat.ChatState {
   const uuid = 1002

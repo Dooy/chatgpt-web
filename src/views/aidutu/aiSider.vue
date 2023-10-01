@@ -5,23 +5,30 @@ import { useBasicLayout } from '@/hooks/useBasicLayout'
 const { isMobile } = useBasicLayout()
 import { NAvatar,NTooltip,NDrawerContent, NDrawer} from 'naive-ui'
 import { useUserStore,homeStore } from '@/store'
+import { ajax } from '@/api'
 //import gallery from '@/views/gallery/index.vue'
 
 const Setting = defineAsyncComponent(() => import('@/components/common/Setting/index.vue'))
 const userStore = useUserStore()
 
-const st= ref({'show':false,showImg:false})
+const st= ref({'show':false,showImg:false, menu:[]})
+
 
 const userInfo = computed(() => userStore.userInfo)
 const goCz=()=>{
 	userStore.updateUserInfo({doLogin:1})
 }
+const loadMenu=()=>{
+   ajax({url:'/chatgpt/mj/menu',method:'GET'})
+    .then(d=> st.value.menu=d.data.menu );
+}
+loadMenu()
 </script>
 <template>
 <div class="flex-shrink-0 w-[60px] z-[1000]  h-full" v-if="!isMobile">
     <div class="flex h-full select-none flex-col items-center justify-between bg-[#e8eaf1] px-2 pt-4 pb-8 dark:bg-[#25272d]">
         <div class="flex flex-col space-y-4 flex-1">
-            <a href="https://vip.minihuo.com/?mj" target="_blank" class="router-link-active router-link-exact-active h-12 w-12 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
+            <a href="/?mj"   class="router-link-active router-link-exact-active h-12 w-12 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
                 <n-tooltip placement="right" trigger="hover">
                   <template #trigger> 
                     <div  class="flex h-full justify-center items-center ">
@@ -32,7 +39,7 @@ const goCz=()=>{
                 </n-tooltip>
             </a>
 
-            <a href="/" class=" router-link-exact-active h-12 w-12 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
+            <a href="#" class=" router-link-exact-active h-12 w-12 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
                 <n-tooltip placement="right" trigger="hover">
                   <template #trigger> 
                     <div  class="flex h-full justify-center items-center active">
@@ -54,14 +61,15 @@ const goCz=()=>{
                 </n-tooltip>
             </section>
 
-            <a href="https://www.yuque.com/yuqueyonghuxlsfct/mj" target="_blank" class=" router-link-exact-active h-12 w-12 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
+            <a :href="item.url" :target="item.target" v-for="(item,index) in st.menu" :key="index"
+            class=" router-link-exact-active h-12 w-12 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
                 <n-tooltip placement="right" trigger="hover">
                   <template #trigger> 
                     <div  class="flex h-full justify-center items-center ">
-                    <SvgIcon icon="ep:guide" class="text-3xl"></SvgIcon>
+                    <SvgIcon :icon="item.icon" class="text-3xl"></SvgIcon>
                     </div> 
                   </template>
-                    教程指南
+                    {{ item.title }}
                 </n-tooltip>
             </a>
 

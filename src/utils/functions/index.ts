@@ -75,3 +75,16 @@ export function getTextFormProcess(text:string):any
 
 }
 
+
+export const _GET=(text:string):string=>
+{
+	// 获取查询字符串部分
+		const queryString = window.location.search;
+
+		// 解析查询字符串
+		const urlParams = new URLSearchParams(queryString);
+
+		// 获取参数的值
+		const aValue = urlParams.get( text);
+		return aValue??'';
+}
