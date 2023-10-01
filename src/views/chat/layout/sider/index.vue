@@ -76,13 +76,14 @@ onMounted(()=>{
 </script>
 
 <template>
+ <!-- position="absolute" -->
   <NLayoutSider
     :collapsed="collapsed"
     :collapsed-width="0"
     :width="260"
     :show-trigger="isMobile ? false : 'arrow-circle'"
     collapse-mode="transform"
-    position="absolute"
+   
     bordered
     :style="getMobileClass"
     @update-collapsed="handleUpdateCollapsed"
