@@ -12,15 +12,28 @@
                 "label": "超高清",
                 "value": "2"
             }],
-    "styleList": [{
-                "label": "山水画",
-                "value": "landscape"
+    "styleList": [
+        {
+                 "label": "赛博朋克",
+                "value": "Cyberpunk"
+            }, {
+                "label": "星际",
+                "value": "Warframe"
+            }, {
+                "label": "二次元",
+                "value": "ACGN"
+            }, {
+                "label": "日本漫画",
+                "value": "Japanese comics/manga"
+            }, {
+                "label": "水墨",
+                "value": "Ink Wash Painting Style"
             }, {
                 "label": "原画风格",
                 "value": "Original"
             }, {
-                "label": "赛博朋克",
-                "value": "Cyberpunk"
+               "label": "山水画",
+                "value": "landscape"
             }, {
                 "label": "插画",
                 "value": "illustration"

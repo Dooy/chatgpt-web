@@ -17,7 +17,7 @@ const { isMobile,isMD } = useBasicLayout()
 const show = ref(false)
 const show2 = ref(false)
 
-const collapsed = computed(() => appStore.siderCollapsed || isMD.value)
+const collapsed = computed(() => appStore.siderCollapsed ||  isMD.value)
 
 function handleAdd() {
   chatStore.addHistory({ title: 'New Task', uuid: Date.now(), isEdit: false })

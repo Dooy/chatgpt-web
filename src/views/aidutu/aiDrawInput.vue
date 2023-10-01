@@ -76,7 +76,7 @@ function createPrompt(rz:string){
         else if(v.k=='version') {
             rz +=` ${f.value.version}`;
         }
-        else rz +=` , ${f.value[v.k]}`;
+        else if( f.value[v.k] ) rz +=` , ${f.value[v.k]}`;
     }
      if(f.value.bili>-1) rz +=` --ar ${vf[f.value.bili].label}`;
     //console.log('rz ', rz );
