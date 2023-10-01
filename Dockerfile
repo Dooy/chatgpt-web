@@ -16,27 +16,7 @@ RUN pnpm install
 COPY . /app
 
 RUN pnpm run build
-
-# build front-end
-FROM node:lts-alpine AS drawweb
-
-RUN npm install pnpm -g
-
-RUN pnpm config set registry https://registry.npm.taobao.org
-
-WORKDIR /app
-
-COPY ./midjourney/chatgpt-web/package.json /app
-
-COPY ./midjourney/chatgpt-web/chatgpt-web/pnpm-lock.yaml /app
-
-RUN pnpm install
-
-COPY ./midjourney/chatgpt-web/chatgpt-web /app
-
-RUN pnpm run build
-
-
+ 
 # build backend
 FROM node:lts-alpine as backend
 
@@ -74,8 +54,6 @@ RUN pnpm install --production && rm -rf /root/.npm /root/.pnpm-store /usr/local/
 COPY /service /app
 
 COPY --from=frontend /app/dist /app/public
-
-COPY --from=drawweb /app/dist/draw /app/public/draw
 
 COPY --from=backend /app/build /app/build
 
