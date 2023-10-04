@@ -110,7 +110,7 @@ loadImg();
 <NImage   :src="st.showImg"  ref="showImg" v-if="st.showImg" :width="1" />
  <!-- <NButton type="primary" size="small" @click="copy2('abdd' )" >复制</NButton> -->
 
-<div @click="copy2('abdd' )">复制测试</div>
+<!-- <div @click="copy2('abdd' )">复制测试</div> -->
 </template>
 
 <style>
