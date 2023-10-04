@@ -21,7 +21,10 @@ function drawSent(e:any){
   st.value.show=false;
   $emit('drawSent', e)
 }
-watch( ()=>homeStore.myData.act, (act) =>  act=='newtask' && (st.value.show=true));
+watch( ()=>homeStore.myData.act, (act) => {
+  act=='newtask' && (st.value.show=true);
+  act=='same2' && (st.value.show=true);
+});
 </script>
 <template>
 <div v-if="isMobile" >

@@ -5,6 +5,8 @@ import { ajax } from '@/api'
 import {ref,nextTick} from "vue"
 import {NSpin ,NButton,NImage ,NDialog} from 'naive-ui' 
 import {copyText3} from "@/utils/format";
+//import { copyText } from 'vue3-clipboard'
+//import { copyToClip } from "@/utils/copy";
 import AiMsg from "@/views/aidutu/aiMsg.vue";
 import { homeStore } from "@/store"
 import { useBasicLayout } from '@/hooks/useBasicLayout'
@@ -56,13 +58,20 @@ const goShow=( item:any)=>{
     nextTick(() => showImg.value?.click());
 }
 function copy( item:any){ 
-	copyText3(  item.prompt ).then(()=>msgRef.value.showMsg('复制成功！'));
+  //console.log('copy', item.prompt );
+	//copyText3(  item.prompt ).then(()=>msgRef.value.showMsg('复制成功！'));
+  homeStore.setMyData({act:'copy',actData: {text: item.prompt } });
+	//copyToClip(  item.prompt ).then(()=>msgRef.value.showMsg('复制成功！'));
+}
+
+const copy2=(text:string)=>{
+   copyText3(   text ).then(()=>msgRef.value.showMsg('复制成功2！'));
 }
 
 //画同款
-const same=( item:any)=>{
+const same=( item:any,act:string)=>{
   //console.log('same',item);
-  homeStore.setMyData({act:'same',actData: JSON.parse(JSON.stringify(item) ) });
+  homeStore.setMyData({act,actData: JSON.parse(JSON.stringify(item) ) }); //:'same'
   emit('close');
 }
 loadImg();
@@ -85,8 +94,9 @@ loadImg();
             <div class="line-clamp-2 text-[13px]">{{ item.prompt }}</div>
             <div class="space-x-2">
                 
-                <NButton type="primary" size="small" @click="copy(item )" >复制</NButton>
-                <NButton type="primary" size="small"  @click="same(item )">画同款</NButton>
+                <!-- <NButton type="primary" size="small" @click="copy(item )" >复制</NButton> -->
+                <NButton type="primary" size="small" @click="same(item,'same2' )" >引用</NButton>
+                <NButton type="primary" size="small"  @click="same(item,'same' )">画同款</NButton>
                  
             </div>
         </div>
@@ -98,8 +108,9 @@ loadImg();
 
 
 <NImage   :src="st.showImg"  ref="showImg" v-if="st.showImg" :width="1" />
+ <!-- <NButton type="primary" size="small" @click="copy2('abdd' )" >复制</NButton> -->
 
-
+<div @click="copy2('abdd' )">复制测试</div>
 </template>
 
 <style>

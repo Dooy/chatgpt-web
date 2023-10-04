@@ -1,11 +1,13 @@
 <script setup lang="ts">
 //boy, Cyberpunk , Top view , Face Shot (VCU) , Warm light  --style raw  --ar 3:4 --q 0.5 --v 5.2
-import { ref,computed } from "vue";
+import { ref,computed,watch,onMounted } from "vue";
 import config from "./draw.json";
 import {  NSelect,NInput,NButton,NTag,NPopover} from 'naive-ui'; 
 import {  SvgIcon } from '@/components/common'
 import AiMsg from '@/views/aidutu/aiMsg.vue' 
 import { train,upImg } from '@/api' 
+//import {copyText3} from "@/utils/format";
+import { homeStore } from "@/store";
 //import { upImg } from "./mj";
 
 const vf=[{s:'width: 100%; height: 100%;',label:'1:1'}
@@ -30,6 +32,7 @@ const farr= [
 
 const msgRef = ref()
 const fsRef= ref()
+const copyRef = ref()
 const $emit=defineEmits(['drawSent','close']);
 const props = defineProps({buttonDisabled:Boolean});
 
@@ -84,10 +87,30 @@ function createPrompt(rz:string){
     return rz ;
 }
  
-
+// const copy=()=>{
+//     copyText3( '哦们sd').then(()=>msgRef.value.showMsg('复制成功345！'));
+// }
+// const copy2= ()=>{
+//     copyRef.value.click();
+// }
 function selectFile(input:any){
     upImg(input.target.files[0]).then(d=>st.value.fileBase64 =d ).catch(e=>msgRef.value.showError(e))
 }
+
+const same2=()=>{
+     st.value.text= homeStore.myData.actData.prompt;
+    f.value.version='';
+    f.value.quality='';
+}
+watch(()=>homeStore.myData.act,(n)=>{
+   // n=='copy' && copy2();
+    n=='same2' && same2();
+});
+onMounted(()=>{
+    homeStore.myData.act=='same2' && same2();
+});
+
+
 
 
 //const config=
@@ -119,7 +142,7 @@ function selectFile(input:any){
     </section>
     <div class="mb-1">
      <n-input    type="textarea"  v-model:value="st.text"   placeholder="提示词" round clearable maxlength="500" show-count 
-      :autosize="{   minRows:4 }" />
+      :autosize="{   minRows:2, maxRows:5 }" />
     </div>
     <div class="mb-4 flex justify-between items-center">
         <div>
@@ -154,6 +177,10 @@ function selectFile(input:any){
         </n-button>
         </div>
     </div>
+    <!-- <div class="mb-4 flex justify-between items-center">
+        <div @click="copy()" ref="copyRef">复制</div>
+        <div @click="copy2()"  >复制2</div> 
+    </div> -->
 
 </div>
 </template>
