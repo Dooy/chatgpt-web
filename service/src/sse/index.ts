@@ -145,8 +145,10 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
 			}
 			else {
 				response.writeHead(428);
-				response.end("get way error...\n"  );
-				console.log('error>>', 'get way error...' ,e )
+				//response.end("get way error...\n"  );
+                let ss = e.reason??'gate way error...';
+				response.end( `{"error":{"message":"${ss}","type":"openai_hk_error"}}`   );
+				console.log('error>>', ss ,e )
                 publishData( "openapi", 'error',  JSON.stringify({e: {status:428,reason:e}, tomq }));
                 return ;
 			}
