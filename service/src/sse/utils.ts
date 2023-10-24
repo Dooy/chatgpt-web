@@ -3,7 +3,7 @@ export class mError extends Error {
     status:number
     constructor(reason:any,status?:number){
         super(reason)
-        this.reason=reason
+        this.reason=`{"error":{"message":"${reason}","type":"openai_hk_error"}}` 
         this.status=status??428
     }
 

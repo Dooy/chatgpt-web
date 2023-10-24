@@ -138,8 +138,8 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
 			//response.send(2)
 			if(e.status) {
 				response.writeHead(e.status );
-				response.end( e.reason);
                 publishData( "openapi", 'error',  JSON.stringify({e,tomq} ));
+                response.end( e.reason?.replace(/one_api_error/ig,'openai_hk_error'));
 				return ;
 				//response.write(`data: ${ e.reason}\n\n`);
 			}

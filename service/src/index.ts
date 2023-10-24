@@ -24,8 +24,10 @@ import { sse } from './sse'
 
 	app.all('*', (_, res, next) => {
 		res.header('Access-Control-Allow-Origin', '*')
-		res.header('Access-Control-Allow-Headers', 'authorization, Content-Type')
+		res.header('Access-Control-Allow-Headers', '*')
+		res.header('Access-Control-Allow-Credentials', 'true')
 		res.header('Access-Control-Allow-Methods', '*')
+		res.header('Access-Control-Max-Age', '3600')
 		next()
 	})
 
@@ -169,6 +171,7 @@ import { sse } from './sse'
 	
     //转发接口
 	router.post('/v1/chat/completions',  sse );
+	router.post('/v1/embeddings',  sse );
 	router.post('/sse',  sse );
 
 	//v1/chat/completions
