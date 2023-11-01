@@ -6,7 +6,7 @@ import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
 import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
-import { sse } from './sse'
+import { sse,mjapi } from './sse'
 
 
 
@@ -173,6 +173,8 @@ import { sse } from './sse'
 	router.post('/v1/chat/completions',  sse );
 	router.post('/v1/embeddings',  sse );
 	router.post('/sse',  sse );
+	router.post('/mj/submit',  mjapi );
+	router.post('/mj/submit/imagine',  mjapi );
 
 	//v1/chat/completions
 
