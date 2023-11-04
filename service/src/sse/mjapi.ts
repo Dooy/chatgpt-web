@@ -36,14 +36,14 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
 
 	const uri= request.headers['x-uri']??'/mj/submit/imagine'
     try{
-            const mykey=await getMyKey( request.headers['authorization'], request.body);
+            const mykey=await getMyKey( request.headers['mj-api-secret']?? request.headers['authorization'], request.body);
             tomq.myKey=mykey.key ;
             tomq.user= mykey.user;
 
             const rqUrl=  url+uri ;//mykey.apiUrl==''? url+uri: mykey.apiUrl+uri;
             const authString = Buffer.from( userPsw ).toString('base64');
 
-            mlog('请求>>', rqUrl,  mykey.user?.uid, mykey.user?.fen    );
+            mlog('请求>>', rqUrl,  mykey.user?.uid, mykey.user?.fen ,authString   );
             const body=  JSON.stringify(  changBody(request.body,+mykey.user?.uid ));
             //mlog( 'body' ,body )
 		    await fetchSSE( rqUrl ,{
