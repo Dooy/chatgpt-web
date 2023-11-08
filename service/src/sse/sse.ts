@@ -112,11 +112,13 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
             tomq.myKey=mykey.key ;
             tomq.user= mykey.user;
             // console.log('请求>>', uri,  mykey.user?.uid, mykey.user?.fen,tomq.myKey , mykey.apiUrl );
+            
+            let rqUrl= mykey.apiUrl==''? url+uri: mykey.apiUrl+uri;
             if( model=='midjourney' ){
-                url= 'https://mj2chat.ccaiai.com';
+                rqUrl= 'https://mj2chat.ccaiai.com'+uri ;
                 tomq.myKey= 'sk-mj2chatmidjourney';
             }
-            const rqUrl= mykey.apiUrl==''? url+uri: mykey.apiUrl+uri;
+
              console.log('请求>>', rqUrl,  mykey.user?.uid, mykey.user?.fen,tomq.myKey   );
 		    await fetchSSE( rqUrl ,{
                 method: 'POST',
