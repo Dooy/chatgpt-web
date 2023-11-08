@@ -30,6 +30,11 @@ const routes: RouteRecordRaw[] = [
     name: '500',
     component: () => import('@/views/exception/500/index.vue'),
   },
+   {
+    path: '/mysse',
+    name: 'mysse',
+    component: () => import('@/views/mytest/sse.vue'),
+  },
 
   {
     path: '/:pathMatch(.*)*',

@@ -57,6 +57,16 @@ export default defineConfig((env) => {
           changeOrigin: true, // 允许跨域
           rewrite: path => path.replace('/api/', '/'),
         },
+        '/backend-api/conversation': {
+					//target: 'http://43.154.119.189:6019',
+					target: 'https://beta.note123.net',
+					changeOrigin: true, // 允许跨域
+				},
+         '/mmm-api/conversation': {
+					target: 'https://demo.xyhelper.cn',
+					changeOrigin: true, // 允许跨域
+          rewrite: path => path.replace('/mmm-api/', '/backend-api/'),
+				},
 
       },
     },

@@ -1,3 +1,5 @@
+import { isNotEmptyString } from "src/utils/is"
+
 export class mError extends Error {
     reason:any
     status:number
@@ -10,6 +12,9 @@ export class mError extends Error {
 }
 
 export const mlog =(...arg)=>{
+  //const M_DEBUG = process.env.M_DEBUG
+  if(! isNotEmptyString(process.env.M_DEBUG) ) return ;
+  
   const currentDate = new Date();
   const hours = currentDate.getHours().toString().padStart(2, '0');
   const minutes = currentDate.getMinutes().toString().padStart(2, '0');

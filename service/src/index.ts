@@ -6,7 +6,8 @@ import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
 import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
-import { sse,mjapi } from './sse'
+import { sse,mjapi ,mj2gpt ,chat2api} from './sse'
+ 
 
 
 
@@ -168,13 +169,23 @@ import { sse,mjapi } from './sse'
 		}
 	})
 
-	
+	const API_ENTRY = process.env.API_ENTRY
     //转发接口
-	router.post('/v1/chat/completions',  sse );
+	if( API_ENTRY=='chat2api') router.post('/v1/chat/completions',  chat2api );
+	else if( API_ENTRY=='mj2gpt') router.post('/v1/chat/completions',  mj2gpt );
+	else router.post('/v1/chat/completions',  sse ); 
+	
 	router.post('/v1/embeddings',  sse );
 	router.post('/sse',  sse );
 	router.post('/mj/submit',  mjapi );
 	router.post('/mj/submit/imagine',  mjapi );
+	//mj2gpt的格式输出
+	router.post('/mj2gpt/completions',  mj2gpt );
+	router.post('/mj2gpt',  mj2gpt );
+
+	//逆向 将chat对话转化为 api
+	router.post('/chat2api',  chat2api );
+
 
 	//v1/chat/completions
 

@@ -36,6 +36,7 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
 
 	const uri= request.headers['x-uri']??'/mj/submit/imagine'
     try{
+            
             const mykey=await getMyKey( request.headers['mj-api-secret']?? request.headers['authorization'], request.body);
             tomq.myKey=mykey.key ;
             tomq.user= mykey.user;
@@ -90,7 +91,7 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
                 return ;
 			}
 		}
-		console.log("finish_mjapi",  request.headers['authorization'])
+		console.log("finish_mjapi",  request.headers['mj-api-secret']?? request.headers['authorization'] )
         tomq.etime=Date.now();
         publishData( "openapi", 'finish_mjapi',  JSON.stringify(tomq));
 		response.end();
