@@ -13,7 +13,8 @@ export class mError extends Error {
 
 export const mlog =(...arg)=>{
   //const M_DEBUG = process.env.M_DEBUG
-  if(! isNotEmptyString(process.env.M_DEBUG) ) return ;
+  if(['error','log'].indexOf( arg[0] )>-1 ){ //必须显示的
+  }else  if(! isNotEmptyString(process.env.M_DEBUG) ) return ;
   
   const currentDate = new Date();
   const hours = currentDate.getHours().toString().padStart(2, '0');

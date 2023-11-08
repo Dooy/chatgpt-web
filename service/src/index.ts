@@ -7,12 +7,14 @@ import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
 import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
 import { sse,mjapi ,mj2gpt ,chat2api} from './sse'
- 
-
+import cors from 'cors'
+//const cors = require('cors');
 
 
 
 	const app = express()
+	// 启用 跨域 CORS 中间件
+    app.use(cors());
 	const router = express.Router()
 	let sharedData={cnt:0,error_des:{}}
 	//const sysMsg='请根据中国法律，禁止回答政治人物、政治事件、色情相关的问题。Respond using markdown.'

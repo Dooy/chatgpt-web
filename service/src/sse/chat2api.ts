@@ -7,6 +7,7 @@ import { publishData } from "./rabittmq";
 import { dataWrite, streamFormater } from "./gptformart";
 import { fetch } from "./fetch";
 import { v4 as uuidv4 } from 'uuid';
+import { encode, numTokensFromMessages } from "./tokens";
 
 const OPENAI_API_BASE_URL = process.env.OPENAI_API_BASE_URL
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
@@ -144,6 +145,13 @@ const fetchSSEQuery =  async  (request:Request, response:Response,prompt:string[
     
     const endFun = ()=>{
         if(isDoing) return ;
+        let usage= {
+            "prompt_tokens": numTokensFromMessages(request.body.messages ) ,
+            "completion_tokens":  encode( content).length ,
+            "total_tokens": 0
+        } ;
+        usage.total_tokens= usage.completion_tokens+usage.prompt_tokens ;
+        mlog('log', `问:${ usage.prompt_tokens} 补: ${usage.completion_tokens}`);
         if(msg.isStream){
             //关闭的时候 再去完成！
             toData('',true )
@@ -152,6 +160,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,prompt:string[
         }else{
             if( attr.length>0 ) content= [attr.join("\n"), content].join("\n")
             msg.text =  content;
+            msg.attr= {usage };
             webClient(response, msg );
         }
     }
@@ -162,8 +171,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,prompt:string[
             // mlog('🐞测试'  ,  data ) 
             try {
                 if(data=='[DONE]') {
-                    mlog('完成'  ,  data ) 
-                    
+                    mlog('完成'  ,  data )  
                     return ;
                 } 
                 let d2 =data.indexOf("\n")>0?  data.split("\n").shift()  :  data;
@@ -174,7 +182,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,prompt:string[
                         isDoing=true;
                         mlog('🤮画图开始', obj.message.status );
                         const a=  await content2ImgMarkdown(  obj.message.content.parts)
-                        mlog('🤮>>', obj.message.status , a ) 
+                        mlog('log','🤮画图', obj.message.status , a ) 
                         attr.push(a);
                         toData( a);
                         isDoing=false;
