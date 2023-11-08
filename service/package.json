@@ -37,7 +37,8 @@
     "node-fetch": "^3.3.0",
     "rabbitmq-client": "^3.3.2",
     "redis": "^4.6.7",
-    "socks-proxy-agent": "^7.0.0"
+    "socks-proxy-agent": "^7.0.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.35.3",
