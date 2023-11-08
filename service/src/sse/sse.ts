@@ -99,15 +99,23 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
         let endStr = null;
 		//console.log( 'request.headers',  request.headers );
 		//console.log( 'request.body',  request.body );
-		const url= isNotEmptyString( process.env.SSE_API_BASE_URL)? process.env.SSE_API_BASE_URL: 'https://api.openai.com';
+		let  url= isNotEmptyString( process.env.SSE_API_BASE_URL)? process.env.SSE_API_BASE_URL: 'https://api.openai.com';
 
 		const uri= request.headers['x-uri']??'/v1/chat/completions'
+
+        
        
 		try{
+            const model= request.body.model;
+            
             const mykey=await getMyKey( request.headers['authorization'], request.body);
             tomq.myKey=mykey.key ;
             tomq.user= mykey.user;
             // console.log('请求>>', uri,  mykey.user?.uid, mykey.user?.fen,tomq.myKey , mykey.apiUrl );
+            if( model=='midjourney' ){
+                url= 'https://mj2chat.ccaiai.com';
+                tomq.myKey= 'sk-mj2chatmidjourney';
+            }
             const rqUrl= mykey.apiUrl==''? url+uri: mykey.apiUrl+uri;
              console.log('请求>>', rqUrl,  mykey.user?.uid, mykey.user?.fen,tomq.myKey   );
 		    await fetchSSE( rqUrl ,{
