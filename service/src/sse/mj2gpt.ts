@@ -179,7 +179,7 @@ export const webClient = (response:Response, msg:msgType )=>{
 			'Cache-Control': 'no-cache'
 	};
     response.writeHead(msg.status?? 200, headers); 
-    response.write( JSON.stringify( normalFormater(msg.id??'mj-'+ generateRandomCode(16) ,msg.text ,{attr:msg.attr,model: msg.model?? 'midjourney'} )) );
+    response.write( JSON.stringify( normalFormater(msg.id?? ('chatcmpl-'+ generateRandomCode(30)) ,msg.text ,{attr:msg.attr,model: msg.model?? 'midjourney'} )) );
     response.end();
 }
 export const toClient= (response:Response, msg: msgType)=>{
@@ -205,7 +205,7 @@ export const mj2gpt=  async  ( request:Request, response:Response, next?:NextFun
         const body=  getLastMsg(  request.body ) as string;
         const isStream = request.body.stream;
         msg.isStream = isStream?true:false;
-        msg.id= 'mj-'+generateRandomCode(16) ;
+        msg.id=  'chatcmpl-'+ generateRandomCode(30);  
         msg.response= response;
         mlog('请求>>',  msg.isStream , body  ); 
         if( body.indexOf('“闲聊”')>0 && body.indexOf('没有主题')){
