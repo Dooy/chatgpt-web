@@ -17,10 +17,12 @@ export interface msgType{
     id?:string
     response?: Response
 }
-const getLastMsg= ( body:any )=>{
+const getLastMsg4= ( body:any )=>{
     //messages[1].content
     const msg = body.messages;
+    if(msg[msg.length-1] &&  msg[msg.length-1].content )
     return msg[msg.length-1].content ;
+    return '';
 }
 
 //提交
@@ -66,9 +68,9 @@ const body2Pasty= async  ( body:string,reqbody:any ) =>{
         }
 
         //const match = str.match(regex);  
-        mlog('dd', '找到任务为：' ,    tsid);
+        mlog( '找到任务为：' ,    tsid);
         const taskD =  await taskFetch( tsid);
-        mlog('dd', '找到任务为：' ,    taskD.data.buttons  );
+        //mlog('dd', '找到任务为：' ,    taskD.data.buttons  );
         const buttons= taskD.data.buttons
 
         if( buttons.length <= cmd ) {
@@ -202,7 +204,7 @@ export const mj2gpt=  async  ( request:Request, response:Response, next?:NextFun
      let msg:msgType ={text:'',attr:null};
 
     try { 
-        const body=  getLastMsg(  request.body ) as string;
+        const body=  getLastMsg4(  request.body ) as string;
         const isStream = request.body.stream;
         msg.isStream = isStream?true:false;
         msg.id=  'chatcmpl-'+ generateRandomCode(30);  
@@ -210,6 +212,11 @@ export const mj2gpt=  async  ( request:Request, response:Response, next?:NextFun
         mlog('请求>>',  msg.isStream , body  ); 
         if( body.indexOf('“闲聊”')>0 && body.indexOf('没有主题')){
             msg.text='画图:'+generateRandomCode(3);
+            toClient(response,msg );
+            return ;
+        }
+        if(body==''){
+            msg.text='提示词出错！' ;
             toClient(response,msg );
             return ;
         }
@@ -240,8 +247,8 @@ export const mj2gpt=  async  ( request:Request, response:Response, next?:NextFun
         let ss = e.reason??(  JSON.stringify(e ) );
         let error = { "error": {  "message":ss,  "type": "openai_hk_error", "code": "gate_way_error" }}
         response.end( JSON.stringify(error)  );
-        mlog('error>>', ss ,e )
-        publishData( "openapi", 'error_mjapi',  JSON.stringify({e: {status:428,reason:e} }));
+        mlog('error', ss ,e )
+        //publishData( "openapi", 'error_mjapi',  JSON.stringify({e: {status:428,reason:e} }));
         return ;
     }
 

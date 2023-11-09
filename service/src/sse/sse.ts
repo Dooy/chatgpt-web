@@ -119,7 +119,7 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
                 tomq.myKey= 'sk-mj2chatmidjourney';
             }
 
-             console.log('请求>>', rqUrl,  mykey.user?.uid, mykey.user?.fen,tomq.myKey   );
+             console.log('请求>>', rqUrl,  mykey.user?.uid,model , mykey.user?.fen,tomq.myKey   );
 		    await fetchSSE( rqUrl ,{
                 method: 'POST',
                 headers:{
