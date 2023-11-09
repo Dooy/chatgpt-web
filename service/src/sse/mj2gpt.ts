@@ -134,6 +134,10 @@ const taskFetch= (rid:string,msg?:msgType )=>{
                     resolve({data:d, text:getText(d),taskID:rid});
                     return ;
                 }
+                if('FAILURE'==d.status ){
+                    resolve({data:d, text:'失败:' + d.failReason ,taskID:0});
+                    return ;
+                }
                 if(  Date.now()-stime>10000*60*8 ) {
                     reject(`task:${rid} 超时`)
                     return  ;
