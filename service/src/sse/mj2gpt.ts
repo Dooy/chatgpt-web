@@ -20,7 +20,7 @@ export interface msgType{
 const getLastMsg4= ( body:any )=>{
     //messages[1].content
     const msg = body.messages;
-    if(msg[msg.length-1] &&  msg[msg.length-1].content )
+    if( msg && msg[msg.length-1] &&  msg[msg.length-1].content )
     return msg[msg.length-1].content ;
     return '';
 }
