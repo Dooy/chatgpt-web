@@ -138,7 +138,7 @@ const taskFetch= (rid:string,msg?:msgType )=>{
                     resolve({data:d, text:'失败:' + d.failReason ,taskID:0});
                     return ;
                 }
-                if(  Date.now()-stime>10000*60*8 ) {
+                if(  Date.now()-stime>1000*60*8 ) { //8分钟
                     reject(`task:${rid} 超时`)
                     return  ;
                 }
