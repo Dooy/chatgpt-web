@@ -89,8 +89,8 @@ const body2Pasty= async  ( body:string,reqbody:any ) =>{
     //return {url:'/mj/sub',data,body}
     data= {
         "base64Array": [],
-        "instanceId": "",
-        "modes": [],
+        //"instanceId": "",
+       // "modes": [],
         "notifyHook": "",
         "prompt": body,
         "remix": true,
@@ -214,7 +214,9 @@ export const mj2gpt=  async  ( request:Request, response:Response, next?:NextFun
         msg.id=  'chatcmpl-'+ generateRandomCode(30);  
         msg.response= response;
         mlog('请求>>',  msg.isStream , body  ); 
-        if( body.indexOf('“闲聊”')>0 && body.indexOf('没有主题')){
+        if(   body.indexOf('总结')>-1
+            || (body.indexOf('“闲聊”')>0 && body.indexOf('没有主题')) 
+        ){
             msg.text='画图:'+generateRandomCode(3);
             toClient(response,msg );
             return ;
