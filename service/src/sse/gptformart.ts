@@ -59,7 +59,7 @@ export const  streamFormater =(id:string,content:string
 
 export const toWrite= ( data:any)=>{
     let msg= isString(data)?data: JSON.stringify(data);
-    return `data:${msg}\n\n`;
+    return `data: ${msg}\n\n`;
 }
 
 export const dataWrite= (response:Response,data:any)=>{
