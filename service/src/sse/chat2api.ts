@@ -109,13 +109,21 @@ const fetchSSEQuery =  async  (request:Request, response:Response,prompt:string[
    
     mlog('baseurl', OPENAI_API_BASE_URL, msg.isStream  );
     const url=`${OPENAI_API_BASE_URL}/backend-api/conversation`
+    //const url=`http://api.zahei.com/v1/chat/completions`
     const sk= OPENAI_API_KEY
     const headers ={
             'Content-Type': 'application/json'
             ,'Authorization': 'Bearer '+sk
-            ,'Accept': 'text/event-stream'
             ,'AUTHKEY': 'xyhelper'
-            ,'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
+            //,'Accept': '*/*' //这个是一个考核项
+            //,'Origin': 'https://chat.openai.com'
+            //,'Cache-Control': 'no-cache'
+            //,'Accept-Encoding': 'gzip, deflate, br'//这个是一个考核项
+            //,'Connection': 'keep-alive' //这个是一个考核项
+            //,'sec-fetch-mode': 'cors'
+            //,'AUTHKEY': 'xyhelper'
+            //,'Referer': 'https://chat.openai.com/c/fdcae85c-637d-48ba-adea-b5c7d42d4f9a'
+            //,'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
     }
     let  content  = '';
     let attr= []; //额外一次性的
