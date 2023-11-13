@@ -6,3 +6,4 @@ FROM openresty/openresty
 COPY ./conf/default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 8091
+EXPOSE 8092
