@@ -10,5 +10,5 @@ docker build -t chatpoint . && docker tag chatpoint ydlhero/chatpoint && docker 
 docker pull  ydlhero/chatpoint
 docker rm -f  chatpoint && docker run --name chatpoint  -itd  --restart=always  -p 80:8091  -p 8092:8092  ydlhero/chatpoint
 
-docker rm -f  chatpoint && docker run --name chatpoint  -itd  --restart=always  -p 6092:8091  -p 8092:8092  ydlhero/chatpoint
+docker rm -f  chatpoint && docker run --name chatpoint  -itd  --restart=always  -p 6091:8091  -p 8092:8092  ydlhero/chatpoint
 ```

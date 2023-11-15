@@ -4,6 +4,9 @@ import * as types from './types'
 import { fetch as globalFetch } from './fetch'
 import { streamAsyncIterable } from './stream-async-iterable'
 
+export class ChatGPTError2 extends types.ChatGPTError{
+    reason?:string
+}
 export async function fetchSSE(
   url: string,
   options: Parameters<typeof fetch>[1] & {
@@ -24,9 +27,10 @@ export async function fetchSSE(
     }
 
     const msg = `ChatGPT error ${res.status}: ${reason}`
-    const error = new types.ChatGPTError(msg, { cause: res })
+    const error = new ChatGPTError2(msg, { cause: res })
     error.statusCode = res.status
     error.statusText = res.statusText
+    error.reason =reason
     throw error
   }
 

@@ -27,6 +27,8 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+*.db
+*.sqlite
 
 # Environment variables files
 /service/.env

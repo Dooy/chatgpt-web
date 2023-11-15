@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
     "target": "es2020",
     "lib": [
       "esnext"
@@ -16,6 +17,7 @@
     "baseUrl": ".",
     "outDir": "build",
     "noEmit": true
+    ,"emitDecoratorMetadata":true, 
   },
   "exclude": [
     "node_modules",

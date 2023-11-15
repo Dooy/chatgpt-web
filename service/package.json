@@ -38,7 +38,10 @@
     "node-fetch": "^3.3.0",
     "rabbitmq-client": "^3.3.2",
     "redis": "^4.6.7",
+    "reflect-metadata": "^0.1.13",
     "socks-proxy-agent": "^7.0.0",
+    "sqlite3": "^5.1.6",
+    "typeorm": "^0.3.17",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

@@ -1,5 +1,7 @@
 //import { fetchSSE } from "./fetch-sse"
-import { fetchSSE } from "./fsse"
+
+
+import { fetchSSE,ChatGPTError2 } from "./fsse"
 import { generateRandomCode, mlog } from './utils'
 import { Request, Response, NextFunction } from 'express';
 import { msgType, toClient, webClient } from "./mj2gpt";
@@ -8,8 +10,11 @@ import { dataWrite, streamFormater } from "./gptformart";
 import { fetch } from "./fetch";
 import { v4 as uuidv4 } from 'uuid';
 import { encode, numTokensFromMessages } from "./tokens";
+import {  getApiKey, SessionRepository, updateSession} from "./db";
+ 
 
-const OPENAI_API_BASE_URL = process.env.OPENAI_API_BASE_URL
+
+const OPENAI_API_BASE_URL = process.env.C2API_BASE_URL
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
 
 
@@ -83,7 +88,7 @@ export const getResponseHeader= (isStream:boolean)=>{
 }
 //https://beta.note123.net/backend-api/files/file-m5T415U5KdvoFgoCsyc3kQrL/download
 const downloadImg=  async (file:string )=>{
-    const OPENAI_API_BASE_URL = process.env.OPENAI_API_BASE_URL
+    //const OPENAI_API_BASE_URL = process.env.C2API_BASE_URL
     //https://beta.note123.net/backend-api/files/file-m5T415U5KdvoFgoCsyc3kQrL/download
     //file-service://file-2b57qSEqeeTkp4ztNYp8Hjzc/
     const url = `${OPENAI_API_BASE_URL}/backend-api/files/${file.replace('file-service://','')}/download`
@@ -105,16 +110,21 @@ const downloadImg=  async (file:string )=>{
     
 }
 
+ 
+
 const fetchSSEQuery =  async  (request:Request, response:Response,prompt:string[],msg:msgType )=>{
    
     mlog('baseurl', OPENAI_API_BASE_URL, msg.isStream  );
     const url=`${OPENAI_API_BASE_URL}/backend-api/conversation`
     //const url=`http://api.zahei.com/v1/chat/completions`
-    const sk= OPENAI_API_KEY
+    //await getApiKey();
+    const onekey= await getApiKey() ;;
+    const sk= 'api::'+onekey.id+'::'+onekey.email // OPENAI_API_KEY
     const headers ={
             'Content-Type': 'application/json'
             ,'Authorization': 'Bearer '+sk
-            ,'AUTHKEY': 'xyhelper'
+            ,'Cookie': (onekey.cookie)
+            //,'AUTHKEY': 'xyhelper'
             //,'Accept': '*/*' //这个是一个考核项
             //,'Origin': 'https://chat.openai.com'
             //,'Cache-Control': 'no-cache'
@@ -172,52 +182,73 @@ const fetchSSEQuery =  async  (request:Request, response:Response,prompt:string[
             webClient(response, msg );
         }
     }
-    await fetchSSE( url,{
-        method: 'POST',
-        headers: headers,
-        onMessage: async (data:string)=> {
-            // mlog('🐞测试'  ,  data ) 
-            try {
-                if(data=='[DONE]') {
-                    mlog('完成'  ,  data )  
-                    return ;
-                } 
-                let d2 =data.indexOf("\n")>0?  data.split("\n").shift()  :  data;
-                let obj = JSON.parse(d2);
-                if( obj.message ) {
-                    let type =  obj.message.content.content_type; //message.content.content_type
-                    if( type== 'multimodal_text'){
-                        isDoing=true;
-                        mlog('🤮画图开始', obj.message.status );
-                        const a=  await content2ImgMarkdown(  obj.message.content.parts)
-                        mlog('log','🤮画图', obj.message.status , a ) 
-                        attr.push(a);
-                        toData( a);
-                        isDoing=false;
-                        endFun();
-                    }
-                    else if( type== 'text' &&  obj.message.author.role=='assistant' ) {
-                        const a= obj.message.content.parts.join("\n");
-                        mlog('✅>>', obj.message.status , a) 
-                        toProcess( a);
+    try { 
+       const res = await fetchSSE( url,{
+            method: 'POST',
+            headers: headers,
+            onMessage: async (data:string)=> {
+                // mlog('🐞测试'  ,  data ) 
+                try {
+                    if(data=='[DONE]') {
+                        mlog('完成'  ,  data )  
+                        return ;
+                    } 
+                    let d2 =data.indexOf("\n")>0?  data.split("\n").shift()  :  data;
+                    let obj = JSON.parse(d2);
+                    if( obj.message ) {
+                        let type =  obj.message.content.content_type; //message.content.content_type
+                        if( type== 'multimodal_text'){
+                            isDoing=true;
+                            mlog('🤮画图开始', obj.message.status );
+                            const a=  await content2ImgMarkdown(  obj.message.content.parts)
+                            mlog('log','🤮画图', obj.message.status , a ) 
+                            attr.push(a);
+                            toData( a);
+                            isDoing=false;
+                            endFun();
+                        }
+                        else if( type== 'text' &&  obj.message.author.role=='assistant' ) {
+                            const a= obj.message.content.parts.join("\n");
+                            mlog('✅>>', obj.message.status , a) 
+                            toProcess( a);
+                        }else{
+                            mlog('❎ type>>',  type  ) 
+                        }
                     }else{
-                        mlog('❎ type>>',  type  ) 
+                        mlog('❌不是message'  ) 
                     }
-                }else{
-                    mlog('❌不是message'  ) 
+                } catch (error) {
+                    mlog('❌3 error>>' ,data   )
+                    
                 }
-            } catch (error) {
-                mlog('❌3 error>>' ,data   )
                 
-            }
-            
-        },
-        onError(e ){
-            //console.log('eee>>', e )
-             mlog('❌未错误',e    )
-        },
-        body 
-    });
+            },
+            onError(e ){
+                //console.log('eee>>', e )
+                mlog('❌未错误',e    )
+            },
+            body 
+        });
+     } catch (error ) {
+        const a  =error as ChatGPTError2;
+        try {
+            if(a.statusCode==401 ){
+                if(   a.reason && a.reason.toLocaleLowerCase().indexOf('not parse your authentication token')>-1 ){
+                    onekey.cookie='';
+                }else{
+                    onekey.status=0; //这个时候 应该去更新下远程的库
+                    
+                }
+                mlog('error','远程更新', a.reason )
+                //SessionRepository().then( dbRep=>dbRep.save(onekey)).catch(eee=>{});
+                updateSession(onekey);
+                
+            } 
+        }catch(ee){
+        }
+        mlog('错误错误代码',error.reason  )
+        throw(error );
+    } 
     endFun();
 
 }
@@ -256,10 +287,12 @@ export const chat2api=  async  ( request:Request, response:Response, next?:NextF
     } catch (e) {
         response.writeHead(428, headers);
         let ss = e.reason??(  JSON.stringify(e ) );
+
         let error = { "error": {  "message":ss,  "type": "openai_hk_error", "code": "gate_way_error" }}
         response.end( JSON.stringify(error)  );
         mlog('error', ss ,e )
-        publishData( "openapi", 'chat2api_error',  JSON.stringify({server:{host:OPENAI_API_BASE_URL, token:OPENAI_API_KEY  },e: {status:428,reason:e} }));
+        //mlog('错误啊'  ,e. )
+        //publishData( "openapi", 'chat2api_error',  JSON.stringify({server:{host:OPENAI_API_BASE_URL, token:OPENAI_API_KEY  },e: {status:428,reason:e} }));
         return ;
     }
 
