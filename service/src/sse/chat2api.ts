@@ -120,6 +120,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,prompt:string[
     //await getApiKey();
     const onekey= await getApiKey() ;;
     const sk= 'api::'+onekey.id+'::'+onekey.email // OPENAI_API_KEY
+    mlog('这边的COOKIE是多少？', onekey.cookie )
     const headers ={
             'Content-Type': 'application/json'
             ,'Authorization': 'Bearer '+sk

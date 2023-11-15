@@ -83,7 +83,7 @@ export const getApiKey = async ()=>{
     else if( Date.now()-(+updatetime)>600*1000 )initAccount();
 
     let  onekey = await getOneKey();
-     if(onekey.cookie! || onekey.cookie=='' ){
+     if( !onekey.cookie || onekey.cookie=='' ){
         onekey= await login(onekey);
      }
    
