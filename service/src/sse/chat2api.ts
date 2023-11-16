@@ -10,7 +10,7 @@ import { dataWrite, streamFormater } from "./gptformart";
 import { fetch } from "./fetch";
 import { v4 as uuidv4 } from 'uuid';
 import { encode, numTokensFromMessages } from "./tokens";
-import {  getApiKey, SessionRepository, updateSession} from "./db";
+import {  fetchA, getApiKey, SessionRepository, updateSession} from "./db";
  
 
 
@@ -240,12 +240,20 @@ const fetchSSEQuery =  async  (request:Request, response:Response,prompt:string[
                     onekey.status=0; //这个时候 应该去更新下远程的库
                     
                 }
+                
                 mlog('error','远程更新', a.reason )
                 //SessionRepository().then( dbRep=>dbRep.save(onekey)).catch(eee=>{});
                 updateSession(onekey);
+                // await fetchA('/api/auth/session')
+                // await fetchA('/api/auth/session')
+                // await fetchA('/backend-api/accounts/check/v4-2023-04-27')
+                // await fetchA('/public-api/conversation_limit')
+                // await fetchA('/backend-api/me')
+                // await fetchA('/backend-api/models')
                 
             } 
         }catch(ee){
+             mlog('error','fetchA', '错误！')
         }
         mlog('错误错误代码',error.reason  )
         throw(error );

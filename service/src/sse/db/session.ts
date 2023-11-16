@@ -6,6 +6,7 @@ import { mlog } from "../utils";
 import { getSess } from "./connect";
 const C2API_SERVER= process.env.C2API_SERVER
 const C2API_BASE_URL=  process.env.C2API_BASE_URL
+let  _cookie ="";
 
 @Entity()
 export class Session {
@@ -86,7 +87,7 @@ export const getApiKey = async ()=>{
      if( !onekey.cookie || onekey.cookie=='' ){
         onekey= await login(onekey);
      }
-   
+     _cookie= onekey.cookie;
     //mlog('onekey', onekey );
     return onekey;//`${onekey.id}---${onekey.email}`;
 }
@@ -108,7 +109,7 @@ const login= async (one:Session)=>{
         "method": "POST",
         "mode": "cors",
         "credentials": "include",
-        redirect: 'manual' //不跟随才能取到cookie
+         redirect: 'manual' //不跟随才能取到cookie
         });
    
    let ck=  d.headers.get('set-cookie');
@@ -122,6 +123,11 @@ const login= async (one:Session)=>{
    throw('登录出问题了！');
    //throw  ("cookie:"+d.status+':' + JSON.stringify(     d.headers.get('set-cookie') )  );
    //throw("未初始化账号或者未添加账号！"); 
+}
+
+export const fetchA= async (url:string)=>{
+     const d= await fetch(`${C2API_BASE_URL}${url}`);
+     mlog('fetchA' ,d.status );
 }
 
 export const updateSession = (onekey:Session)=>{
