@@ -31,8 +31,9 @@ loadMenu()
             <a href="/?mj"   class="router-link-active router-link-exact-active h-12 w-12 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
                 <n-tooltip placement="right" trigger="hover">
                   <template #trigger> 
-                    <div  class="flex h-full justify-center items-center ">
-                    <SvgIcon icon="ri:wechat-line" class="text-3xl"></SvgIcon>
+                    <div  class="flex h-full justify-center items-center py-1 flex-col">
+                    <SvgIcon icon="ri:wechat-line" class="text-3xl  flex-1"></SvgIcon>
+                     <span class="text-[10px]">对话</span>
                     </div>
                  </template>
                 AI Chat
@@ -42,31 +43,36 @@ loadMenu()
             <a href="#" class=" router-link-exact-active h-12 w-12 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
                 <n-tooltip placement="right" trigger="hover">
                   <template #trigger> 
-                    <div  class="flex h-full justify-center items-center active">
-                    <SvgIcon icon="ic:outline-palette" class="text-3xl"></SvgIcon>
+                    <div  class="flex h-full justify-center items-center active py-1 flex-col">
+                    <SvgIcon icon="ic:outline-palette" class="text-3xl flex-1"></SvgIcon>
+                     <span class="text-[10px]">绘画</span>
                     </div> 
                   </template>
-                    AI绘画
+                    AI绘画 Midjourney引擎
                 </n-tooltip>
             </a>
             <section  class=" router-link-exact-active h-12 w-12 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]"
             @click="homeStore.setMyData({act:'gallery'})" >
                 <n-tooltip placement="right" trigger="hover">
                   <template #trigger> 
-                    <div  class="flex h-full justify-center items-center ">
-                    <SvgIcon icon="mingcute:grid-2-line" class="text-3xl"></SvgIcon>
-                    </div> 
+                    <div  class="flex  h-full justify-center items-center py-1 flex-col ">
+                      <SvgIcon icon="mingcute:grid-2-line" class="text-3xl flex-1"></SvgIcon>
+                      <span class="text-[10px]">画廊</span>
+                    </div>  
                   </template>
-                    画廊
+                    画廊:看看别人是如何画的
                 </n-tooltip>
+                
+                
             </section>
 
             <a :href="item.url" :target="item.target" v-for="(item,index) in st.menu" :key="index"
             class=" router-link-exact-active h-12 w-12 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
                 <n-tooltip placement="right" trigger="hover">
                   <template #trigger> 
-                    <div  class="flex h-full justify-center items-center ">
-                    <SvgIcon :icon="item.icon" class="text-3xl"></SvgIcon>
+                    <div  class="flex h-full justify-center items-center py-1 flex-col  ">
+                    <SvgIcon :icon="item.icon" class="text-3xl  flex-1"></SvgIcon>
+                    <span class="text-[10px]" v-if="item.name" v-html="item.name"></span>
                     </div> 
                   </template>
                     {{ item.title }}

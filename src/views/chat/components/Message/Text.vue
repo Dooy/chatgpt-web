@@ -299,6 +299,8 @@ const goCanvan=()=>{
                <n-button :type="isDo('V31')? 'error':'info'"  size="small"  @click="imageSend({t:'V',v: 31,chat})"  v-if="checkBt(`v31` )"><SvgIcon icon="cil:search"/> 2倍变焦</n-button>
                <n-button :type="isDo('V32')? 'error':'info'"  size="small"  @click="imageSend({t:'V',v: 32,chat})"  v-if="checkBt(`v32` )"><SvgIcon icon="cil:search"/> 1.5倍变焦</n-button>
                <n-button :type="isDo('V34')? 'error':'info'"  size="small"  @click="imageSend({t:'V',v: 34,chat})"  v-if="checkBt(`v34` )"><SvgIcon icon="icons8:resize-four-directions"/> 方正拓展</n-button>
+               <n-button :type="isDo('U51')? 'error':'info'"  size="small"  @click="imageSend({t:'U',v: 51,chat})"  v-if="checkBt(`u51` )"><SvgIcon icon="icon-park-outline:two-key"/> 放大2倍</n-button>
+               <n-button :type="isDo('U52')? 'error':'info'"  size="small"  @click="imageSend({t:'U',v: 52,chat})"  v-if="checkBt(`u52` )"><SvgIcon icon="icon-park-outline:four-key"/> 放大4倍</n-button>
              </n-space>
               <n-space style="margin-top: 10px;">
                <n-button :type="isDo('V41')? 'error':'success'"  size="small"  @click="imageSend({t:'V',v: 41,chat})"  v-if="checkBt(`v41` )"><SvgIcon icon="icon-park-outline:left-two"/> 视角左移</n-button>

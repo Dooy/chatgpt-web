@@ -28,8 +28,9 @@ export function upImg(file:any   ):Promise<any>
 }
 
 function containsChinese(str:string ) {
-  var reg = /[\u4e00-\u9fa5]/g; // 匹配中文的正则表达式
-  return reg.test(str);
+  return false; //11.18 都不需要翻译
+//   var reg = /[\u4e00-\u9fa5]/g; // 匹配中文的正则表达式
+//   return reg.test(str);
 }
 
 export  async function train( text:string){
@@ -41,6 +42,8 @@ export  async function train( text:string){
            reject('请填写提示词！');
             return ;
         }
+
+        
         if( !containsChinese(text.trim()) ){
             resolve( text.trim() );
             return ;
