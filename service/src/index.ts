@@ -7,6 +7,7 @@ import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
 import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
 import { sse,mjapi ,mj2gpt ,chat2api} from './sse'
+import bodyParser  from 'body-parser';
 import cors from 'cors'
 //const cors = require('cors');
 
@@ -23,8 +24,8 @@ import cors from 'cors'
 
 
 	app.use(express.static('public'))
-	app.use(express.json())
-
+	//app.use(express.json())
+	app.use(bodyParser.json({ limit: '10mb' })); //大文件传输
 	app.all('*', (_, res, next) => {
 		res.header('Access-Control-Allow-Origin', '*')
 		res.header('Access-Control-Allow-Headers', '*')

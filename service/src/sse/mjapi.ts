@@ -87,12 +87,21 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
                 let ss = e.reason??'gate way error...';
 				response.end( `{"error":{"message":"${ss}","type":"openai_hk_error","code":"gate_way_error"}}`   );
 				console.log('error>>', ss ,e )
+				
+				//请图片数据省得太大
+				if(tomq.request.base64Array  ) tomq.request.base64Array=[];
+				if(tomq.request.base64  ) tomq.request.base64='3';
+
                 publishData( "openapi", 'error_mjapi',  JSON.stringify({e: {status:428,reason:e}, tomq }));
                 return ;
 			}
 		}
 		console.log("finish_mjapi",  request.headers['mj-api-secret']?? request.headers['authorization'] )
         tomq.etime=Date.now();
+		//请图片数据省得太大
+		if(tomq.request.base64Array  ) tomq.request.base64Array=[];
+		if(tomq.request.base64  ) tomq.request.base64='3';
+
         publishData( "openapi", 'finish_mjapi',  JSON.stringify(tomq));
 		response.end();
 }
