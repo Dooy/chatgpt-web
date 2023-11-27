@@ -57,12 +57,16 @@ function getRandomInt(max: number): number {
 async function getKeyFromPool(redis:RedisClientType, uid:number, model:string,oldkey?:string):Promise<string> {
     let key='pool:3k';
     if(model?.indexOf('gpt-4')>=0) key='pool:4k';
+
+    //    "model": "gpt-4-vision-preview" 支持 vision
+    if(model?.indexOf('vision')>=0) key='pool:4v'; 
+
     const rz = await redis.get(key);
     //console.log('test redis>>',  rz );
     const kesy = JSON.parse(rz);
     if( kesy.length==0)  {
         if(oldkey) return oldkey;
-        throw new mError('pools no key');
+        throw new mError( `model ${model} pools no key`);
     }
     const ik= getRandomInt(kesy.length);
     //console.log('test redis>>',  kesy.length  );
@@ -107,7 +111,7 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
        
 		try{
             const model= request.body.model;
-            
+            //获取key
             const mykey=await getMyKey( request.headers['authorization'], request.body);
             tomq.myKey=mykey.key ;
             tomq.user= mykey.user;
