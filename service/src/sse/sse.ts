@@ -55,6 +55,11 @@ function getRandomInt(max: number): number {
 }
 
 async function getKeyFromPool(redis:RedisClientType, uid:number, model:string,oldkey?:string):Promise<string> {
+    //GAO_KEY 如果有搞并发key 直接用高并发key
+  if (isNotEmptyString(process.env.GAO_KEY)) {
+    return process.env.GAO_KEY;
+  }
+
     let key='pool:3k';
     if(model?.indexOf('gpt-4')>=0) key='pool:4k';
 
