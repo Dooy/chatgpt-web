@@ -87,8 +87,9 @@ async function getKeyFromPool(redis:RedisClientType, uid:number, model:string,ol
 //主要转发接口
 export async function sse( request:Request, response:Response, next?:NextFunction) {
     
-    const headers = {
-			'Content-Type': 'text/event-stream',
+    let headers = {
+			//'Content-Type': 'text/event-stream',
+			'Content-Type': 'application/json',
 			'Connection': 'keep-alive',
 			'Cache-Control': 'no-cache'
 		};
@@ -116,6 +117,9 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
        
 		try{
             const model= request.body.model;
+            if( request.body && request.body.stream==true ){
+                headers['Content-Type']= 'text/event-stream'; //为了 适配fastcgi
+            }
             //获取key
             const mykey=await getMyKey( request.headers['authorization'], request.body);
             tomq.myKey=mykey.key ;
