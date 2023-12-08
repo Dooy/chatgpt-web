@@ -66,6 +66,9 @@ async function getKeyFromPool(redis:RedisClientType, uid:number, model:string,ol
     //    "model": "gpt-4-vision-preview" 支持 vision
     if(model?.indexOf('vision')>=0) key='pool:4v'; 
 
+    //gpts 多模态 直接走这个路口
+    if(model?.indexOf('gizmo')>=0) key='pool:4g'; 
+
     const rz = await redis.get(key);
     //console.log('test redis>>',  rz );
     const kesy = JSON.parse(rz);
