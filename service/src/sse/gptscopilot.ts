@@ -87,10 +87,13 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
             body 
         });
      } catch (e ) {
-       mlog('error',e)
+       mlog('error','food',e)
         //response.send(2)
         if(e.status) {
             response.writeHead(e.status );
+            if(e.status==403){
+                writeAidutu({'error':'可能是因为cookie 失效因为账号不存在' ,status:403 });
+            }
             //publishData( "openapi", 'error',  JSON.stringify({e,tomq} ));
             //response.end( e.reason?.replace(/one_api_error/ig,'openai_hk_error'));
             //let ss = e.reason??'gate way error...';
@@ -101,6 +104,9 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
         }
         else {
             response.writeHead(428);
+            if( e.statusCode==403 ){
+                  writeAidutu({'error':'可能是因为cookie 失效因为账号不存在' ,status:403 });
+            }
             //response.end("get way error...\n"  );
             let ss = e.reason??'gate way error...';
             response.end( `{"error":{"message":"${ss}","type":"openai_hk_error","code":"gate_way_error"}}`   );
