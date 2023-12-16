@@ -6,7 +6,7 @@ import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
 import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
-import { sse,mjapi ,mj2gpt ,chat2api} from './sse'
+import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot} from './sse'
 import bodyParser  from 'body-parser';
 import cors from 'cors'
 //const cors = require('cors');
@@ -188,6 +188,7 @@ import cors from 'cors'
     //转发接口
 	if( API_ENTRY=='chat2api') router.post('/v1/chat/completions',  chat2api );
 	else if( API_ENTRY=='mj2gpt') router.post('/v1/chat/completions',  mj2gpt );
+	else if( API_ENTRY=='gptscopilot') router.post('/v1/chat/completions',  gptscopilot );
 	else router.post('/v1/chat/completions',  sse ); 
 	
 	router.post('/v1/embeddings',  sse );
@@ -200,6 +201,9 @@ import cors from 'cors'
 
 	//逆向 将chat对话转化为 api
 	router.post('/chat2api',  chat2api );
+
+    //逆向 https://gptscopilot.ai
+	router.post('/gptscopilot',  gptscopilot );
 
 
 	//v1/chat/completions
