@@ -2,14 +2,11 @@ import { fetchSSE,ChatGPTError2 } from "./fsse"
 import { generateRandomCode, mlog } from './utils'
 import { Request, Response, NextFunction } from 'express';
 import { msgType, toClient, webClient } from "./mj2gpt";
-import { publishData } from "./rabittmq";
-import { dataWrite, streamFormater } from "./gptformart";
-import { fetch } from "./fetch";
-import { v4 as uuidv4 } from 'uuid';
-import { encode, numTokensFromMessages } from "./tokens";
+ 
 //import {  fetchA, getApiKey, SessionRepository, updateSession} from "./db";
  
 import { getResponseHeader } from "./chat2api"
+import { writeAidutu } from "src/utils";
  
 
 
@@ -43,20 +40,43 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
     msg.id= id ;
     let isGo=false;
     let isDoing= false;  
+    let isError=false;
  
-
+    let oldData='';
     try { 
        const res = await fetchSSE( url,{
             method: 'POST',
             headers: headers,
             onMessage: async (data:string)=> {
                  mlog('🐞测试'  ,  data ) 
-                 if(!isGo) response.writeHead(200, getResponseHeader( true) );
+                 if( isError ){
+                    return ;
+                 }
+                 
+                 if(!isGo) {
+                    if(data.indexOf('We have run out of conversations today. Please try again tomorrow.')>-1 ){
+                        writeAidutu( {data});
+                        isError=true;
+                        response.writeHead(428);
+                        let obj={error:{"message":'请重试',  "type":"openai_hk_error","code":'please_retry'}}
+                        //response.json( obj  );
+                        response.end( JSON.stringify(obj)  );
+                    }
+                    else response.writeHead(200, getResponseHeader( true) );
+                 }
 				 isGo=true;
-                  
-                 if(msg.isStream) response.write( `data: ${data}\n` ); 
-                 else response.write(  data  ); 
-                 response.write(  "\n"); 
+                 if(!msg.isStream) {
+                    response.write(  data  ); 
+                    response.write(  "\n"); 
+                 }
+                 else if(data=='[DONE]'){
+                    response.write( `data: ${data}\n` );  
+                    response.write(  "\n"); 
+                 }else if(oldData ){
+                    response.write( `data: ${oldData}\n` );  
+                    response.write(  "\n"); 
+                 }
+                 oldData= data;
             },
             onError(e ){
                 //console.log('eee>>', e )
@@ -72,7 +92,10 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
         if(e.status) {
             response.writeHead(e.status );
             //publishData( "openapi", 'error',  JSON.stringify({e,tomq} ));
-            response.end( e.reason?.replace(/one_api_error/ig,'openai_hk_error'));
+            //response.end( e.reason?.replace(/one_api_error/ig,'openai_hk_error'));
+            //let ss = e.reason??'gate way error...';
+            let obj={error:{"message":e.statusText,  "type":"openai_hk_error","code":e.status}}
+            response.end(  JSON.stringify(obj)  );
             return ;
             
         }
