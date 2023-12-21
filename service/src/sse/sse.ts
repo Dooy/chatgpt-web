@@ -146,7 +146,7 @@ export async function whisper( request:Request, response:Response, next?:NextFun
                 })   ;
                 // console.log('responseBody', responseBody.data  );
             res.json(responseBody.data );
-            tomq.response= responseBody.data ;
+            tomq.response= JSON.stringify( responseBody.data) ;
             
         }catch( error ){
             if( error.response ) {
