@@ -6,8 +6,10 @@ import { createRedis } from './redis';
 import { publishData } from './rabittmq';
 import fetch from 'node-fetch';
 import { RedisClientType } from 'redis';
-import { generateRandomCode, mError } from './utils';
-
+import { generateRandomCode, mError, mlog } from './utils';
+import axios from 'axios';
+import FormData  from 'form-data'
+import mp3Duration from 'mp3-duration'
 
 export async function getMyKey(authorization:string,body:any):Promise<any> {
     //if(authorization)
@@ -88,6 +90,120 @@ async function getKeyFromPool(redis:RedisClientType, uid:number, model:string,ol
 
 
 //主要转发接口
+export async function whisper( request:Request, response:Response, next?:NextFunction) {
+
+    const clientId =  generateRandomCode(16);
+    const newClient = {
+        id: clientId,response
+    };
+    request.on('close', () => {
+        console.log(`${clientId} Connection closed`);
+        //clients = clients.filter(client => client.id !== clientId);
+    });
+    let tomq={header: request.headers,request:{model: request.body.model, duration:0 },response:'',reqid: clientId ,status:200,myKey:'', stime:Date.now(),etime:0,user:{} }
+    let  url= isNotEmptyString( process.env.SSE_API_BASE_URL)? process.env.SSE_API_BASE_URL: 'https://api.openai.com';
+    let uri= request.headers['x-uri']??'/v1/audio/transcriptions';
+    const req= request;
+    const res= response;
+    if(!req.file  || !req.file.buffer) { 
+         //res.status(400).json({'error':'uploader fail'});
+       
+        publishData( "openapi", 'error',  JSON.stringify({e:{error:'buffer error file not uploader '},tomq} ));
+        //response.writeHead( 400 ).end( JSON.stringify( {error:'buffer error file not uploader '}));
+        response.writeHead( 428 ).end(  `{"error":{"message":"please upload file ","type":"openai_hk_error","code":"file_null"}}`  );
+
+        return ;
+    }else{
+        try{
+            const fileBuffer = req.file.buffer; 
+            const formData = new FormData();
+            formData.append('file',  fileBuffer,  { filename:  req.file.originalname }  );
+            formData.append('model',  req.body.model );
+
+            //获取key
+            const mykey=await getMyKey( request.headers['authorization'], request.body);
+            tomq.myKey=mykey.key ;
+            tomq.user= mykey.user;
+            let rqUrl= mykey.apiUrl==''? url+uri: mykey.apiUrl+uri;
+            let model= req.body.model
+            try{
+                let mp3= await mp3time( fileBuffer);
+                tomq.request.duration= mp3.duration;
+            }catch(e3){
+                publishData( "openapi", 'error',  JSON.stringify({e:{error:'获取时间识别 '},tomq} ));
+                response.writeHead( 428 ).end(  `{"error":{"message":"mp3 time error","type":"openai_hk_error","code":"mp3_time_error"}}`  );
+                return ;
+            }
+                
+
+            console.log('请求>>', rqUrl,  mykey.user?.uid,model , mykey.user?.fen,tomq.myKey ,  tomq.request.duration );
+            
+            let responseBody = await axios.post( rqUrl , formData, {
+                    headers: {  
+                     Authorization:  tomq.myKey, 
+                    'Content-Type': 'multipart/form-data'  
+                    } 
+                })   ;
+                // console.log('responseBody', responseBody.data  );
+            res.json(responseBody.data );
+            tomq.response= responseBody.data ;
+            
+        }catch( error ){
+            if( error.response ) {
+                let e = error.response;
+                let data= error.response.data
+                console.log('error>>', data    )
+				response.writeHead(e.status??428  );
+                publishData( "openapi", 'error',  JSON.stringify({e:{ status:e.status, data },tomq} ));
+                if(data ) response.end( JSON.stringify(data).replace(/one_api_error/ig,'openai_hk_error'));
+                else {
+                    response.end( `{"error":{"message":"error","type":"openai_hk_error","code":"gate_way_error"}}`   );
+                }
+				return ;
+				//response.write(`data: ${ e.reason}\n\n`);
+			}
+			else if(error.status) {
+                 publishData( "openapi", 'error',  JSON.stringify({e:  error, tomq }));
+                response.writeHead(error.status ).end( error.reason );
+            }
+			else {
+                let e= error;
+				response.writeHead(428);
+				//response.end("get way error...\n"  );
+                let ss = e.reason??'gate way error...';
+				response.end( `{"error":{"message":"${ss}","type":"openai_hk_error","code":"gate_way_error"}}`   );
+				console.log('error>>', ss , e    )
+                publishData( "openapi", 'error',  JSON.stringify({e: {status:428,reason:e}, tomq }));
+                return ;
+			}
+        }
+
+        console.log("finish",  request.headers['authorization'])
+        tomq.etime=Date.now();
+        publishData( "openapi", 'finish',  JSON.stringify(tomq));
+		response.end();
+
+
+
+    }  
+
+}
+
+const mp3time= (buffer:any )=>{
+    return new Promise<{duration:number}>((resolve, reject) => {
+         mp3Duration(buffer , (err, duration) => {
+        if (err) {
+            //return res.status(500).send('无法获取时长');
+            reject({error:'无法获取时长'});
+        }
+        resolve({duration});
+
+
+      //res.send(`MP3文件时长为 ${duration} 秒`);
+        });
+    })
+   
+}
 export async function sse( request:Request, response:Response, next?:NextFunction) {
     
     let headers = {
@@ -114,7 +230,7 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
 		//console.log( 'request.body',  request.body );
 		let  url= isNotEmptyString( process.env.SSE_API_BASE_URL)? process.env.SSE_API_BASE_URL: 'https://api.openai.com';
 
-		const uri= request.headers['x-uri']??'/v1/chat/completions'
+		let uri= request.headers['x-uri']??'/v1/chat/completions'
 
         
        
@@ -122,6 +238,11 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
             const model= request.body.model;
             if( request.body && request.body.stream==true ){
                 headers['Content-Type']= 'text/event-stream'; //为了 适配fastcgi
+            }
+            const isTTS=  model.indexOf('tts-')===0
+            if( isTTS ){ 
+                headers['Content-Type']= 'audio/mpeg';
+                uri='/v1/audio/speech';
             }
             //获取key
             const mykey=await getMyKey( request.headers['authorization'], request.body);
@@ -136,29 +257,56 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
             }
 
              console.log('请求>>', rqUrl,  mykey.user?.uid,model , mykey.user?.fen,tomq.myKey   );
-		    await fetchSSE( rqUrl ,{
-                method: 'POST',
-                headers:{
-                'Content-Type': 'application/json',
-                Authorization:  tomq.myKey
-		},
-			onMessage(data) {
-				if(!isGo) response.writeHead(200, headers);
-				isGo=true;
-				//console.log('onMessage>>', data )
-				//response.write(`data: ${ data}\n\n`);
-				response.write( data);
-                tomq.response+= data;
-			},
-			onError(e) {
-				console.log('onError>>', e );
-				response.writeHead(e.status );
-				response.end( e.reason);
-                publishData( "openapi", 'error',  JSON.stringify({e,tomq} ));
-                //endStr=e.reason;
-			},
-			body: JSON.stringify( request.body)
-		});
+            // mlog('body',  request.body );
+            if( isTTS ){
+                const reps = await fetch(rqUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                         Authorization:  tomq.myKey
+                    },
+                    body: JSON.stringify( request.body),
+                });
+
+                if (!reps.ok) { 
+                    response.writeHead(reps.status );
+                    let e={reason: `Failed to generate speech: ${reps.statusText}` }
+                    response.end( e.reason);
+                    publishData( "openapi", 'error',  JSON.stringify({e,tomq} ));
+                }
+                 
+                const arrayBuffer = await reps.arrayBuffer();
+                const audioBuffer = Buffer.from(arrayBuffer);
+                response.set('Content-Type',  'audio/mpeg' );
+                response.send(audioBuffer);
+                tomq.response= JSON.stringify({'len':audioBuffer.length })
+
+            }else {
+                await fetchSSE( rqUrl ,{
+                    method: 'POST',
+                    headers:{
+                        'Content-Type': 'application/json',
+                        Authorization:  tomq.myKey
+                    },
+                    onMessage(data) {
+                        if(!isGo) response.writeHead(200, headers);
+                        isGo=true;
+                        //console.log('onMessage>>', data )
+                        //response.write(`data: ${ data}\n\n`);
+                        response.write( data);
+                        tomq.response+= data;
+                        
+                    },
+                    onError(e) {
+                        console.log('onError>>', e );
+                        response.writeHead(e.status );
+                        response.end( e.reason);
+                        publishData( "openapi", 'error',  JSON.stringify({e,tomq} ));
+                        //endStr=e.reason;
+                    },
+                    body: JSON.stringify( request.body)
+                });
+            }
 		}catch(e){
 			console.log('error>>',e)
 			//response.send(2)

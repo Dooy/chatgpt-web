@@ -32,7 +32,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
     const oldModel= messageBody.model ;
     //gpt-4-gizmo-
     if( messageBody.model ) messageBody.model=  messageBody.model.replace(/gpt-4-gizmo-/ig,'');
-    if(messageBody.model=='gpt-4-all')messageBody.model=  process.env.GPTS_ALL? process.env.GPTS_ALL: "g-ic1IxDDmk";
+    if(messageBody.model=='gpt-4-all')messageBody.model=  process.env.GPTS_ALL? process.env.GPTS_ALL: "g-l23NycKzK";
     mlog('log','model', oldModel , messageBody.model );
 
     const body = JSON.stringify( messageBody );

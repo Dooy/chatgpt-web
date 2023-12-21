@@ -6,9 +6,10 @@ import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
 import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
-import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot} from './sse'
+import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper } from './sse'
 import bodyParser  from 'body-parser';
 import cors from 'cors'
+import multer from "multer"
 //const cors = require('cors');
 
 
@@ -192,6 +193,13 @@ import cors from 'cors'
 	else router.post('/v1/chat/completions',  sse ); 
 	
 	router.post('/v1/embeddings',  sse );
+	router.post('/v1/audio/speech',  sse );
+
+	//whisper
+	const storage2 = multer.memoryStorage();
+	const upload2 = multer({ storage: storage2 });
+	router.post('/v1/audio/transcriptions', upload2.single('file') ,  whisper );
+
 	router.post('/sse',  sse );
 	router.post('/mj/submit',  mjapi );
 	router.post('/mj/submit/imagine',  mjapi );
