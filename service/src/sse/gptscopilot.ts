@@ -54,7 +54,16 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                  }
                  
                  if(!isGo) {
-                    if(data.indexOf('We have run out of conversations today. Please try again tomorrow.')>-1 ){
+                    let ddata=''
+                    try{
+                        let pjson= JSON.parse(data );
+                        ddata= pjson.choices[0].delta.content;
+                    }catch(e3){
+                    }
+                    if(
+                    data.indexOf('We have run out of conversations today. Please try again tomorrow.')>-1
+                    || ddata.indexOf('今日对话次数已用完，请明日再试')>-1
+                     ){
                         writeAidutu( {data});
                         isError=true;
                         response.writeHead(428);
