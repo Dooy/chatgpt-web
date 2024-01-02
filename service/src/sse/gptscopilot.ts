@@ -11,9 +11,9 @@ import { writeAidutu } from "src/utils";
 
 
 const GPTS_COOKIE = process.env.GPTS_COOKIE
-let reqCount = 0;
+//let reqCount = 0;
 
-const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:any,msg:msgType )=>{
+const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:any,msg:msgType, reqCount:number )=>{
     mlog('baseurl', msg.isStream  );
     const url=`https://gptscopilot.ai/api/chat/completions` 
     const headers ={
@@ -139,7 +139,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
     mlog('log','结果cnt：', arrDataString.length ,reqCount , arrDataString[0] );
     if(msg.isStream &&  arrDataString.length<=1 && arrDataString[0]=='' && reqCount<=1 ){
          mlog('log','重复中 repost' );
-         fetchSSEQuery(request, response,messageBody,msg  ) //request:Request, response:Response,messageBody:any,msg
+         fetchSSEQuery(request, response,messageBody,msg , reqCount  ) //request:Request, response:Response,messageBody:any,msg
          return ;
     }
     response.end();
@@ -171,7 +171,7 @@ export const gptscopilot=  async  ( request:Request, response:Response, next?:Ne
         const isStream = request.body.stream;
         msg.isStream = isStream?true:false;
         msg.model=  request.body.model;
-        await fetchSSEQuery(request, response,  request.body,msg );
+        await fetchSSEQuery(request, response,  request.body,msg,0 );
          
          
     } catch (e) {
