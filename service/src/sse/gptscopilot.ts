@@ -135,9 +135,10 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
             response.end( `{"error":{"message":"gate way error...","type":"openai_hk_error","code":"gate_way_error"}}`   );
             return ;
         }
-    } 
-    mlog('log','结果cnt：', arrDataString.length ,reqCount , arrDataString[0] );
-    if(msg.isStream &&  arrDataString.length<=1 && arrDataString[0]=='' && reqCount<=1 ){
+    }
+    const firstLen= arrDataString[0]? arrDataString[0].length :0 ;
+    mlog('log','结果cnt=', arrDataString.length ,',reqCount=',reqCount,",strlen=" ,  firstLen );
+    if(msg.isStream &&  arrDataString.length<=1 && firstLen==0 && reqCount<=1 ){
          mlog('log','重复中 repost' );
          fetchSSEQuery(request, response,messageBody,msg , reqCount  ) //request:Request, response:Response,messageBody:any,msg
          return ;
