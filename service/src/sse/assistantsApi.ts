@@ -46,7 +46,7 @@ export const  assistantsApi = async  ( request:Request, response:Response, next?
 	};
     request.on('close', () => console.log(`${clientId} Connection closed`) );
 
-	let tomq={header: request.headers,request:request.body,response:'',reqid: clientId ,status:200,myKey:'',myUrl:'', stime:Date.now(),etime:0,user:{} }
+	let tomq={header: request.headers,request:request.body,response:'',url:request.url,reqid: clientId ,status:200,myKey:'',myUrl:'', stime:Date.now(),etime:0,user:{} }
 
     const url= isNotEmptyString( process.env.OPENAI_API_BASE_URL)? process.env.OPENAI_API_BASE_URL: 'https://api.openai.com';
     const userPsw=  isNotEmptyString( process.env.OPENAI_API_KEY)? process.env.OPENAI_API_KEY: "sk-abc";
@@ -172,7 +172,7 @@ export const  tokenApi = async  ( request:Request, response:Response, next?:Next
 export const uploadFileApi= async  ( request:Request, response:Response, next?:NextFunction)=> {
     let error:errorType= { message:'',code:'openai_hk_error',type:'openai_hk_error', param:'' }
     const clientId =  generateRandomCode(16);
-	let tomq={header: request.headers,request:request.body,response:'',reqid: clientId ,status:200,myKey:'',myUrl:'', stime:Date.now(),etime:0,user:{} }
+	let tomq={header: request.headers,request:request.body,response:'',url:request.url,reqid: clientId ,status:200,myKey:'',myUrl:'', stime:Date.now(),etime:0,user:{} }
 
     const url= isNotEmptyString( process.env.OPENAI_API_BASE_URL)? process.env.OPENAI_API_BASE_URL: 'https://api.openai.com';
     const userPsw=  isNotEmptyString( process.env.OPENAI_API_KEY)? process.env.OPENAI_API_KEY: "sk-abc";
@@ -200,7 +200,7 @@ export const uploadFileApi= async  ( request:Request, response:Response, next?:N
              tomq.myUrl = url ;
             tomq.user= mykey.user;
             let rqUrl= url+uri ;
-            let model= req.body.model
+            let model= req.body.purpose
              
                 
 
