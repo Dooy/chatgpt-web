@@ -6,7 +6,7 @@ import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
 import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
-import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper } from './sse'
+import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenApi } from './sse'
 import bodyParser  from 'body-parser';
 import cors from 'cors'
 import multer from "multer"
@@ -206,6 +206,14 @@ import multer from "multer"
 	//mj2gpt的格式输出
 	router.post('/mj2gpt/completions',  mj2gpt );
 	router.post('/mj2gpt',  mj2gpt );
+
+	//assistantsApi 
+	router.all('/v1/assistants',  assistantsApi );
+	router.all('/v1/assistants/*',  assistantsApi );
+	router.all('/v1/threads',  assistantsApi );
+	router.all('/v1/threads/*',  assistantsApi );
+	//token计算
+	router.post('/tokens',  tokenApi );
 
 	//逆向 将chat对话转化为 api
 	router.post('/chat2api',  chat2api );
