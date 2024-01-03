@@ -6,7 +6,7 @@ import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
 import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
-import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenApi } from './sse'
+import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenApi, uploadFileApi } from './sse'
 import bodyParser  from 'body-parser';
 import cors from 'cors'
 import multer from "multer"
@@ -214,6 +214,12 @@ import multer from "multer"
 	router.all('/v1/threads/*',  assistantsApi );
 	//token计算
 	router.post('/tokens',  tokenApi );
+	//文件上传
+	//whisper
+	//const storage2 = multer.memoryStorage();
+	//const upload2 = multer({ storage: storage2 });
+	router.post('/v1/files', upload2.single('file') ,  uploadFileApi );
+	//router.post('/v1/files',  fileUploader );
 
 	//逆向 将chat对话转化为 api
 	router.post('/chat2api',  chat2api );
