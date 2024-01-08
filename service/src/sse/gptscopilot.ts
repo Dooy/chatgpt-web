@@ -7,6 +7,8 @@ import { msgType, toClient, webClient } from "./mj2gpt";
  
 import { getResponseHeader } from "./chat2api"
 import { writeAidutu } from "src/utils";
+import { encode, numTokensFromMessages } from "./tokens";
+import { normalFormater } from "./gptformart";
  
 
 
@@ -34,13 +36,15 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
     if(messageBody.model=='gpt-4-all')messageBody.model='gpt-4-all' ;// process.env.GPTS_ALL? process.env.GPTS_ALL: "g-l23NycKzK";
     mlog('log','model', oldModel , messageBody.model, reqCount  );
 
+    messageBody.stream= true; 
+
     const body = JSON.stringify( messageBody );
     const id= 'chatcmpl-'+ generateRandomCode(30); 
     msg.id= id ;
     let isGo= reqCount<=0 ? false :true ;
     let isDoing= false;  
     let isError=false;
- 
+    //let isFirst = reqCount<=0 ? false :true ;
     let oldData='';
     let arrDataString: string[]= [];
     try { 
@@ -73,12 +77,19 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                         //response.json( obj  );
                         response.end( JSON.stringify(obj)  );
                     }
-                    else response.writeHead(200, getResponseHeader( true) );
+                    else if(msg.isStream ) response.writeHead(200, getResponseHeader( true) );
                  }
 				 isGo=true;
                  if(!msg.isStream) {
-                    response.write(  data  ); 
-                    response.write(  "\n"); 
+                    // response.write(  data  ); 
+                    // response.write(  "\n");
+                    if(data=='[DONE]'){
+                    }else if(oldData ){
+                        //response.write( `data: ${oldData}\n` );  
+                        //response.write(  "\n"); 
+                        arrDataString.push( getStreamContent(data)); //每个chunk结果
+                    }
+                    
                  }
                  else if(data=='[DONE]'){
                     response.write( `data: ${data}\n` );  
@@ -90,7 +101,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                     }
                     arrDataString.push( getStreamContent(data)); //每个chunk结果
                  }
-                 oldData= data;
+                 if( data!='[DONE]' ) oldData= data;
                
             },
             onError(e ){
@@ -138,10 +149,24 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
     }
     const firstLen= arrDataString[0]? arrDataString[0].length :0 ;
     mlog('log','结果cnt=', arrDataString.length ,',reqCount=',reqCount,",strlen=" ,  firstLen );
-    if(msg.isStream &&  arrDataString.length<=1 && firstLen==0 && reqCount<=1 ){
+    if(  arrDataString.length<=1 && firstLen==0 && reqCount<=1 ){
          mlog('log','重复中 repost' );
          fetchSSEQuery(request, response,messageBody,msg , reqCount  ) //request:Request, response:Response,messageBody:any,msg
          return ;
+    }
+    //msg.isStream &&
+    if( !msg.isStream ){
+        //oldData
+        let usage= {
+            "prompt_tokens": numTokensFromMessages(request.body.messages ) ,
+            "completion_tokens":  encode( arrDataString.join('')).length ,
+            "total_tokens": 0
+        } ;
+        
+        usage.total_tokens= usage.completion_tokens+usage.prompt_tokens ;
+        // 
+        const mjson = normalFormater(msg.id?? ('chatcmpl-'+ generateRandomCode(30)) , arrDataString.join('') ,{attr: {  usage },model: msg.model?? 'gpt-4-all'} );
+        response.json( mjson );
     }
     response.end();
 

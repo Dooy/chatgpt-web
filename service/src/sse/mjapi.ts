@@ -5,13 +5,19 @@ import { publishData } from './rabittmq';
 import { isNotEmptyString } from 'src/utils/is';
 import { fetchSSE } from './fetch-sse';
 
-
-const changBody = ( body:any ,uid:number )=>{
+const fast_uid = isNotEmptyString(process.env.FAST_UID)? process.env.FAST_UID.split(',').map(v=>v.trim() ) :[];
+const changBody = ( body:any ,uid:number,uri:string )=>{
     //mlog('changBody', body);
     let rz = body;
     const notifyHook=`${process.env.SSE_HTTP_SERVER}/openai/mjapi/${uid}` 
     rz.notifyHook= notifyHook +'/'+ ( rz.notifyHook?encodeURIComponent( rz.notifyHook ):'');
     if(!rz.state || rz.state=='')rz.state= `${uid}` ;
+	mlog( 'Fast UID=',uid, fast_uid )
+	if(uri=='/mj/submit/imagine' && fast_uid.indexOf( `${uid}`)>-1 ){
+		mlog('log','Fast UID=',uid )
+		if(rz.accountFilter) rz.accountFilter.modes=['FAST']
+		else rz.accountFilter= {modes:['FAST'] }
+	}
     mlog('changBody>> ',   rz.notifyHook );
     return rz ;
 }
@@ -34,7 +40,7 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
     const url= isNotEmptyString( process.env.MJ_SERVER_URL)? process.env.MJ_SERVER_URL: 'http://43.154.119.189:6090';
     const userPsw=  isNotEmptyString( process.env.MJ_SERVER_USERPSW)? process.env.MJ_SERVER_USERPSW: "aitutu:20221116";
 
-	const uri= request.headers['x-uri']??'/mj/submit/imagine'
+	const uri= (request.headers['x-uri']??'/mj/submit/imagine') as string
     try{
             
             const mykey=await getMyKey( request.headers['mj-api-secret']?? request.headers['authorization'], request.body);
@@ -45,7 +51,7 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
             const authString = Buffer.from( userPsw ).toString('base64');
 
             mlog('请求>>', rqUrl,  mykey.user?.uid, mykey.user?.fen ,authString   );
-            const body=  JSON.stringify(  changBody(request.body,+mykey.user?.uid ));
+            const body=  JSON.stringify(  changBody(request.body,+mykey.user?.uid,uri ));
             //mlog( 'body' ,body )
 		    await fetchSSE( rqUrl ,{
                 method: 'POST',
