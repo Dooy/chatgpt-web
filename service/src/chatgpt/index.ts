@@ -131,6 +131,10 @@ async function chatReplyProcess(options: RequestOptions) {
   catch (error: any) {
     const code = error.statusCode
     global.console.log(error)
+    if(error.message && error.message.indexOf('will be refresh')>-1 ){ //will be refresh
+      console.log('请重试')
+      return sendResponse({ type: 'Fail', message: '请重试' })
+    }
     if (Reflect.has(ErrorCodeMessage, code))
       return sendResponse({ type: 'Fail', message: ErrorCodeMessage[code] })
     return sendResponse({ type: 'Fail', message: error.message ?? 'Please check the back-end console' })
