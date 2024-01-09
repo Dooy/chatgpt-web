@@ -41,6 +41,28 @@ export async function getMyKey(authorization:string,body:any):Promise<any> {
         console.log( authorization, 'Insufficient points, please recharge 积分不足，请充值' );
         throw  new mError('Insufficient points, please recharge 积分不足，请充值');
     }
+    const kk2= `attr:${mvar.uid}`; 
+    let attr:any =  await redis.hGetAll(kk2);
+    if( !attr || attr.hk_gpt3==undefined ){
+        let res= await fetch(`${process.env.SSE_HTTP_SERVER}/openai/client/hkopt/${mvar.uid}` )
+        const rdate:any =await res.json()  
+        console.log('服务端获取用户设置>>',rdate?.data?.userAttr, kk2 );
+        //await redis.HSET(kk, );
+        const hk=rdate?.data?.userAttr
+        if(hk){
+            await Object.keys(hk).map(async (k)=>{ await redis.hSet(kk2,k,hk[k]) }); 
+            await redis.expire(kk2,300); //5分钟 不然充值后 余额一直都不更新
+        }
+        attr= hk;
+    }
+    if( body.model ){
+        const model= body.model as string ;
+        checkModelFotbitten(model,attr )
+    }
+    //mlog('attr', attr );
+    
+
+
     const poolkey= await getKeyFromPool(redis,+mvar.uid,body.model); //从卡池中获取key
     const parr = poolkey.split('||');
 
@@ -48,7 +70,23 @@ export async function getMyKey(authorization:string,body:any):Promise<any> {
     //console.log('test redis>>',  mvar , body.model ,await getKeyFromPool(redis,+mvar.uid,body.model) );
     //await redis.set('abc','time:'+ Date.now() );
     redis.disconnect();
-    return {key:'Bearer '+parr[0], user:mvar,apiUrl:parr[1]??'' };
+    return {key:'Bearer '+parr[0], user:mvar,apiUrl:parr[1]??'',attr  };
+}
+
+export const checkModelFotbitten= ( model:string, attr:any )=>{
+    let forBitten = false;
+    if(model.indexOf('gpt-3.5')>-1){
+        forBitten=  attr.hk_gpt3 && '1'=== attr.hk_gpt3;
+    }else if(model.indexOf('dall-e')>-1 || model.indexOf('midjourney')>-1){
+        forBitten=  attr.hk_draw && '1'=== attr.hk_draw;
+    }else if(model.indexOf('gpt-4-all')>-1 || model.indexOf('gpt-4-gizmo')>-1 ){
+        forBitten=  attr.hk_gpts && '1'=== attr.hk_gpts;
+    }else if(model.indexOf('gpt-4')>-1   ){
+         forBitten=  attr.hk_gpt4 && '1'=== attr.hk_gpt4;
+    }
+    if(forBitten)  throw  new mError(`模型 ${model} 已禁用`);
+    
+
 }
 
 //取 0到 max-1随机数
