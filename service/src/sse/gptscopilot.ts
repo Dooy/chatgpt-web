@@ -92,8 +92,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                     
                  }
                  else if(data=='[DONE]'){
-                    response.write( `data: ${data}\n` );  
-                    response.write(  "\n"); 
+                    
                  }else{ 
                     if(oldData ){
                         response.write( `data: ${oldData}\n` );  
@@ -149,11 +148,22 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
     }
     const firstLen= arrDataString[0]? arrDataString[0].length :0 ;
     mlog('log','结果cnt=', arrDataString.length ,',reqCount=',reqCount,",strlen=" ,  firstLen );
-    if(  arrDataString.length<=1 && firstLen==0 && reqCount<=1 ){
-         mlog('log','重复中 repost' );
-         fetchSSEQuery(request, response,messageBody,msg , reqCount  ) //request:Request, response:Response,messageBody:any,msg
-         return ;
+
+    
+    if(  arrDataString.length<=1 && firstLen==0  ){
+         if( reqCount<=1 ){
+            mlog('log','重复中 repost' );
+            fetchSSEQuery(request, response,messageBody,msg , reqCount  ) //request:Request, response:Response,messageBody:any,msg
+            return ;
+         }else{
+            let obj={error:{"message":'请重试',  "type":"openai_hk_error","code":'re_back_error'}}
+            response.end( JSON.stringify(obj)  );
+            return ;
+         }
     }
+     
+    if( msg.isStream ) response.write( `data: [DONE]\n\n` );  
+    
     //msg.isStream &&
     if( !msg.isStream ){
         //oldData
