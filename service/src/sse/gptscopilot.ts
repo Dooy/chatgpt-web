@@ -44,6 +44,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
     let isGo= reqCount<=0 ? false :true ;
     let isDoing= false;  
     let isError=false;
+    let isWriteHeader= false; 
     //let isFirst = reqCount<=0 ? false :true ;
     let oldData='';
     let arrDataString: string[]= [];
@@ -77,7 +78,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                         //response.json( obj  );
                         response.end( JSON.stringify(obj)  );
                     }
-                    else if(msg.isStream ) response.writeHead(200, getResponseHeader( true) );
+                    //else if(msg.isStream ) response.writeHead(200, getResponseHeader( true) );
                  }
 				 isGo=true;
                  if(!msg.isStream) {
@@ -95,6 +96,10 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                     
                  }else{ 
                     if(oldData ){
+                        if(   !isWriteHeader  ){
+                            response.writeHead(200, getResponseHeader( true) );
+                            isWriteHeader= true ;
+                        }
                         response.write( `data: ${oldData}\n` );  
                         response.write(  "\n"); 
                     }
@@ -156,6 +161,8 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
             fetchSSEQuery(request, response,messageBody,msg , reqCount  ) //request:Request, response:Response,messageBody:any,msg
             return ;
          }else{
+            mlog('log',' repost 无结果' );
+            response.writeHead(428);
             let obj={error:{"message":'请重试',  "type":"openai_hk_error","code":'re_back_error'}}
             response.end( JSON.stringify(obj)  );
             return ;
