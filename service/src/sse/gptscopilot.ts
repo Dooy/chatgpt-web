@@ -87,6 +87,13 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                         response.end( JSON.stringify(obj)  );
                         isEnd= true;
                     }
+                    if( ddata.indexOf('http')>-1  ){
+                        mlog('error','警告', ddata )
+                        response.writeHead(428);
+                        let obj={error:{"message":'请重试',  "type":"openai_hk_error","code":'please_retry'}} 
+                        response.end( JSON.stringify(obj)  );
+                        isEnd= true;
+                    }
                     //else if(msg.isStream ) response.writeHead(200, getResponseHeader( true) );
                  }
 				 isGo=true;
