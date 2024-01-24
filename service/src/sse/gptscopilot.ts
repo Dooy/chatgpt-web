@@ -68,8 +68,12 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                     // }catch(e3){
                     // }
                     let ddata= getStreamContent(data);
+
                     //gptscopilot.ai/pricing
-                    if( 
+                    if(ddata.indexOf('chat.openai.com')>-1 ){
+                         mlog('log','openai有错误', ddata )
+                    }
+                    else if( 
                     data.indexOf('We have run out of conversations today. Please try again tomorrow.')>-1
                     || ddata.indexOf('今日对话次数已用完，请明日再试')>-1
                     || ddata.indexOf('gptscopilot')>-1
