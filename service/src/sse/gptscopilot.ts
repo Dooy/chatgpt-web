@@ -45,6 +45,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
     let isDoing= false;  
     let isError=false;
     let isWriteHeader= false; 
+    let isEnd=false;
     //let isFirst = reqCount<=0 ? false :true ;
     let oldData='';
     let arrDataString: string[]= [];
@@ -84,6 +85,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                         let obj={error:{"message":'请重试',  "type":"openai_hk_error","code":'please_retry'}}
                         //response.json( obj  );
                         response.end( JSON.stringify(obj)  );
+                        isEnd= true;
                     }
                     //else if(msg.isStream ) response.writeHead(200, getResponseHeader( true) );
                  }
@@ -104,21 +106,28 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                  }else{ 
                     //const chunkData=  getStreamContent(data);
                     arrDataString.push( getStreamContent(data)); //每个chunk结果
-                    const chunkData= arrDataString.join('');
-                    if( chunkData.indexOf('gptscopilot')>-1
-                        || chunkData.indexOf('openai-now')>-1
-                    ){
-                        response.write( `data: [DONE]\n\n` );//直接end发现异常
-                        mlog('error','chunkData', chunkData )
-                        writeAidutu( {data});
-                    }
+                    
                     if(oldData ){
+                        const chunkData= arrDataString.join('');
+                        if( chunkData.indexOf('gptscopilot')>-1
+                            || chunkData.indexOf('openai-now')>-1
+                        ){
+                            response.write( `data: [DONE]\n\n` );//直接end发现异常
+                            mlog('error','chunkData', chunkData )
+                            writeAidutu( {data});
+                            isEnd= true;
+                            response.end();
+                        }
+
+
                         if(   !isWriteHeader  ){
                             response.writeHead(200, getResponseHeader( true) );
                             isWriteHeader= true ;
                         }
-                        response.write( `data: ${oldData}\n` );  
-                        response.write(  "\n");
+                        if( !isEnd ){ 
+                            response.write( `data: ${oldData}\n` );  
+                            response.write(  "\n");
+                        }
                          
                     }
                     
@@ -137,7 +146,8 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
             body 
         });
      } catch (e ) {
-       mlog('error','food',e)
+       mlog('error','food',e);
+       if( isEnd) return ;
         //response.send(2)
         try{
             if(e.status) {
@@ -173,6 +183,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
     }
     const firstLen= arrDataString[0]? arrDataString[0].length :0 ;
     mlog('log','结果cnt=', arrDataString.length ,',reqCount=',reqCount,",strlen=" ,  firstLen );
+    if( isEnd) return ;
 
     
     if(  arrDataString.length<=1 && firstLen==0  ){
