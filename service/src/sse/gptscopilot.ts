@@ -77,7 +77,8 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                     data.indexOf('We have run out of conversations today. Please try again tomorrow.')>-1
                     || ddata.indexOf('今日对话次数已用完，请明日再试')>-1
                     || ddata.indexOf('gptscopilot')>-1
-                    || ddata.indexOf('.com')>-1
+                    || ddata.indexOf('openai-now')>-1
+                    //|| ddata.indexOf('.com')>-1
                     || ddata.indexOf('.ai')>-1
                     //|| ddata.indexOf('http')>-1
                     || data.indexOf('gptscopilot')>-1
@@ -90,13 +91,14 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                         //response.json( obj  );
                         response.end( JSON.stringify(obj)  );
                         isEnd= true;
-                    }else if( ddata.indexOf('http')>-1  ){
-                        mlog('error','警告', ddata )
-                        response.writeHead(428);
-                        let obj={error:{"message":'请重试',  "type":"openai_hk_error","code":'please_retry'}} 
-                        response.end( JSON.stringify(obj)  );
-                        isEnd= true;
                     }
+                    // else if( ddata.indexOf('http')>-1  ){
+                    //     mlog('error','警告', ddata )
+                    //     response.writeHead(428);
+                    //     let obj={error:{"message":'请重试',  "type":"openai_hk_error","code":'please_retry'}} 
+                    //     response.end( JSON.stringify(obj)  );
+                    //     isEnd= true;
+                    // }
                     //else if(msg.isStream ) response.writeHead(200, getResponseHeader( true) );
                  }
 				 isGo=true;
