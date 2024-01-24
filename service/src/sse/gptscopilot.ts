@@ -74,6 +74,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                     || ddata.indexOf('gptscopilot')>-1
                     || ddata.indexOf('.com')>-1
                     || ddata.indexOf('.ai')>-1
+                    || ddata.indexOf('http')>-1
                     || data.indexOf('gptscopilot')>-1
                      ){
                         mlog('error', ddata )
