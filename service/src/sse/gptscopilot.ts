@@ -102,15 +102,28 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                  else if(data=='[DONE]'){
                     
                  }else{ 
+                    //const chunkData=  getStreamContent(data);
+                    arrDataString.push( getStreamContent(data)); //每个chunk结果
+                    const chunkData= arrDataString.join('');
+                    if( chunkData.indexOf('gptscopilot')>-1
+                        || chunkData.indexOf('openai-now')>-1
+                    ){
+                        response.write( `data: [DONE]\n\n` );//直接end发现异常
+                        mlog('error','chunkData', chunkData )
+                        writeAidutu( {data});
+                    }
                     if(oldData ){
                         if(   !isWriteHeader  ){
                             response.writeHead(200, getResponseHeader( true) );
                             isWriteHeader= true ;
                         }
                         response.write( `data: ${oldData}\n` );  
-                        response.write(  "\n"); 
+                        response.write(  "\n");
+                         
                     }
-                    arrDataString.push( getStreamContent(data)); //每个chunk结果
+                    
+                    
+
                  }
                  if( data!='[DONE]' ) oldData= data;
                
