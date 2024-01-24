@@ -86,8 +86,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                         //response.json( obj  );
                         response.end( JSON.stringify(obj)  );
                         isEnd= true;
-                    }
-                    if( ddata.indexOf('http')>-1  ){
+                    }else if( ddata.indexOf('http')>-1  ){
                         mlog('error','警告', ddata )
                         response.writeHead(428);
                         let obj={error:{"message":'请重试',  "type":"openai_hk_error","code":'please_retry'}} 
