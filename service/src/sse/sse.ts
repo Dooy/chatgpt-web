@@ -63,7 +63,7 @@ export async function getMyKey(authorization:string,body:any):Promise<any> {
     
 
 
-    const poolkey= await getKeyFromPool(redis,+mvar.uid,body.model); //从卡池中获取key
+    const poolkey= await getKeyFromPool(redis,+mvar.uid,body); //从卡池中获取key
     const parr = poolkey.split('||');
 
 
@@ -73,6 +73,7 @@ export async function getMyKey(authorization:string,body:any):Promise<any> {
     return {key:'Bearer '+parr[0], user:mvar,apiUrl:parr[1]??'',attr  };
 }
 
+//禁用
 export const checkModelFotbitten= ( model:string, attr:any )=>{
     let forBitten = false;
     if(model.indexOf('gpt-3.5')>-1){
@@ -94,11 +95,12 @@ function getRandomInt(max: number): number {
     return Math.floor(Math.random() * max);
 }
 
-async function getKeyFromPool(redis:RedisClientType, uid:number, model:string,oldkey?:string):Promise<string> {
+async function getKeyFromPool(redis:RedisClientType, uid:number, body:any,oldkey?:string):Promise<string> {
     //GAO_KEY 如果有搞并发key 直接用高并发key
   if (isNotEmptyString(process.env.GAO_KEY)) {
     return process.env.GAO_KEY;
   }
+  const model = body.model;
 
     let key='pool:3k';
     if(model?.indexOf('gpt-4')>=0) key='pool:4k';
@@ -108,6 +110,12 @@ async function getKeyFromPool(redis:RedisClientType, uid:number, model:string,ol
 
     //gpts 多模态 直接走这个路口
     if(model?.indexOf('gizmo')>=0) key='pool:4g'; 
+
+    //gpt-4-all 要判断是否带链接 代理丢到key池 不带链接到多模态
+    if( model=='gpt-4-all' ){
+        const msg= JSON.stringify( body.message );
+        if( msg.toLocaleLowerCase().indexOf('http')==-1 ) key='pool:4g'; 
+    }
 
     const rz = await redis.get(key);
     //console.log('test redis>>',  rz );
