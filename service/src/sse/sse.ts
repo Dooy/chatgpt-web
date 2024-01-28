@@ -113,7 +113,8 @@ async function getKeyFromPool(redis:RedisClientType, uid:number, body:any,oldkey
 
     //gpt-4-all 要判断是否带链接 代理丢到key池 不带链接到多模态
     if( model=='gpt-4-all' ){
-        const msg= JSON.stringify( body.message );
+        const msg= JSON.stringify( body.messages );
+        //mlog('msg', msg )
         if( msg.toLocaleLowerCase().indexOf('http')==-1 ) key='pool:4g'; 
     }
 
