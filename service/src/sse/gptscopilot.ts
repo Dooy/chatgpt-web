@@ -9,6 +9,7 @@ import { getResponseHeader } from "./chat2api"
 import { writeAidutu } from "src/utils";
 import { encode, numTokensFromMessages } from "./tokens";
 import { normalFormater } from "./gptformart";
+import { fetch } from "./fetch";
  
 
 
@@ -85,7 +86,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                     || data.indexOf('openai-now')>-1
                      ){
                         mlog('error', ddata )
-                        writeAidutu( {data});
+                        writeAidutu2( {data});
                         isError=true;
                         response.writeHead(428);
                         let obj={error:{"message":'请重试',  "type":"openai_hk_error","code":'please_retry'}}
@@ -127,7 +128,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
                         ){
                             response.write( `data: [DONE]\n\n` );//直接end发现异常
                             mlog('error','chunkData', chunkData )
-                            writeAidutu( {data});
+                            writeAidutu2( {data});
                             isEnd= true;
                             response.end();
                         }
@@ -166,7 +167,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
             if(e.status) {
                 response.writeHead(e.status );
                 if(e.status==403){
-                    writeAidutu({'error':'可能是因为cookie 失效因为账号不存在' ,status:403 });
+                    writeAidutu2({'error':'可能是因为cookie 失效因为账号不存在' ,status:403 });
                 }
                 //publishData( "openapi", 'error',  JSON.stringify({e,tomq} ));
                 //response.end( e.reason?.replace(/one_api_error/ig,'openai_hk_error'));
@@ -179,7 +180,7 @@ const fetchSSEQuery =  async  (request:Request, response:Response,messageBody:an
             else if( e.statusCode ) {
                 response.writeHead(428);
                 if( e.statusCode==403 ){
-                    writeAidutu({'error':'可能是因为cookie 失效因为账号不存在' ,status:403 });
+                    writeAidutu2({'error':'可能是因为cookie 失效因为账号不存在' ,status:403 });
                 }
                 //response.end("get way error...\n"  );
                 let ss = e.reason??'gate way error...';
@@ -273,4 +274,31 @@ export const gptscopilot=  async  ( request:Request, response:Response, next?:Ne
         return ;
     }
 
+}
+
+async function writeAidutu2( data:object ){
+    //mlog("writeAidutu2 good news");
+    const url=`https://gptscopilot.ai/api/account` 
+    const headers ={
+            'Content-Type': 'application/json'
+            ,'Cookie': GPTS_COOKIE
+            ,'authority': 'gptscopilot.ai'
+            ,'Accept': 'application/json, text/plain, */*'  
+            ,'Origin': 'https://gptscopilot.ai' 
+            ,'Referer': 'https://gptscopilot.ai'
+            ,'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
+    }
+    try {
+        const d= await fetch(url, {headers});//.then(d=>d.json() )
+        const json = await d.json();
+        mlog("log", 'credit', json.data.credit );
+        if( json.data && json.data.credit>0 ){ 
+             mlog("log", 'credit', json.data.credit );
+            return ;
+        }
+    } catch (error) {
+       // writeAidutu(data)
+    }
+    writeAidutu(data);
+   
 }
