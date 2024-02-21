@@ -41,7 +41,7 @@ export const  checkWhileIp = async ( uid:number , request:Request )=>{
     
      const wip =  mvar.wip as string[];
      if(wip.length>0 && wip.indexOf(fip)==-1 ){
-         mlog('log', uid , "ip" , fip );
+         mlog('log', uid , "ip-limit" , fip );
          throw  new mError( `请将你的IP加入白名单`);
      }
 
