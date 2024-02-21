@@ -35,9 +35,7 @@ export const  checkWhileIp = async ( uid:number , request:Request )=>{
      }
      const fip= getIP( request );
      if(fip=='') {
-         mlog('log', uid , "未获取到 x-forwarded-for ip" )
-         mlog('log', request.headers );
-         mlog('log', request.header('x-forwarded-for') );
+         mlog('log', uid , "未获取到 x-forwarded-for ip" );
         return ;
      }
     
@@ -50,12 +48,10 @@ export const  checkWhileIp = async ( uid:number , request:Request )=>{
 
 function getIP( obj:Request){
     //x-forwarded-for
-    if (obj.header && obj.header["x-forwarded-for"]) {
-        const str =<string>  obj.header["x-forwarded-for"];
+    if (obj.header && obj.header('x-forwarded-for')) {
+        const str =<string>  obj.header('x-forwarded-for');
         const arr = str.split(',');
         return arr[0];
-        //if( str.indexOf('chat/completions')>-1 ) return '/v1/chat/completions';
-        //return str;
     }
     return '';
 }
