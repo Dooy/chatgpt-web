@@ -12,7 +12,7 @@ import FormData  from 'form-data'
 import mp3Duration from 'mp3-duration'
 
 export const  checkWhileIp = async ( uid:number , request:Request )=>{
-     const kk= `cw:${uid}`;
+     const kk= `cw:${uid}`; //白名单设置
      const redis= await createRedis();
      let mstr:any =  await redis.get(kk);
      let mvar:any = mstr? JSON.parse(mstr): {} ;
@@ -24,7 +24,7 @@ export const  checkWhileIp = async ( uid:number , request:Request )=>{
         if(wdata){
             //await Object.keys(wdata).map(async k=>{ await redis.hSet(kk,k,wdata[k]) });
             await redis.set(kk, JSON.stringify(wdata) );
-            await redis.expire(kk,600); // 10分钟 不然充值后 余额一直都不更新
+            await redis.expire(kk,1800); // 30分钟 不然充值后 余额一直都不更新
             mvar= wdata;
         }
      }
