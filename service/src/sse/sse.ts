@@ -19,7 +19,7 @@ export const  checkWhileIp = async ( uid:number , request:Request )=>{
      if(!mstr || !mvar || Object.keys(mvar).length==0 ){
         let res= await fetch(`${process.env.SSE_HTTP_SERVER}/openai/client/scheck/${uid}` )
         const rdate:any =await res.json()  
-        console.log('服务端获取ip白名单信息>>',rdate?.data?.wdata );
+        console.log('服务端获取ip白名单信息>>',uid ,rdate?.data?.wdata );
         const wdata= rdate?.data?.wdata;
         if(wdata){
             //await Object.keys(wdata).map(async k=>{ await redis.hSet(kk,k,wdata[k]) });
@@ -28,7 +28,34 @@ export const  checkWhileIp = async ( uid:number , request:Request )=>{
             mvar= wdata;
         }
      }
+     console.log('ip白名单信息>>', uid , mvar.wip   );
+     if( !mvar.wip || mvar.wip.length==0){
+        mlog('log',uid , "WIP 白名单无" )
+        return ;
+     }
+     const fip= getIP( request );
+     if(fip=='') {
+         mlog('log', uid , "未获取到 x-forwarded-for ip" )
+        return ;
+     }
+    
+     const wip =  mvar.wip as string[];
+     if(wip.length>0 && wip.indexOf(fip)==-1 ){
+         throw  new mError( `请将你的IP加入白名单`);
+     }
 
+}
+
+function getIP( obj:Request){
+    //x-forwarded-for
+    if (obj.header && obj.header["x-forwarded-for"]) {
+        const str =<string>  obj.header["x-forwarded-for"];
+        const arr = str.split(',');
+        return arr[0];
+        //if( str.indexOf('chat/completions')>-1 ) return '/v1/chat/completions';
+        //return str;
+    }
+    return '';
 }
 
 //获取key 验证key 验证码积分的地方； 验证码ip百名单也在
