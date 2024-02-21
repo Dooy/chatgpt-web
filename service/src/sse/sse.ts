@@ -24,7 +24,7 @@ export const  checkWhileIp = async ( uid:number , request:Request )=>{
         if(wdata){
             //await Object.keys(wdata).map(async k=>{ await redis.hSet(kk,k,wdata[k]) });
             await redis.set(kk, JSON.stringify(wdata) );
-            await redis.expire(kk,1800); // 30分钟 不然充值后 余额一直都不更新
+            await redis.expire(kk,1800); // 30分钟 
             mvar= wdata;
         }
      }
