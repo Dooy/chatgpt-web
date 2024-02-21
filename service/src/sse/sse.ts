@@ -36,6 +36,8 @@ export const  checkWhileIp = async ( uid:number , request:Request )=>{
      const fip= getIP( request );
      if(fip=='') {
          mlog('log', uid , "未获取到 x-forwarded-for ip" )
+         mlog('log', request );
+         mlog('log', request.header );
         return ;
      }
     
