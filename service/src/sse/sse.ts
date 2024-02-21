@@ -11,6 +11,27 @@ import axios from 'axios';
 import FormData  from 'form-data'
 import mp3Duration from 'mp3-duration'
 
+export const  checkWhileIp = async ( uid:number , request:Request )=>{
+     const kk= `cw:${uid}`;
+     const redis= await createRedis();
+     let mstr:any =  await redis.get(kk);
+     let mvar:any = mstr? JSON.parse(mstr): {} ;
+     if(!mstr || !mvar || Object.keys(mvar).length==0 ){
+        let res= await fetch(`${process.env.SSE_HTTP_SERVER}/openai/client/scheck/${uid}` )
+        const rdate:any =await res.json()  
+        console.log('服务端获取ip白名单信息>>',rdate?.data?.wdata );
+        const wdata= rdate?.data?.wdata;
+        if(wdata){
+            //await Object.keys(wdata).map(async k=>{ await redis.hSet(kk,k,wdata[k]) });
+            await redis.set(kk, JSON.stringify(wdata) );
+            await redis.expire(kk,600); // 10分钟 不然充值后 余额一直都不更新
+            mvar= wdata;
+        }
+     }
+
+}
+
+//获取key 验证key 验证码积分的地方； 验证码ip百名单也在
 export async function getMyKey(authorization:string,body:any):Promise<any> {
     //if(authorization)
      if( ! authorization || authorization=='' ) throw  new mError( "HK KEY ERROR, KEY缺失");
@@ -70,6 +91,9 @@ export async function getMyKey(authorization:string,body:any):Promise<any> {
     //console.log('test redis>>',  mvar , body.model ,await getKeyFromPool(redis,+mvar.uid,body.model) );
     //await redis.set('abc','time:'+ Date.now() );
     redis.disconnect();
+
+     
+
     return {key:'Bearer '+parr[0], user:mvar,apiUrl:parr[1]??'',attr  };
 }
 
@@ -171,6 +195,9 @@ export async function whisper( request:Request, response:Response, next?:NextFun
             const mykey=await getMyKey( request.headers['authorization'], request.body);
             tomq.myKey=mykey.key ;
             tomq.user= mykey.user;
+            //验证IP百名单
+            await checkWhileIp( +mykey.user.uid,request );
+
             let rqUrl= mykey.apiUrl==''? url+uri: mykey.apiUrl+uri;
             let model= req.body.model
             try{
@@ -295,6 +322,8 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
             const mykey=await getMyKey( request.headers['authorization'], request.body);
             tomq.myKey=mykey.key ;
             tomq.user= mykey.user;
+            //验证IP百名单
+            await checkWhileIp( +mykey.user.uid,request );
             // console.log('请求>>', uri,  mykey.user?.uid, mykey.user?.fen,tomq.myKey , mykey.apiUrl );
             
             let rqUrl= mykey.apiUrl==''? url+uri: mykey.apiUrl+uri;

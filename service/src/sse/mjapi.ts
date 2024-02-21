@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { generateRandomCode, mError,mlog } from './utils';
-import {checkModelFotbitten, getMyKey } from "./sse"
+import {checkModelFotbitten, checkWhileIp, getMyKey } from "./sse"
 import { publishData } from './rabittmq';
 import { isNotEmptyString } from 'src/utils/is';
 import { fetchSSE } from './fetch-sse';
@@ -46,6 +46,9 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
             const mykey=await getMyKey( request.headers['mj-api-secret']?? request.headers['authorization'], request.body);
             tomq.myKey=mykey.key ;
             tomq.user= mykey.user;
+			//验证IP百名单
+            await checkWhileIp( +mykey.user.uid,request );
+
 			checkModelFotbitten('midjourney',mykey.attr );
 
             const rqUrl=  url+uri ;//mykey.apiUrl==''? url+uri: mykey.apiUrl+uri;
