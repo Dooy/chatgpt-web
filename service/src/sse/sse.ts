@@ -28,14 +28,14 @@ export const  checkWhileIp = async ( uid:number , request:Request )=>{
             mvar= wdata;
         }
      }
-     console.log('ip白名单信息>>', uid , mvar.wip   );
+     //console.log('ip白名单信息>>', uid , mvar.wip   );
      if( !mvar.wip || mvar.wip.length==0){
-        mlog('log',uid , "WIP 白名单无" )
+        //mlog('log',uid , "WIP 白名单无" )
         return ;
      }
      const fip= getIP( request );
      if(fip=='') {
-         mlog('log', uid , "未获取到 x-forwarded-for ip" );
+        mlog('log', uid , "未获取到 x-forwarded-for ip" );
         return ;
      }
     
