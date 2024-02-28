@@ -98,7 +98,7 @@ import multer from "multer"
 				firstChunk = false
 			},
 			systemMessage:sysMsg
-			,tokens
+			,tokens: (tokens?(tokens>4000?4000:tokens):tokens )
 		})
 	} catch (error) {
 		try {
