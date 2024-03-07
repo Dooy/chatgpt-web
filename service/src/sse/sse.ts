@@ -132,7 +132,7 @@ export const checkModelFotbitten= ( model:string, attr:any )=>{
         forBitten=  attr.hk_draw && '1'=== attr.hk_draw;
     }else if(model.indexOf('gpt-4-all')>-1 || model.indexOf('gpt-4-gizmo')>-1 ){
         forBitten=  attr.hk_gpts && '1'=== attr.hk_gpts;
-    }else if(model.indexOf('gpt-4')>-1   ){
+    }else if(model.indexOf('gpt-4')>-1 || model.indexOf('claude-3')>-1   ){
          forBitten=  attr.hk_gpt4 && '1'=== attr.hk_gpt4;
     }
     if(forBitten)  throw  new mError(`模型 ${model} 已禁用`);
