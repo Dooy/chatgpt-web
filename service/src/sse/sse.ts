@@ -132,7 +132,8 @@ export const checkModelFotbitten= ( model:string, attr:any )=>{
         forBitten=  attr.hk_draw && '1'=== attr.hk_draw;
     }else if(model.indexOf('gpt-4-all')>-1 || model.indexOf('gpt-4-gizmo')>-1 ){
         forBitten=  attr.hk_gpts && '1'=== attr.hk_gpts;
-    }else if(model.indexOf('gpt-4')>-1 || model.indexOf('claude-3')>-1   ){
+    //}else if(model.indexOf('gpt-4')>-1 || model.indexOf('claude-3')>-1   ){
+    }else { //默认就到gpt4
          forBitten=  attr.hk_gpt4 && '1'=== attr.hk_gpt4;
     }
     if(forBitten)  throw  new mError(`模型 ${model} 已禁用`);
@@ -194,7 +195,7 @@ export async function whisper( request:Request, response:Response, next?:NextFun
         id: clientId,response
     };
     request.on('close', () => {
-        console.log(`${clientId} Connection closed`);
+        //console.log(`${clientId} Connection closed`);
         //clients = clients.filter(client => client.id !== clientId);
     });
     let tomq={header: request.headers,request:{model: request.body.model, duration:0 },response:'',reqid: clientId ,status:200,myKey:'', stime:Date.now(),etime:0,user:{} }
@@ -236,7 +237,7 @@ export async function whisper( request:Request, response:Response, next?:NextFun
             }
                 
 
-            console.log('请求>>', rqUrl,  mykey.user?.uid,model , mykey.user?.fen,tomq.myKey ,  tomq.request.duration );
+            mlog("log",'请求>>', rqUrl,  mykey.user?.uid,model , mykey.user?.fen,tomq.myKey ,  tomq.request.duration );
             
             let responseBody = await axios.post( rqUrl , formData, {
                     headers: {  
@@ -272,7 +273,7 @@ export async function whisper( request:Request, response:Response, next?:NextFun
 				//response.end("get way error...\n"  );
                 let ss = e.reason??'gate way error...';
 				response.end( `{"error":{"message":"${ss}","type":"openai_hk_error","code":"gate_way_error"}}`   );
-				console.log('error>>', ss , e    )
+				console.log('error gate>>', ss    )
                 publishData( "openapi", 'error',  JSON.stringify({e: {status:428,reason:e}, tomq }));
                 return ;
 			}
@@ -320,7 +321,7 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
 			id: clientId,response
 		};
 		request.on('close', () => {
-			console.log(`${clientId} Connection closed`);
+			mlog(`${clientId} Connection closed`);
 			//clients = clients.filter(client => client.id !== clientId);
 		});
 
@@ -410,10 +411,11 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
                 });
             }
 		}catch(e){
-			console.log('error>>',e)
+			//console.log('error big>>' )
 			//response.send(2)
 			if(e.status) {
 				response.writeHead(e.status );
+                console.log('error big3>>'    )
                 publishData( "openapi", 'error',  JSON.stringify({e,tomq} ));
                 response.end( e.reason?.replace(/one_api_error/ig,'openai_hk_error'));
 				return ;
@@ -424,7 +426,8 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
 				//response.end("get way error...\n"  );
                 let ss = e.reason??'gate way error...';
 				response.end( `{"error":{"message":"${ss}","type":"openai_hk_error","code":"gate_way_error"}}`   );
-				console.log('error>>', ss ,e )
+				if( e.reason ) mlog("error",'error big2>>', ss   )
+                else console.log('error no reason>>', e    )
                 publishData( "openapi", 'error',  JSON.stringify({e: {status:428,reason:e}, tomq }));
                 return ;
 			}

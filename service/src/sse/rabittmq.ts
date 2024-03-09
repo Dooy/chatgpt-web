@@ -1,10 +1,11 @@
  import { Channel,Connection } from 'rabbitmq-client'
+import { mlog } from './utils';
 let  rabbit:Connection, ch:Channel;
 async function createRabbitMQChannel() {
     rabbit = createRabbitMQ();
     ch = await rabbit.acquire();
     ch.on('close', () => {
-        console.log('channel was closed')
+        mlog('channel was closed')
     });
     return ch ;
 }
@@ -13,7 +14,7 @@ async function createRabbitMQChannelReal() {
     const r = createRabbitMQ();
     const c = await r.acquire();
     c.on('close', () => {
-        console.log('channel was closed')
+        mlog('channel was closed')
     });
     return {r,c} ;
 }
@@ -25,7 +26,7 @@ function createRabbitMQ(){
     retryHigh: 30000,
     });
     r.on('error', (err) =>    console.error('rabbit>>',err)  )
-    r.on('connection', () =>   console.log('The connection is successfully (re)established') )
+    r.on('connection', () =>   mlog('The connection is successfully (re)established') )
     return r;
 }
 
