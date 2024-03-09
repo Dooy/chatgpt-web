@@ -432,8 +432,13 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
                 return ;
 			}
 		}
-		console.log("finish",  request.headers['authorization'])
+		mlog("log","finish",  request.headers['authorization'])
         tomq.etime=Date.now();
         publishData( "openapi", 'finish',  JSON.stringify(tomq));
-		response.end();
+        
+        try{
+		    response.end();
+        }catch(e3 ){
+            mlog("error","response.end")
+        }
 }
