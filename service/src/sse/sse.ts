@@ -305,7 +305,15 @@ const mp3time= (buffer:any )=>{
     })
    
 }
+
 export async function sse( request:Request, response:Response, next?:NextFunction) {
+    try{
+        sseDo(request,response,next )
+    }catch(e ){
+        mlog('error','top.sse.error')
+    }
+}
+async function sseDo( request:Request, response:Response, next?:NextFunction) {
     
     let headers = {
 			//'Content-Type': 'text/event-stream',
