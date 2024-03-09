@@ -178,7 +178,7 @@ async function getKeyFromPool(redis:RedisClientType, uid:number, body:any,oldkey
     }
 
     const rz = await redis.get(key);
-    console.log('test redis>>', key  ,rz );
+    mlog('test redis>>', key  ,rz );
     const kesy = JSON.parse(rz);
     if( kesy.length==0)  {
         if(oldkey) return oldkey;
