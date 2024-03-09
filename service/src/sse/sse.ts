@@ -28,23 +28,30 @@ export const  checkWhileIp = async ( uid:number , request:Request )=>{
             mvar= wdata;
         }
      }
+    //先关闭
+    await redis.disconnect();
      //console.log('ip白名单信息>>', uid , mvar.wip   );
      if( !mvar.wip || mvar.wip.length==0){
         //mlog('log',uid , "WIP 白名单无" )
+        
         return ;
      }
      const fip= getIP( request );
      if(fip=='') {
         mlog('log', uid , "未获取到 x-forwarded-for ip" );
+        
         return ;
      }
     
      const wip =  mvar.wip as string[];
      if(wip.length>0 && wip.indexOf(fip)==-1 ){
          mlog('log', uid , "ip-limit" , fip );
+        
          throw  new mError( `请将你的IP加入白名单`);
+         
      }
 
+   
 }
 
 function getIP( obj:Request){
@@ -116,7 +123,8 @@ export async function getMyKey(authorization:string,body:any):Promise<any> {
 
     //console.log('test redis>>',  mvar , body.model ,await getKeyFromPool(redis,+mvar.uid,body.model) );
     //await redis.set('abc','time:'+ Date.now() );
-    redis.disconnect();
+    
+    await redis.disconnect();
 
      
 
@@ -170,7 +178,7 @@ async function getKeyFromPool(redis:RedisClientType, uid:number, body:any,oldkey
     }
 
     const rz = await redis.get(key);
-    //console.log('test redis>>',  rz );
+    console.log('test redis>>', key  ,rz );
     const kesy = JSON.parse(rz);
     if( kesy.length==0)  {
         if(oldkey) return oldkey;
@@ -189,6 +197,13 @@ async function getKeyFromPool(redis:RedisClientType, uid:number, body:any,oldkey
 
 //主要转发接口
 export async function whisper( request:Request, response:Response, next?:NextFunction) {
+     try{
+        whisperDo(request,response,next )
+    }catch(e ){
+        mlog('error','top.whisper.error', e )
+    }
+}
+async function whisperDo( request:Request, response:Response, next?:NextFunction) {
 
     const clientId =  generateRandomCode(16);
     const newClient = {
