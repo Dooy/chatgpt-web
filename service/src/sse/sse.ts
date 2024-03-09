@@ -415,21 +415,22 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
 			//response.send(2)
             try{
                 if(e.status) {
-                    response.writeHead(e.status );
+                   
                     console.log('error big3>>'    )
                     publishData( "openapi", 'error',  JSON.stringify({e,tomq} ));
+                    response.writeHead(e.status );
                     response.end( e.reason?.replace(/one_api_error/ig,'openai_hk_error'));
                     return ;
                     //response.write(`data: ${ e.reason}\n\n`);
                 }
                 else {
+                    publishData( "openapi", 'error',  JSON.stringify({e: {status:428,reason:e}, tomq }));
                     response.writeHead(428);
                     //response.end("get way error...\n"  );
                     let ss = e.reason??'gate way error...';
                     response.end( `{"error":{"message":"${ss}","type":"openai_hk_error","code":"gate_way_error"}}`   );
                     if( e.reason ) mlog("error",'error big2>>', ss   )
                     else console.log('error no reason>>', e    )
-                    publishData( "openapi", 'error',  JSON.stringify({e: {status:428,reason:e}, tomq }));
                     return ;
                 }
             }catch(e3 ){
