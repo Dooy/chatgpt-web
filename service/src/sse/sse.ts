@@ -70,7 +70,7 @@ export async function getMyKey(authorization:string,body:any):Promise<any> {
     if(!mvar || Object.keys(mvar).length==0 ||  !mvar.uid ||  +mvar.uid<=0  ){
         let res= await fetch(`${process.env.SSE_HTTP_SERVER}/openai/client/hk/${arr[1]}` )
         const rdate:any =await res.json()  
-        console.log('服务端获取用户信息>>',rdate?.data?.hk, authorization );
+        mlog("log",'服务端获取用户信息>>',rdate?.data?.hk, authorization );
         //await redis.HSET(kk, );
         const hk=rdate?.data?.hk
         if(hk){
@@ -359,7 +359,7 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
                 tomq.myKey= 'sk-mj2chatmidjourney';
             }
 
-             console.log('请求>>', rqUrl,  mykey.user?.uid,model , mykey.user?.fen,tomq.myKey   );
+            mlog('log','请求>>', rqUrl,  mykey.user?.uid,model , mykey.user?.fen,tomq.myKey   );
             // mlog('body',  request.body );
             if( isTTS ){
                 const reps = await fetch(rqUrl, {

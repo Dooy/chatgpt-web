@@ -40,8 +40,12 @@ export async function publishData( exchange:string,routingKey:string, data:strin
         await mq.c.close();
         await mq.r.close();
     }catch(e ){
-         //console.error('publishData 发生错误>>', e  )
-        await  publishData_bak(exchange,routingKey, data );
+        console.error('publishData 发生错误>>'  )
+        try{
+            await  publishData_bak(exchange,routingKey, data );
+        }catch(e2 ){
+             console.error('publishData_bak 备用也发生错误>>', e2  )
+        }
     }
 }
 async function publishData_bak( exchange:string,routingKey:string, data:string) {
