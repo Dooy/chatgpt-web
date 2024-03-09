@@ -310,7 +310,7 @@ export async function sse( request:Request, response:Response, next?:NextFunctio
     try{
         sseDo(request,response,next )
     }catch(e ){
-        mlog('error','top.sse.error')
+        mlog('error','top.sse.error', e )
     }
 }
 async function sseDo( request:Request, response:Response, next?:NextFunction) {
