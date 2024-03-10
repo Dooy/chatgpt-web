@@ -146,7 +146,8 @@ const getMyKeyDo= async ( arr:string[] ,body:any ,redis :RedisClientType)=>{
 //禁用
 export const checkModelFotbitten= ( model:string, attr:any )=>{
     let forBitten = false;
-    if(model.indexOf('gpt-3.5')>-1){
+    let is35= model.indexOf('text-embedding')>-1 || model.indexOf('tts')>-1 || model.indexOf('whisper')>-1 
+    if(model.indexOf('gpt-3.5')>-1 || is35 ){
         forBitten=  attr.hk_gpt3 && '1'=== attr.hk_gpt3;
     }else if(model.indexOf('dall-e')>-1 || model.indexOf('midjourney')>-1){
         forBitten=  attr.hk_draw && '1'=== attr.hk_draw;
