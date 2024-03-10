@@ -72,13 +72,28 @@ export async function getMyKey(authorization:string,body:any):Promise<any> {
     const arr = authorization.split('-');
 
     if( !arr[1]) throw  new mError( "HK KEY ERROR, KEY格式错误！");
-    const kk= `hk:${arr[1]}`;
     const redis= await createRedis();
+    try {
+        const rz= await getMyKeyDo(arr,body, redis)
+        await redisClose(redis);
+        return rz ;
+    } catch ( err ) {
+         //if (err instanceof mError) {
+        mlog("error redisClose")
+        await redisClose(redis);
+        throw err
+         //} 
+    }
+   
+}
+
+const getMyKeyDo= async ( arr:string[] ,body:any ,redis :RedisClientType)=>{
+    const kk= `hk:${arr[1]}`;
     let mvar:any =  await redis.hGetAll(kk);
     if(!mvar || Object.keys(mvar).length==0 ||  !mvar.uid ||  +mvar.uid<=0  ){
         let res= await fetch(`${process.env.SSE_HTTP_SERVER}/openai/client/hk/${arr[1]}` )
         const rdate:any =await res.json()  
-        mlog("log",'服务端获取用户信息>>',rdate?.data?.hk, authorization );
+        mlog("log",'服务端获取用户信息>>',rdate?.data?.hk, kk );
         //await redis.HSET(kk, );
         const hk=rdate?.data?.hk
         if(hk){
@@ -89,13 +104,13 @@ export async function getMyKey(authorization:string,body:any):Promise<any> {
     }
     const fen= +(mvar?.fen??0);
     if( !mvar.uid ||  +mvar.uid<=0 ) {
-        await redisClose( redis);
-        console.log( authorization, 'HK key error , is no exit  ! HK key 不存在！', kk );
+        //await redisClose( redis);
+        console.log(  'HK key error , is no exit  ! HK key 不存在！', kk );
         throw  new mError('HK key error , is no exit  ! HK key 不存在！') ;
     }
     if( fen<=0) {
-        console.log( authorization, 'Insufficient points, please recharge 积分不足，请充值' );
-        await redisClose( redis);
+        console.log( kk, 'Insufficient points, please recharge 积分不足，请充值' );
+        //await redisClose( redis);
         throw  new mError('Insufficient points, please recharge 积分不足，请充值');
     }
     const kk2= `attr:${mvar.uid}`; 
@@ -124,11 +139,7 @@ export async function getMyKey(authorization:string,body:any):Promise<any> {
     const parr = poolkey.split('||');
 
 
-    //console.log('test redis>>',  mvar , body.model ,await getKeyFromPool(redis,+mvar.uid,body.model) );
-    //await redis.set('abc','time:'+ Date.now() );
-    
-    //await redis.disconnect();
-    await redisClose( redis);
+    //await redisClose( redis);
     return {key:'Bearer '+parr[0], user:mvar,apiUrl:parr[1]??'',attr  };
 }
 
