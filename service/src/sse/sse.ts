@@ -2,7 +2,7 @@ import { time } from 'console';
 import { Request, Response, NextFunction } from 'express';
 import { isNotEmptyString } from 'src/utils/is';
 import { fetchSSE } from './fetch-sse';
-import { createRedis } from './redis';
+import { createRedis, redisClose } from './redis';
 import { publishData } from './rabittmq';
 import fetch from 'node-fetch';
 import { RedisClientType } from 'redis';
@@ -29,7 +29,8 @@ export const  checkWhileIp = async ( uid:number , request:Request )=>{
         }
      }
     //先关闭
-    await redis.disconnect();
+     //await redis.disconnect();
+      await redisClose( redis);
      //console.log('ip白名单信息>>', uid , mvar.wip   );
      if( !mvar.wip || mvar.wip.length==0){
         //mlog('log',uid , "WIP 白名单无" )
@@ -88,11 +89,13 @@ export async function getMyKey(authorization:string,body:any):Promise<any> {
     }
     const fen= +(mvar?.fen??0);
     if( !mvar.uid ||  +mvar.uid<=0 ) {
+        await redisClose( redis);
         console.log( authorization, 'HK key error , is no exit  ! HK key 不存在！', kk );
         throw  new mError('HK key error , is no exit  ! HK key 不存在！') ;
     }
     if( fen<=0) {
         console.log( authorization, 'Insufficient points, please recharge 积分不足，请充值' );
+        await redisClose( redis);
         throw  new mError('Insufficient points, please recharge 积分不足，请充值');
     }
     const kk2= `attr:${mvar.uid}`; 
@@ -124,10 +127,8 @@ export async function getMyKey(authorization:string,body:any):Promise<any> {
     //console.log('test redis>>',  mvar , body.model ,await getKeyFromPool(redis,+mvar.uid,body.model) );
     //await redis.set('abc','time:'+ Date.now() );
     
-    await redis.disconnect();
-
-     
-
+    //await redis.disconnect();
+     await redisClose( redis);
     return {key:'Bearer '+parr[0], user:mvar,apiUrl:parr[1]??'',attr  };
 }
 
@@ -454,6 +455,7 @@ async function sseDo( request:Request, response:Response, next?:NextFunction) {
                     response.end( `{"error":{"message":"${ss}","type":"openai_hk_error","code":"gate_way_error"}}`   );
                     if( e.reason ) mlog("error",'error big2>>', ss   )
                     else console.log('error no reason>>', e    )
+                    
                     return ;
                 }
             }catch(e3 ){

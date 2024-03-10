@@ -21,3 +21,7 @@ export function createRedis():Promise<RedisClientType> {
     });
     
 }
+
+export async function redisClose( redis:RedisClientType ){
+    await redis.disconnect();
+}
