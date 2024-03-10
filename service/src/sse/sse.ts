@@ -128,7 +128,7 @@ export async function getMyKey(authorization:string,body:any):Promise<any> {
     //await redis.set('abc','time:'+ Date.now() );
     
     //await redis.disconnect();
-     await redisClose( redis);
+    await redisClose( redis);
     return {key:'Bearer '+parr[0], user:mvar,apiUrl:parr[1]??'',attr  };
 }
 
