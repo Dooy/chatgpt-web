@@ -6,10 +6,11 @@ import { isNotEmptyString } from 'src/utils/is';
 import { fetchSSE } from './fetch-sse';
 
 const fast_uid = isNotEmptyString(process.env.FAST_UID)? process.env.FAST_UID.split(',').map(v=>v.trim() ) :[];
-const changBody = ( body:any ,uid:number,uri:string )=>{
+const changBody = ( body:any ,idArr:number[],uri:string )=>{
     //mlog('changBody', body);
     let rz = body;
-    const notifyHook=`${process.env.SSE_HTTP_SERVER}/openai/mjapi/${uid}` 
+	const uid= idArr[0];
+    const notifyHook=`${process.env.SSE_HTTP_SERVER}/openai/mjapi/${uid}-${idArr[1]}` 
     rz.notifyHook= notifyHook +'/'+ ( rz.notifyHook?encodeURIComponent( rz.notifyHook ):'');
     if(!rz.state || rz.state=='')rz.state= `${uid}` ;
 	mlog( 'Fast UID=',uid, fast_uid )
@@ -55,7 +56,14 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
             const authString = Buffer.from( userPsw ).toString('base64');
 
             mlog('请求>>', rqUrl,  mykey.user?.uid, mykey.user?.fen ,authString   );
-            const body=  JSON.stringify(  changBody(request.body,+mykey.user?.uid,uri ));
+
+			let son_id=0;
+			if ( mykey.user?.son!='' ){
+				const ajson = JSON.parse( mykey.user.son);
+				son_id= +ajson.id ;
+			}
+
+            const body=  JSON.stringify(  changBody(request.body,[ +mykey.user?.uid , son_id],uri ));
             //mlog( 'body' ,body )
 		    await fetchSSE( rqUrl ,{
                 method: 'POST',
