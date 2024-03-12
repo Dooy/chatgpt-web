@@ -58,9 +58,13 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
             mlog('请求>>', rqUrl,  mykey.user?.uid, mykey.user?.fen ,authString   );
 
 			let son_id=0;
-			if ( mykey.user?.son!='' ){
-				const ajson = JSON.parse( mykey.user.son);
-				son_id= +ajson.id ;
+			if ( mykey.user?.son  ){
+				try{
+					const ajson = JSON.parse( mykey.user.son);
+					son_id= +ajson.id ;
+				}catch(e ){
+					mlog("error",' mj-son>>', e )
+				}
 			}
 
             const body=  JSON.stringify(  changBody(request.body,[ +mykey.user?.uid , son_id],uri ));
