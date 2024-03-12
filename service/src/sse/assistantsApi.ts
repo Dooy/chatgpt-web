@@ -55,7 +55,8 @@ export const  assistantsApi = async  ( request:Request, response:Response, next?
     let error:errorType= { message:'',code:'openai_hk_error',type:'openai_hk_error', param:'' }
     try{
             
-            const mykey=await getMyKey(  request.headers['authorization'], request.body);
+            //const mykey=await getMyKey(  request.headers['authorization'], request.body);
+            const mykey=await getMyKey(  request,'gpt');
             //tomq.myKey=mykey.key ;
             tomq.myKey= userPsw ;
             tomq.myUrl = url ;
@@ -195,7 +196,7 @@ export const uploadFileApi= async  ( request:Request, response:Response, next?:N
             formData.append('purpose',  req.body.purpose );
 
             //获取key
-            const mykey=await getMyKey( request.headers['authorization'], request.body);
+            const mykey=await getMyKey( request,'gpt');
             tomq.myKey='Bearer '+ userPsw ;
              tomq.myUrl = url ;
             tomq.user= mykey.user;

@@ -43,13 +43,13 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
 	const uri= (request.headers['x-uri']??'/mj/submit/imagine') as string
     try{
             
-            const mykey=await getMyKey( request.headers['mj-api-secret']?? request.headers['authorization'], request.body);
-            tomq.myKey=mykey.key ;
+            //const mykey=await getMyKey( request.headers['mj-api-secret']?? request.headers['authorization'], request.body);
+            const mykey=await getMyKey(request,'mj' ); // request.headers['mj-api-secret']?? request.headers['authorization'], request.body
             tomq.user= mykey.user;
 			//验证IP百名单
-            await checkWhileIp( +mykey.user.uid,request );
+            //await checkWhileIp( +mykey.user.uid,request );
 
-			checkModelFotbitten('midjourney',mykey.attr );
+			//checkModelFotbitten('midjourney',mykey.attr );
 
             const rqUrl=  url+uri ;//mykey.apiUrl==''? url+uri: mykey.apiUrl+uri;
             const authString = Buffer.from( userPsw ).toString('base64');

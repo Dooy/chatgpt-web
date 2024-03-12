@@ -11,9 +11,9 @@ import axios from 'axios';
 import FormData  from 'form-data'
 import mp3Duration from 'mp3-duration'
 
-export const  checkWhileIp = async ( uid:number , request:Request )=>{
+export const  checkWhileIp = async ( uid:number , request:Request, redis:RedisClientType )=>{
      const kk= `cw:${uid}`; //白名单设置
-     const redis= await createRedis();
+     //const redis= await createRedis();
      let mstr:any =  await redis.get(kk);
      let mvar:any = mstr? JSON.parse(mstr): {} ;
      if(!mstr || !mvar || Object.keys(mvar).length==0 ){
@@ -30,7 +30,7 @@ export const  checkWhileIp = async ( uid:number , request:Request )=>{
      }
     //先关闭
      //await redis.disconnect();
-      await redisClose( redis);
+     // await redisClose( redis);
      //console.log('ip白名单信息>>', uid , mvar.wip   );
      if( !mvar.wip || mvar.wip.length==0){
         //mlog('log',uid , "WIP 白名单无" )
@@ -65,16 +65,25 @@ function getIP( obj:Request){
     return '';
 }
 
+//export async function getMyKey(authorization:string,body:any):Promise<any> {
 //获取key 验证key 验证码积分的地方； 验证码ip百名单也在
-export async function getMyKey(authorization:string,body:any):Promise<any> {
+export async function getMyKey( request:Request, enType:string):Promise<any> {
+    //authorization:string,body:any
     //if(authorization)
+    let authorization= request.headers['authorization'];
+    if(enType=='mj' && request.headers['mj-api-secret'] != undefined ){
+        //request.headers['mj-api-secret']?? request.headers['authorization']
+        authorization= (request.headers['mj-api-secret']?? request.headers['authorization']) as string;
+    }
+   // const body= request.body;
+
      if( ! authorization || authorization=='' ) throw  new mError( "HK KEY ERROR, KEY缺失");
     const arr = authorization.split('-');
 
     if( !arr[1]) throw  new mError( "HK KEY ERROR, KEY格式错误！");
     const redis= await createRedis();
     try {
-        const rz= await getMyKeyDo(arr,body, redis)
+        const rz= await getMyKeyDo(arr,request, redis, enType)
         await redisClose(redis);
         return rz ;
     } catch ( err ) {
@@ -87,7 +96,9 @@ export async function getMyKey(authorization:string,body:any):Promise<any> {
    
 }
 
-const getMyKeyDo= async ( arr:string[] ,body:any ,redis :RedisClientType)=>{
+const getMyKeyDo= async ( arr:string[] , request:Request ,redis :RedisClientType,enType:string)=>{
+    //body:any
+    const body= request.body;
     const kk= `hk:${arr[1]}`;
     let mvar:any =  await redis.hGetAll(kk);
     if(!mvar || Object.keys(mvar).length==0 ||  !mvar.uid ||  +mvar.uid<=0  ){
@@ -103,6 +114,7 @@ const getMyKeyDo= async ( arr:string[] ,body:any ,redis :RedisClientType)=>{
         mvar= hk;
     }
     const fen= +(mvar?.fen??0);
+    
     if( !mvar.uid ||  +mvar.uid<=0 ) {
         //await redisClose( redis);
         console.log(  'HK key error , is no exit  ! HK key 不存在！', kk );
@@ -113,23 +125,32 @@ const getMyKeyDo= async ( arr:string[] ,body:any ,redis :RedisClientType)=>{
         //await redisClose( redis);
         throw  new mError('Insufficient points, please recharge 积分不足，请充值');
     }
-    const kk2= `attr:${mvar.uid}`; 
-    let attr:any =  await redis.hGetAll(kk2);
-    if( !attr || attr.hk_gpt3==undefined ){
-        let res= await fetch(`${process.env.SSE_HTTP_SERVER}/openai/client/hkopt/${mvar.uid}` )
-        const rdate:any =await res.json()  
-        console.log('服务端获取用户设置>>',rdate?.data?.userAttr, kk2 );
-        //await redis.HSET(kk, );
-        const hk=rdate?.data?.userAttr
-        if(hk){
-            await Object.keys(hk).map(async (k)=>{ await redis.hSet(kk2,k,hk[k]) }); 
-            await redis.expire(kk2,300); //5分钟 不然充值后 余额一直都不更新
+    let attr:any= {}
+    if(mvar.son ){
+        checkSon( mvar.son,request, enType );
+    }else{
+        const kk2= `attr:${mvar.uid}`; 
+        attr =  await redis.hGetAll(kk2);
+        if( !attr || attr.hk_gpt3==undefined ){
+            let res= await fetch(`${process.env.SSE_HTTP_SERVER}/openai/client/hkopt/${mvar.uid}` )
+            const rdate:any =await res.json()  
+            console.log('服务端获取用户设置>>',rdate?.data?.userAttr, kk2 );
+            //await redis.HSET(kk, );
+            const hk=rdate?.data?.userAttr
+            if(hk){
+                await Object.keys(hk).map(async (k)=>{ await redis.hSet(kk2,k,hk[k]) }); 
+                await redis.expire(kk2,300); //5分钟 不然充值后 余额一直都不更新
+            }
+            attr= hk;
         }
-        attr= hk;
-    }
-    if( body.model ){
-        const model= body.model as string ;
-        checkModelFotbitten(model,attr )
+        if( body.model ){
+            const model= body.model as string ;
+            checkModelFotbitten(model,attr )
+        }else if(enType=='mj'){
+            checkModelFotbitten('midjourney',attr );
+        }
+        //ip白名单
+        await checkWhileIp( +mvar.uid,request , redis );
     }
     //mlog('attr', attr );
     
@@ -141,6 +162,58 @@ const getMyKeyDo= async ( arr:string[] ,body:any ,redis :RedisClientType)=>{
 
     //await redisClose( redis);
     return {key:'Bearer '+parr[0], user:mvar,apiUrl:parr[1]??'',attr  };
+}
+
+//子账号限制
+const checkSon=(son:string, request:Request, enType:string )=>{
+    let ajson:any = {};
+    const body= request.body;
+    try{
+        ajson= JSON.parse(son);
+        mlog('checkson', ajson ); 
+        //是否启用
+        if(ajson.status!='1'){
+            throw new  mError(`该KEY被禁用！`);
+        }
+        //模型限制
+        if( ajson.model &&  ajson.model.length>0 ){
+            const models=  ajson.model as string[];
+            const uModel= enType=='mj'?'midjourney':body.model;
+            if( models.indexOf( uModel )==-1 ) throw new  mError(`模型 ${uModel} 未开启！`);
+        }
+        
+        //余额积分
+        if( ajson.unlimited_quota!='1' && +ajson.remain_quota<0  ){
+            throw new  mError(`子key余额积分不足！`);
+        }
+        //过期
+        if( ajson.expired_time!='0' ){ 
+            const now= new Date();
+            //mlog('ex=', now.getTime()," ", +ajson.expired_time*1000 )
+            if( now.getTime()> +ajson.expired_time*1000 ){
+                throw new  mError(`子key已过期！`);
+            }
+        }
+        //ip白名单
+        if(ajson.ip && ajson.ip.length>0 ){
+            const ip= ajson.ip as string[];
+            const fip= getIP( request );
+            if(ip.indexOf(fip)==-1 ){
+                mlog('ip',fip );
+                 throw new  mError(`子key:ip白名单限制！`);
+            }
+        }
+    }catch(e){
+       
+        if( e instanceof  mError ){
+            let authorization= (request.headers['mj-api-secret']?? request.headers['authorization']) as string;
+            mlog('log','checkson', authorization , " " ,  e.reason ); 
+            throw e;
+        } 
+        else  console.log('checkSon>> ', e );
+        return ;
+    }
+    //
 }
 
 //禁用
@@ -247,11 +320,11 @@ async function whisperDo( request:Request, response:Response, next?:NextFunction
             formData.append('model',  req.body.model );
 
             //获取key
-            const mykey=await getMyKey( request.headers['authorization'], request.body);
+            const mykey=await getMyKey( request,'gpt' ); //request.headers['authorization'], request.body
             tomq.myKey=mykey.key ;
             tomq.user= mykey.user;
-            //验证IP百名单
-            await checkWhileIp( +mykey.user.uid,request );
+            //验证IP百名单 
+            //await checkWhileIp( +mykey.user.uid,request );
 
             let rqUrl= mykey.apiUrl==''? url+uri: mykey.apiUrl+uri;
             let model= req.body.model
@@ -382,11 +455,11 @@ async function sseDo( request:Request, response:Response, next?:NextFunction) {
                 uri='/v1/audio/speech';
             }
             //获取key
-            const mykey=await getMyKey( request.headers['authorization'], request.body);
+            const mykey=await getMyKey( request,'gpt' ); //request.headers['authorization'], request.body
             tomq.myKey=mykey.key ;
             tomq.user= mykey.user;
             //验证IP百名单
-            await checkWhileIp( +mykey.user.uid,request );
+            //await checkWhileIp( +mykey.user.uid,request );
             // console.log('请求>>', uri,  mykey.user?.uid, mykey.user?.fen,tomq.myKey , mykey.apiUrl );
             
             let rqUrl= mykey.apiUrl==''? url+uri: mykey.apiUrl+uri;
