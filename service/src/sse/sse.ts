@@ -146,11 +146,15 @@ const getMyKeyDo= async ( arr:string[] , request:Request ,redis :RedisClientType
         if( body.model ){
             const model= body.model as string ;
             checkModelFotbitten(model,attr )
+            await checkBingfa(mvar, redis, body.model )
         }else if(enType=='mj'){
             checkModelFotbitten('midjourney',attr );
+            await checkBingfa(mvar, redis,'midjourney' )
         }
         //ip白名单
         await checkWhileIp( +mvar.uid,request , redis );
+
+       
     }
     //mlog('attr', attr );
     
@@ -162,6 +166,34 @@ const getMyKeyDo= async ( arr:string[] , request:Request ,redis :RedisClientType
 
     //await redisClose( redis);
     return {key:'Bearer '+parr[0], user:mvar,apiUrl:parr[1]??'',attr  };
+}
+
+//并发限制
+const checkBingfa= async ( mvar:any , redis:RedisClientType, model:string)=>{
+     if( model.indexOf('gpt-4')>-1 || model=='midjourney' || model.indexOf('claude-3')>-1 ){
+     }else return ;
+     const now = new Date(); 
+     // 获取小时和分钟
+     const hour = now.getHours();
+     const minute = now.getMinutes();
+     const kk2= `l:${mvar.uid}:${hour}-${minute}`; 
+     //const is= await redis.keys(kk2 );
+     const kv= await redis.incr( kk2);
+     await redis.expire(kk2,60);
+     //const kv= re
+   
+     let lFen=50, fen=+ mvar.fen;
+     if(fen<20000){
+        lFen=1
+     }else if(fen<100000){
+        lFen=5
+     }
+     else if(fen<300000){
+        lFen=15
+     }
+     mlog('log', model,kk2 ,  kv,lFen , mvar.fen );
+     if(kv>lFen ) throw new mError('注意请求速率RPM');
+
 }
 
 //子账号限制
