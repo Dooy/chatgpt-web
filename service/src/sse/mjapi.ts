@@ -38,8 +38,9 @@ const changBody = ( body:any ,idArr:number[],cType:changType)=>{
 			if(rz.accountFilter) rz.accountFilter.modes=['RELAX'] //relax
 			else rz.accountFilter= {modes:['RELAX'] }
 		}else {
-			//if(rz.accountFilter) rz.accountFilter.modes=[] 
+			
 			mlog('log','一般模式 ',uid , cType.mode )
+			if(rz.accountFilter) delete rz.accountFilter ;
 		}
 
 	}
