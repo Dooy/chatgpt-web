@@ -71,7 +71,7 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
     const userPsw=  isNotEmptyString( process.env.MJ_SERVER_USERPSW)? process.env.MJ_SERVER_USERPSW: "aitutu:20221116";
 
 	let  uri= (request.headers['x-uri']??'/mj/submit/imagine') as string
-	let  xmode= (request.headers['x-mode']??'fast') as string
+	let  xmode= (request.headers['x-mode']??'') as string
 	if (uri.indexOf('/fast/')==0){
 		xmode='fast'
 		uri=uri.substring( 5)
