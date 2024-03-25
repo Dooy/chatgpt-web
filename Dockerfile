@@ -42,6 +42,7 @@ FROM node:lts-alpine
 RUN npm install pnpm -g
 
 #RUN pnpm config set registry https://registry.npm.taobao.org
+RUN pnpm config set registry  http://registry.npmjs.org
 
 WORKDIR /app
 
