@@ -29,14 +29,17 @@ const changBody = ( body:any ,idArr:number[],cType:changType)=>{
 	if(  subArr.indexOf(uri)>-1 ){
 		
 		if (fast_uid.indexOf( `${uid}`)>-1 ||  cType.mode=='fast'  ) { //
-			mlog('log','Fast UID=',uid )
+			mlog('log','快速 UID=',uid , cType.mode )
 			if(rz.accountFilter) rz.accountFilter.modes=['FAST']
 			else rz.accountFilter= {modes:['FAST'] }
 		}
-		if(  isRelax  ){
-			mlog('log','慢速 ',uid )
+		else if(  isRelax  ){
+			mlog('log','慢速 ',uid , cType.mode )
 			if(rz.accountFilter) rz.accountFilter.modes=['RELAX'] //relax
 			else rz.accountFilter= {modes:['RELAX'] }
+		}else {
+			//if(rz.accountFilter) rz.accountFilter.modes=[] 
+			mlog('log','一般模式 ',uid , cType.mode )
 		}
 
 	}
