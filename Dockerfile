@@ -3,7 +3,8 @@ FROM node:lts-alpine AS frontend
 
 RUN npm install pnpm -g
 
-RUN pnpm config set registry https://registry.npm.taobao.org
+#RUN pnpm config set registry https://registry.npm.taobao.org
+RUN pnpm config set registry  http://registry.npmjs.org
 
 WORKDIR /app
 
@@ -22,7 +23,8 @@ FROM node:lts-alpine as backend
 
 RUN npm install pnpm -g
 
-RUN pnpm config set registry https://registry.npm.taobao.org
+#RUN pnpm config set registry https://registry.npm.taobao.org
+RUN pnpm config set registry  http://registry.npmjs.org
 
 WORKDIR /app
 
