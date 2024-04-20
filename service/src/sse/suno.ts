@@ -33,7 +33,7 @@ export const openHkUserCheck= async  ( request:Request, response:Response, next?
      let tomq={header: request.headers,request:request.body,response:'',reqid: clientId ,status:200,myKey:'', stime:Date.now(),etime:0,user:{} }
 
      try{
-        const mykey=await getMyKey(request,'' );
+        const mykey=await getMyKey(request,'suno-v3' );
         tomq.user= mykey.user;
        
         next();

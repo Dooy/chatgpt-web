@@ -150,6 +150,9 @@ const getMyKeyDo= async ( arr:string[] , request:Request ,redis :RedisClientType
         }else if(enType=='mj'){
             checkModelFotbitten('midjourney',attr );
             await checkBingfa(mvar, redis,'midjourney' )
+        }else if(enType=='suno-v3'){
+             checkModelFotbitten( enType ,attr );
+            await checkBingfa(mvar, redis, enType )
         }
         //ip白名单
         await checkWhileIp( +mvar.uid,request , redis );
@@ -170,7 +173,8 @@ const getMyKeyDo= async ( arr:string[] , request:Request ,redis :RedisClientType
 
 //并发限制
 const checkBingfa= async ( mvar:any , redis:RedisClientType, model:string)=>{
-     if( model.indexOf('gpt-4')>-1 || model=='midjourney' || model.indexOf('claude-3')>-1 ){
+     if( model.indexOf('gpt-4')>-1 || model=='midjourney' || model.indexOf('claude-3')>-1 
+     || model.indexOf('suno')>-1  ){
      }else return ;
      const now = new Date(); 
      // 获取小时和分钟
