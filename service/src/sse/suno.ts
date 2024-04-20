@@ -38,7 +38,7 @@ export const openHkUserCheck= async  ( request:Request, response:Response, next?
        
         next();
      }catch(e){
-        console.log('error>>',e)
+        //console.log('error>>',e)
 			//response.send(2)
 			if(e.status) {
 				response.writeHead(e.status );
