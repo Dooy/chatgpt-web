@@ -28,6 +28,9 @@ dependencies:
   express:
     specifier: ^4.18.2
     version: 4.18.2
+  express-http-proxy:
+    specifier: ^2.0.0
+    version: 2.0.0
   express-rate-limit:
     specifier: ^6.7.0
     version: 6.7.0(express@4.18.2)
@@ -1736,7 +1739,6 @@ packages:
         optional: true
     dependencies:
       ms: 2.1.3
-    dev: true
 
   /debug@4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
@@ -1969,6 +1971,10 @@ packages:
       is-date-object: 1.0.5
       is-symbol: 1.0.4
     dev: true
+
+  /es6-promise@4.2.8:
+    resolution: {integrity: sha512-HJDGx5daxeIvxdBxvG2cb9g4tEvwIk3i8+nhX0yGrYmZUzbkdg8QbDevheDB8gd0//uPj4c1EQua8Q+MViT0/w==}
+    dev: false
 
   /esbuild@0.17.19:
     resolution: {integrity: sha512-XQ0jAPFkK/u3LcVRcvVHQcTIqD6E2H1fvZMA5dQPSOWb3suUbWbfbRf94pjc0bNzRYLfIrDRQXr7X+LHIm5oHw==}
@@ -2491,6 +2497,17 @@ packages:
       signal-exit: 3.0.7
       strip-final-newline: 2.0.0
     dev: true
+
+  /express-http-proxy@2.0.0:
+    resolution: {integrity: sha512-TXxcPFTWVUMSEmyM6iX2sT/JtmqhqngTq29P+eXTVFdtxZrTmM8THUYK59rUXiln0FfPGvxEpGRnVrgvHksXDw==}
+    engines: {node: '>=6.0.0'}
+    dependencies:
+      debug: 3.2.7
+      es6-promise: 4.2.8
+      raw-body: 2.5.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /express-rate-limit@6.7.0(express@4.18.2):
     resolution: {integrity: sha512-vhwIdRoqcYB/72TK3tRZI+0ttS8Ytrk24GfmsxDXK9o9IhHNO5bXRiXQSExPQ4GbaE5tvIS7j1SGrxsuWs+sGA==}

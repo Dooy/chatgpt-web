@@ -6,10 +6,14 @@ import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
 import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
-import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenApi, uploadFileApi } from './sse'
+import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenApi,
+ uploadFileApi ,openHkUserCheck ,sunoProxy } from './sse'
 import bodyParser  from 'body-parser';
 import cors from 'cors'
 import multer from "multer"
+
+
+
 //const cors = require('cors');
 
 
@@ -210,6 +214,10 @@ import multer from "multer"
 	//mj2gpt的格式输出
 	router.post('/mj2gpt/completions',  mj2gpt );
 	router.post('/mj2gpt',  mj2gpt );
+	
+	//suno
+	
+	app.use('/sunoapi' ,openHkUserCheck, sunoProxy);
 
 	//assistantsApi 
 	router.all('/v1/assistants',  assistantsApi );
