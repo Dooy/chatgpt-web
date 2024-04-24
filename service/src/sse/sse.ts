@@ -196,7 +196,7 @@ const checkBingfa= async ( mvar:any , redis:RedisClientType, model:string)=>{
         lFen=15
      }
      mlog('log', model,kk2 ,  kv,lFen , mvar.fen );
-     if(kv>lFen ) throw new mError('注意请求速率RPM');
+     if(kv>lFen ) throw new mError('已触发低积分多请求限制(RPM),请充值或者过1分钟后重试');
 
 }
 
