@@ -186,7 +186,7 @@ const checkBingfa= async ( mvar:any , redis:RedisClientType, model:string)=>{
      await redis.expire(kk2,60);
      //const kv= re
    
-     let lFen=50, fen=+ mvar.fen;
+     let lFen=1500, fen=+ mvar.fen;
      if(fen<20000){
         lFen=1
      }else if(fen<100000){
@@ -194,9 +194,11 @@ const checkBingfa= async ( mvar:any , redis:RedisClientType, model:string)=>{
      }
      else if(fen<300000){
         lFen=15
+     }else if(fen<1000000){
+        lFen=80
      }
      mlog('log', model,kk2 ,  kv,lFen , mvar.fen );
-     if(kv>lFen ) throw new mError('已触发低积分多请求限制(RPM),请充值或者过1分钟后重试');
+     if(kv>lFen ) throw new mError(`已触发低积分多请求限制(${lFen}RPM),请充值或者过1分钟后重试`);
 
 }
 
