@@ -186,7 +186,7 @@ const checkBingfa= async ( mvar:any , redis:RedisClientType, model:string)=>{
      await redis.expire(kk2,60);
      //const kv= re
    
-     let lFen=1500, fen=+ mvar.fen;
+     let lFen=3000, fen=+ mvar.fen;
      if(fen<20000){
         lFen=1
      }else if(fen<100000){
