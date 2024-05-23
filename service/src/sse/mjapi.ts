@@ -70,7 +70,8 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
 
     const url= isNotEmptyString( process.env.MJ_SERVER_URL)? process.env.MJ_SERVER_URL: 'http://43.154.119.189:6090';
     const userPsw=  isNotEmptyString( process.env.MJ_SERVER_USERPSW)? process.env.MJ_SERVER_USERPSW: "aitutu:20221116";
-
+    const MJ_API_SECRET=  isNotEmptyString( process.env.MJ_API_SECRET)? process.env.MJ_API_SECRET: "";
+	//Mj-Api-Secret
 	let  uri= (request.headers['x-uri']??'/mj/submit/imagine') as string
 	let  xmode= (request.headers['x-mode']??'') as string
 	if (uri.indexOf('/fast/')==0){
@@ -94,7 +95,7 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
             const rqUrl=  url+uri ;//mykey.apiUrl==''? url+uri: mykey.apiUrl+uri;
             const authString = Buffer.from( userPsw ).toString('base64');
 
-            mlog('请求>>', rqUrl,  mykey.user?.uid, mykey.user?.fen ,authString   );
+            mlog('log','请求>>', rqUrl,  mykey.user?.uid, mykey.user?.fen ,authString ,MJ_API_SECRET  );
 
 			let son_id=0;
 			if ( mykey.user?.son  ){
@@ -108,12 +109,19 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
 
             const body=  JSON.stringify(  changBody(request.body,[ +mykey.user?.uid , son_id],{uri,mode:xmode} ));
             //mlog( 'body' ,body )
+			let headers={
+				'Content-Type': 'application/json',
+                'Authorization': `Basic ${authString}`
+			}
+			if (MJ_API_SECRET!=''){
+				headers={
+					'Content-Type': 'application/json',
+					'Mj-Api-Secret': `${MJ_API_SECRET}`
+				}
+			}
 		    await fetchSSE( rqUrl ,{
                 method: 'POST',
-                headers:{
-                'Content-Type': 'application/json',
-                'Authorization': `Basic ${authString}`
-		},
+                headers ,
 			onMessage(data) {
 				if(!isGo) response.writeHead(200, headers);
 				isGo=true; 
