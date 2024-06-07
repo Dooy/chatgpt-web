@@ -17,7 +17,10 @@ const endResDecorator= (  proxyRes:any, proxyResData:any, req:any , userRes:any 
 export const sunoProxy= proxy(process.env.SUNO_SERVER??'https://suno-api.suno.ai', {
 		https: false, limit: '10mb',
 		proxyReqPathResolver: function (req) {
-			return req.originalUrl.replace('/sunoapi', '') // 将URL中的 `/openapi` 替换为空字符串
+			//return req.originalUrl.replace('/sunoapi', '') // 将URL中的 `/openapi` 替换为空字符串
+			let url= req.originalUrl.replace('/sunoapi', '') // 将URL中的 `/openapi` 替换为空字符串
+            url=(process.env.SUNO_SERVER_DIR??'')+url;
+            return url;
 		},
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) { 
 			if ( process.env.SUNO_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.SUNO_KEY;
