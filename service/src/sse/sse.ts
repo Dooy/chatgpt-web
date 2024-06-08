@@ -152,7 +152,7 @@ const getMyKeyDo= async ( arr:string[] , request:Request ,redis :RedisClientType
             await checkBingfa(mvar, redis,'midjourney' )
         }else if(enType=='suno-v3'){
              checkModelFotbitten( enType ,attr );
-            await checkBingfa(mvar, redis, enType )
+             //await checkBingfa(mvar, redis, enType ) // suno-v3 去除并发限制
         }
         //ip白名单
         await checkWhileIp( +mvar.uid,request , redis );
