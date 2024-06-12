@@ -18,7 +18,9 @@ const changBody = ( body:any ,idArr:number[],cType:changType)=>{
 	const uid= idArr[0];
 	const uri= cType.uri
     const notifyHook=`${process.env.SSE_HTTP_SERVER}/openai/mjapi/${uid}-${idArr[1]}` 
-    rz.notifyHook= notifyHook +'/'+ ( rz.notifyHook?encodeURIComponent( rz.notifyHook ):'');
+	//content.replace(/\.php/gi, '--php');
+    //rz.notifyHook= notifyHook +'/'+ ( rz.notifyHook?encodeURIComponent( rz.notifyHook ):'');
+    rz.notifyHook= notifyHook +'/'+ ( rz.notifyHook?encodeURIComponent( rz.notifyHook.replace(/\.php/gi, '--php') ):'');
 	const isRelax= cType.mode=='slow' || cType.mode=='relax'
 	if (isRelax && uri!='/mj/insight-face/swap'){
 		 rz.notifyHook= notifyHook +`-relax/`+ ( rz.notifyHook?encodeURIComponent( rz.notifyHook ):'');
