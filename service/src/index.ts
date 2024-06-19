@@ -11,6 +11,7 @@ import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenAp
 import bodyParser  from 'body-parser';
 import cors from 'cors'
 import multer from "multer"
+import { lumaProxy } from './sse/luma'
 
 
 
@@ -218,6 +219,10 @@ import multer from "multer"
 	//suno
 	
 	app.use('/sunoapi' ,openHkUserCheck, sunoProxy);
+
+	//luma
+	app.use('/luma' ,openHkUserCheck, lumaProxy);
+
 
 	//assistantsApi 
 	router.all('/v1/assistants',  assistantsApi );
