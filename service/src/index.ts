@@ -11,7 +11,7 @@ import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenAp
 import bodyParser  from 'body-parser';
 import cors from 'cors'
 import multer from "multer"
-import { lumaProxy } from './sse/luma'
+import { lumaProProxy, lumaProxy } from './sse/luma'
 
 
 
@@ -220,8 +220,12 @@ import { lumaProxy } from './sse/luma'
 	
 	app.use('/sunoapi' ,openHkUserCheck, sunoProxy);
 
+	//专业版本
+	app.use('/pro/luma' ,openHkUserCheck, lumaProProxy);
 	//luma
 	app.use('/luma' ,openHkUserCheck, lumaProxy);
+	//app.use('/relex/luma' ,openHkUserCheck, lumaProxy);
+	
 
 
 	//assistantsApi 
