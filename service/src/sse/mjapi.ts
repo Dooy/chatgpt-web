@@ -70,9 +70,9 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
 
 	let tomq={header: request.headers,request:request.body,response:'',reqid: clientId ,status:200,myKey:'', stime:Date.now(),etime:0,user:{} }
 
-    const url= isNotEmptyString( process.env.MJ_SERVER_URL)? process.env.MJ_SERVER_URL: 'http://43.154.119.189:6090';
+    let url= isNotEmptyString( process.env.MJ_SERVER_URL)? process.env.MJ_SERVER_URL: 'http://43.154.119.189:6090';
     const userPsw=  isNotEmptyString( process.env.MJ_SERVER_USERPSW)? process.env.MJ_SERVER_USERPSW: "aitutu:20221116";
-    const MJ_API_SECRET=  isNotEmptyString( process.env.MJ_API_SECRET)? process.env.MJ_API_SECRET: "";
+    let MJ_API_SECRET=  isNotEmptyString( process.env.MJ_API_SECRET)? process.env.MJ_API_SECRET: "";
 	//Mj-Api-Secret
 	let  uri= (request.headers['x-uri']??'/mj/submit/imagine') as string
 	let  xmode= (request.headers['x-mode']??'') as string
@@ -83,6 +83,12 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
 	if(uri.indexOf('/relax/')==0){
 		xmode='relax'
 		uri=uri.substring(6)
+		if( process.env.RELAX_MJ_SERVER_URL ){
+			url=process.env.RELAX_MJ_SERVER_URL
+		}
+		if(process.env.RELAX_MJ_API_SECRET){
+			MJ_API_SECRET=process.env.RELAX_MJ_API_SECRET
+		}
 	}
     try{
             
