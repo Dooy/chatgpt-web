@@ -206,10 +206,10 @@ export const mjProxy= proxy( API_MJ_SERVER_URL, {
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) { 
 			// if ( process.env.SUNO_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.SUNO_KEY;
             // else proxyReqOpts.headers['Authorization'] ='Bearer hi' ;
-			if( proxyReqOpts.headers['Authorization'] ) proxyReqOpts.headers['Authorization']="";
+			//if( proxyReqOpts.headers['Authorization'] ) proxyReqOpts.headers['Authorization']="";
 			if (API_MJ_API_SECRET){
 			 	proxyReqOpts.headers[ 'Mj-Api-Secret' ] = API_MJ_API_SECRET ;
-				proxyReqOpts.headers['Authorization']=`Bearer ${API_MJ_API_SECRET}`;
+				if( proxyReqOpts.headers['Authorization'] )  proxyReqOpts.headers['Authorization']=`Bearer ${API_MJ_API_SECRET}`;
 			}
 
 			proxyReqOpts.headers['Content-Type'] = 'application/json';
