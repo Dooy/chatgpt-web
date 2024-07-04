@@ -4,6 +4,8 @@ import {checkModelFotbitten, checkWhileIp, getMyKey } from "./sse"
 import { publishData } from './rabittmq';
 import { isNotEmptyString } from 'src/utils/is';
 import { fetchSSE } from './fetch-sse';
+import { http2mq } from './suno';
+import  proxy from "express-http-proxy"
 
 export interface changType{
 	uri:string
@@ -53,7 +55,8 @@ const changBody = ( body:any ,idArr:number[],cType:changType)=>{
     return rz ;
 }
 
-
+const API_MJ_SERVER_URL= isNotEmptyString( process.env.MJ_SERVER_URL)? process.env.MJ_SERVER_URL: 'http://43.154.119.189:6090';
+const API_MJ_API_SECRET=  isNotEmptyString( process.env.MJ_API_SECRET)? process.env.MJ_API_SECRET: "";
 
 export const  mjapi = async  ( request:Request, response:Response, next?:NextFunction)=> {
     const headers = {
@@ -182,3 +185,31 @@ export const  mjapi = async  ( request:Request, response:Response, next?:NextFun
         publishData( "openapi", 'finish_mjapi',  JSON.stringify(tomq));
 		response.end();
 }
+
+const endResDecorator= (  proxyRes:any, proxyResData:any, req:any , userRes:any )=>{
+   // slog('log','responseData'   );
+    const dd={ from:'mj',etime: Date.now() ,url: req.originalUrl,header:req.headers, body:req.body ,data:proxyResData.toString('utf8') };
+    
+    http2mq( 'mj',dd )
+    return proxyResData; //.toString('utf8') 
+  }
+//sunoAPI代理
+export const mjProxy= proxy( API_MJ_SERVER_URL, {
+		https: false, limit: '10mb',
+		proxyReqPathResolver: function (req) {
+			 
+			// let url= req.originalUrl.replace('/sunoapi', '') // 将URL中的 `/openapi` 替换为空字符串
+            // url=(process.env.SUNO_SERVER_DIR??'')+url;
+            // return url;
+			return  req.originalUrl;
+		},
+		proxyReqOptDecorator: function (proxyReqOpts, srcReq) { 
+			// if ( process.env.SUNO_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.SUNO_KEY;
+            // else proxyReqOpts.headers['Authorization'] ='Bearer hi' ;
+			if (API_MJ_API_SECRET) proxyReqOpts.headers[ 'Mj-Api-Secret' ] = API_MJ_API_SECRET ;
+
+			proxyReqOpts.headers['Content-Type'] = 'application/json';
+			return proxyReqOpts;
+		},
+		userResDecorator:endResDecorator
+})

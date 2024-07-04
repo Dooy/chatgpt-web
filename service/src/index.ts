@@ -7,7 +7,8 @@ import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
 import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
 import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenApi,
- uploadFileApi ,openHkUserCheck ,sunoProxy } from './sse'
+ uploadFileApi ,openHkUserCheck ,sunoProxy, 
+ mjProxy} from './sse'
 import bodyParser  from 'body-parser';
 import cors from 'cors'
 import multer from "multer"
@@ -215,13 +216,16 @@ import { lumaProProxy, lumaProxy } from './sse/luma'
 	//mj2gpt的格式输出
 	router.post('/mj2gpt/completions',  mj2gpt );
 	router.post('/mj2gpt',  mj2gpt );
+
+	router.get('/mj/task/:id/:action',  mjProxy );
+
+	//mj/task/(\d+)/
 	
 	//suno
-	
 	app.use('/sunoapi' ,openHkUserCheck, sunoProxy);
-
-	//专业版本
+	//suno专业版本
 	app.use('/pro/luma' ,openHkUserCheck, lumaProProxy);
+
 	//luma
 	app.use('/luma' ,openHkUserCheck, lumaProxy);
 	//app.use('/relex/luma' ,openHkUserCheck, lumaProxy);
