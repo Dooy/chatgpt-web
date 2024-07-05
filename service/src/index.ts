@@ -13,6 +13,7 @@ import bodyParser  from 'body-parser';
 import cors from 'cors'
 import multer from "multer"
 import { lumaProProxy, lumaProxy } from './sse/luma'
+import { viggleProxy, viggleProxyFile } from './sse/viggle'
 
 
 
@@ -223,12 +224,19 @@ import { lumaProProxy, lumaProxy } from './sse/luma'
 	
 	//suno
 	app.use('/sunoapi' ,openHkUserCheck, sunoProxy);
-	//suno专业版本
-	app.use('/pro/luma' ,openHkUserCheck, lumaProProxy);
 
+
+	//luma专业版本
+	app.use('/pro/luma' ,openHkUserCheck, lumaProProxy);
 	//luma
 	app.use('/luma' ,openHkUserCheck, lumaProxy);
 	//app.use('/relex/luma' ,openHkUserCheck, lumaProxy);
+
+	 
+	//viggle 相关
+	app.use('/viggle',openHkUserCheck ,viggleProxy)
+	//文件还是自己同NGINX 转发吧
+	//app.use('/viggle/asset',openHkUserCheck,upload2.single('file')   ,viggleProxyFile)
 	
 
 
