@@ -13,7 +13,7 @@ import bodyParser  from 'body-parser';
 import cors from 'cors'
 import multer from "multer"
 import { lumaProProxy, lumaProxy } from './sse/luma'
-import { viggleProxy, viggleProxyFile } from './sse/viggle'
+import { proViggleProxy, viggleProxy, viggleProxyFile } from './sse/viggle'
 
 
 
@@ -233,10 +233,13 @@ import { viggleProxy, viggleProxyFile } from './sse/viggle'
 	//app.use('/relex/luma' ,openHkUserCheck, lumaProxy);
 
 	 
+	
+	//文件还是自己同NGINX 转发吧
+	app.use('/viggle/asset',openHkUserCheck,upload2.single('file')   ,viggleProxyFile)
+	app.use('/pro/viggle/asset',openHkUserCheck,upload2.single('file')   ,viggleProxyFile)
 	//viggle 相关
 	app.use('/viggle',openHkUserCheck ,viggleProxy)
-	//文件还是自己同NGINX 转发吧
-	//app.use('/viggle/asset',openHkUserCheck,upload2.single('file')   ,viggleProxyFile)
+	app.use('/pro/viggle',openHkUserCheck ,proViggleProxy)
 	
 
 
