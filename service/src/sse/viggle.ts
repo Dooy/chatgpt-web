@@ -15,7 +15,15 @@ const endResDecorator= (  proxyRes:any, proxyResData:any, req:any , userRes:any 
 
 const endResDecoratorPro =(  proxyRes:any, proxyResData:any, req:any , userRes:any )=>{
    // slog('log','responseData'   );
-    const dd={ from:'pro-viggle',etime: Date.now() ,url: req.originalUrl,header:req.headers, body:req.body ,data:proxyResData.toString('utf8') };
+    const dd={ 
+        from:'pro-viggle',etime: Date.now() 
+        ,url: req.originalUrl,header:req.headers
+        , body:req.body ,data:proxyResData.toString('utf8')
+        ,base_url:process.env.PRO_VIGGLE_SERVER
+        ,base_key:process.env.PRO_VIGGLE_KEY
+        ,mqcnt:0
+     };
+    
     http2mq( 'pro-viggle',dd )
     return proxyResData; //.toString('utf8') 
 }
