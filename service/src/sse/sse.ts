@@ -173,7 +173,8 @@ const getMyKeyDo= async ( arr:string[] , request:Request ,redis :RedisClientType
 
 //并发限制
 const checkBingfa= async ( mvar:any , redis:RedisClientType, model:string)=>{
-     if( model.indexOf('gpt-4')>-1 || model=='midjourney' || model.indexOf('claude-3')>-1 
+     if( model.indexOf('gpt-4')>-1 || model=='midjourney' 
+     || model.indexOf('opus')>-1  //claude-3-opus
      || model.indexOf('suno')>-1  ){
      }else return ;
      const now = new Date(); 

@@ -92,6 +92,7 @@ export const viggleProxy= proxy(  process.env.VIGGLE_SERVER??'https://suno-api.s
 			// let url= req.originalUrl.replace('/sunoapi', '') // 将URL中的 `/openapi` 替换为空字符串
             // url=(process.env.SUNO_SERVER_DIR??'')+url;
             // return url;
+            //console.log('viggleProxy ', req.originalUrl )
             return  req.originalUrl.replace('/pro', '')
 		},
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) { 
@@ -113,6 +114,7 @@ export const proViggleProxy= proxy(process.env.PRO_VIGGLE_SERVER??'https://suno-
 			// let url= req.originalUrl.replace('/sunoapi', '') // 将URL中的 `/openapi` 替换为空字符串
             // url=(process.env.SUNO_SERVER_DIR??'')+url;
             // return url;
+            //console.log('proViggleProxy ', req.originalUrl )
             return  req.originalUrl.replace('/pro', '')
 		},
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) { 
