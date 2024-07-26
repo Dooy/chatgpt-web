@@ -14,6 +14,7 @@ import cors from 'cors'
 import multer from "multer"
 import { lumaProProxy, lumaProxy } from './sse/luma'
 import { proViggleProxy, viggleProxy, viggleProxyFile } from './sse/viggle'
+import { runwayProxy } from './sse/runway'
 
 
 
@@ -240,6 +241,9 @@ import { proViggleProxy, viggleProxy, viggleProxyFile } from './sse/viggle'
 	//viggle 相关
 	app.use('/viggle',openHkUserCheck ,viggleProxy)
 	app.use('/pro/viggle',openHkUserCheck ,proViggleProxy)
+
+	//runway
+	app.use('/runway',openHkUserCheck ,runwayProxy)
 	
 
 
