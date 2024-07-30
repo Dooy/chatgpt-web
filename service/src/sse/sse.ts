@@ -175,8 +175,12 @@ const getMyKeyDo= async ( arr:string[] , request:Request ,redis :RedisClientType
 const checkBingfa= async ( mvar:any , redis:RedisClientType, model:string)=>{
      if( model.indexOf('gpt-4')>-1 || model=='midjourney' 
      || model.indexOf('opus')>-1  //claude-3-opus
-     || model.indexOf('suno')>-1  ){
+     || model.indexOf('suno')>-1  ){ //限制
      }else return ;
+
+     if(  model.indexOf('gpt-4o-mini')>-1 ){ //不限制
+        return ;
+     }
      const now = new Date(); 
      // 获取小时和分钟
      const hour = now.getHours();
