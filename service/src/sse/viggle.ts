@@ -75,7 +75,8 @@ const viggleProxyFileDo=   async( req:Request, res:Response, next?:NextFunction)
                 mlog("error", "viggle file error!")
         }
       }catch(e){ 
-        res.status( 400 ).json( {error: e } );
+        //res.status( 400 ).json( {error: e } );
+        res.status( 400 ).json( {error: "viggle file error!" } );
       }
 
     }else{
