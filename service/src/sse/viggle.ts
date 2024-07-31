@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import  proxy from "express-http-proxy"
 import { http2mq } from './suno';
 import { generateRandomCode, mlog } from './utils';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import FormData  from 'form-data'
 
 const endResDecorator= (  proxyRes:any, proxyResData:any, req:any , userRes:any )=>{
@@ -67,6 +67,7 @@ const viggleProxyFileDo=   async( req:Request, res:Response, next?:NextFunction)
                 'Content-Type': 'multipart/form-data',
                 }
             })   ; 
+            mlog("error",  responseBody.status )
         res.json(responseBody.data );
         try{
                 dd.data= responseBody.data
@@ -74,9 +75,21 @@ const viggleProxyFileDo=   async( req:Request, res:Response, next?:NextFunction)
         }catch(e){
                 mlog("error", "viggle file error!")
         }
-      }catch(e){ 
+      }catch(e:any){ 
         //res.status( 400 ).json( {error: e } );
-        res.status( 400 ).json( {error: "viggle file error!" } );
+        //mlog("error", "viggle file error!" , e )
+        try{
+            mlog("error",  "viggle file error4!",e.response.status , e.response.data   )
+            if(e.response.data && e.response.data.error && e.response.data.error.message 
+                && e.response.data.error.message.indexOf('vg_up_image')>0  ){
+                e.response.data.error.code='no_account_available' //"code": "get_channel_info_failed"
+                e.response.data.error.message='no account available' //"code": "get_channel_info_failed"
+            }
+            res.status( e.response.status ).json(  e.response.data )
+           
+        }catch(e2){
+          res.status( 400 ).json( {error: "viggle file error!" } );
+        }
       }
 
     }else{
