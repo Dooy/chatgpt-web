@@ -36,7 +36,14 @@ export const openHkUserCheck= async  ( request:Request, response:Response, next?
      let tomq={header: request.headers,request:request.body,response:'',reqid: clientId ,status:200,myKey:'', stime:Date.now(),etime:0,user:{} }
 
      try{
-        const mykey=await getMyKey(request,'suno-v3' ); //并发限制去除
+        let model= 'suno-v3'
+        //if(request.url)
+       
+        if(  request.url && request.url.indexOf('mj/submit')>0 ){
+            model='mj'
+        }
+        // mlog('model>> ', request.url ,model  )
+        const mykey=await getMyKey(request,model ); //并发限制去除
         tomq.user= mykey.user;
        
         next();
