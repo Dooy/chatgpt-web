@@ -57,7 +57,8 @@ const changBody = ( body:any ,idArr:number[],cType:changType)=>{
 
 const API_MJ_SERVER_URL= isNotEmptyString( process.env.MJ_SERVER_URL)? process.env.MJ_SERVER_URL: 'http://43.154.119.189:6090';
 const API_MJ_API_SECRET=  isNotEmptyString( process.env.MJ_API_SECRET)? process.env.MJ_API_SECRET: "";
-
+const IMG_API_MJ_SERVER_URL=  process.env.IMG_MJ_SERVER_URL??API_MJ_SERVER_URL
+const IMG_API_MJ_API_SECRET=   process.env.IMG_MJ_API_SECRET??API_MJ_API_SECRET
 export const  mjapi = async  ( request:Request, response:Response, next?:NextFunction)=> {
     const headers = {
 			'Content-Type': 'application/json',
@@ -193,7 +194,7 @@ const endResDecorator= (  proxyRes:any, proxyResData:any, req:any , userRes:any 
     http2mq( 'mj',dd )
     return proxyResData; //.toString('utf8') 
   }
-//sunoAPI代理
+//mj代理
 export const mjProxy= proxy( API_MJ_SERVER_URL, {
 		https: false, limit: '10mb',
 		proxyReqPathResolver: function (req) {
@@ -212,6 +213,34 @@ export const mjProxy= proxy( API_MJ_SERVER_URL, {
 			 	proxyReqOpts.headers[ 'Mj-Api-Secret' ] = API_MJ_API_SECRET ;
 				//authorization
 				proxyReqOpts.headers['Authorization']=`Bearer ${API_MJ_API_SECRET}`;
+			}
+
+			proxyReqOpts.headers['Content-Type'] = 'application/json';
+			return proxyReqOpts;
+		},
+		userResDecorator:endResDecorator
+})
+
+//mj代理
+export const mjProxyImg= proxy( IMG_API_MJ_SERVER_URL, {
+		https: false, limit: '10mb',
+		proxyReqPathResolver: function (req) {
+			 
+			// let url= req.originalUrl.replace('/sunoapi', '') // 将URL中的 `/openapi` 替换为空字符串
+            // url=(process.env.SUNO_SERVER_DIR??'')+url;
+            // return url;
+			//console.log("IMG_API_MJ_SERVER_URL ", IMG_API_MJ_SERVER_URL , IMG_API_MJ_API_SECRET );
+			return  req.originalUrl;
+		},
+		proxyReqOptDecorator: function (proxyReqOpts, srcReq) { 
+			// if ( process.env.SUNO_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.SUNO_KEY;
+            // else proxyReqOpts.headers['Authorization'] ='Bearer hi' ;
+			if( proxyReqOpts.headers['Authorization'] ) proxyReqOpts.headers['Authorization']="";
+			proxyReqOpts.headers['authorization']= ""
+			if (API_MJ_API_SECRET){
+			 	proxyReqOpts.headers[ 'Mj-Api-Secret' ] = IMG_API_MJ_API_SECRET ;
+				//authorization
+				proxyReqOpts.headers['Authorization']=`Bearer ${IMG_API_MJ_API_SECRET}`;
 			}
 
 			proxyReqOpts.headers['Content-Type'] = 'application/json';

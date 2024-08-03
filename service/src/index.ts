@@ -8,7 +8,8 @@ import { isNotEmptyString } from './utils/is'
 import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
 import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenApi,
  uploadFileApi ,openHkUserCheck ,sunoProxy, 
- mjProxy} from './sse'
+ mjProxy,
+ mjProxyImg} from './sse'
 import bodyParser  from 'body-parser';
 import cors from 'cors'
 import multer from "multer"
@@ -213,8 +214,10 @@ import { runwayProxy } from './sse/runway'
 	router.post('/v1/audio/transcriptions', upload2.single('file') ,  whisper );
 
 	router.post('/sse',  sse );
+	router.post('/mj/submit/upload-discord-images', openHkUserCheck ,  mjProxyImg  );
 	router.post('/mj/submit',  mjapi );
 	router.post('/mj/submit/imagine',  mjapi );
+
 	//mj2gpt的格式输出
 	router.post('/mj2gpt/completions',  mj2gpt );
 	router.post('/mj2gpt',  mj2gpt );
