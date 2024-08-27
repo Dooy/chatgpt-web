@@ -9,13 +9,16 @@ import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
 import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenApi,
  uploadFileApi ,openHkUserCheck ,sunoProxy, 
  mjProxy,
- mjProxyImg} from './sse'
+ mjProxyImg,
+ ideoProxy,
+ ideoProxyFile} from './sse'
 import bodyParser  from 'body-parser';
 import cors from 'cors'
 import multer from "multer"
 import { lumaProProxy, lumaProxy } from './sse/luma'
 import { proViggleProxy, viggleProxy, viggleProxyFile } from './sse/viggle'
 import { runwayProxy } from './sse/runway'
+import { mlog } from './sse/utils'
 
 
 
@@ -100,6 +103,7 @@ import { runwayProxy } from './sse/runway'
 	res.setHeader('Content-type', 'application/octet-stream')
 	try {
 		const {prompt, options = {}, systemMessage,tokens} = req.body as RequestProps
+		
 		let firstChunk = true
 		await chatReplyProcess({
 			message: prompt,
@@ -228,6 +232,11 @@ import { runwayProxy } from './sse/runway'
 	
 	//suno
 	app.use('/sunoapi' ,openHkUserCheck, sunoProxy);
+
+	//ideogram
+	//ideoProxyFileDo
+	app.use('/ideogram/generate' ,openHkUserCheck, ideoProxy);
+	app.use('/ideogram/',openHkUserCheck,upload2.single('image_file'),   ideoProxyFile  )
 
 
 	//luma专业版本

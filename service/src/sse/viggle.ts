@@ -39,6 +39,7 @@ export async function viggleProxyFile  ( request:Request, response:Response, nex
     }
 
 }
+
 const viggleProxyFileDo=   async( req:Request, res:Response, next?:NextFunction)=>{
     // if ( process.env.VIGGLE_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.VIGGLE_KEY;
     // else   proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.OPENAI_API_KEY;  

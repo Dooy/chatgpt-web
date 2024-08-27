@@ -30,6 +30,24 @@ export const sunoProxy= proxy(process.env.SUNO_SERVER??'https://suno-api.suno.ai
 		},
 		userResDecorator:endResDecorator
 })
+//sunoAPI代理
+export const suno2Proxy= proxy(process.env.SUNO_SERVER??'https://suno-api.suno.ai', {
+		https: false, limit: '10mb',
+		// proxyReqPathResolver: function (req) {
+		// 	//return req.originalUrl.replace('/sunoapi', '') // 将URL中的 `/openapi` 替换为空字符串
+		// 	let url= req.originalUrl.replace('/sunoapi', '') // 将URL中的 `/openapi` 替换为空字符串
+        //     url=(process.env.SUNO_SERVER_DIR??'')+url;
+        //     return url;
+		// },
+		proxyReqOptDecorator: function (proxyReqOpts, srcReq) { 
+			if ( process.env.SUNO_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.SUNO_KEY;
+            else proxyReqOpts.headers['Authorization'] ='Bearer hi' ;
+			proxyReqOpts.headers['Content-Type'] = 'application/json';
+			return proxyReqOpts;
+		},
+		userResDecorator:endResDecorator
+})
+
 //用户确认是否有积分
 export const openHkUserCheck= async  ( request:Request, response:Response, next?:NextFunction)=> {
      const clientId =    generateRandomCode(16);
