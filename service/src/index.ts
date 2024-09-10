@@ -11,7 +11,8 @@ import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenAp
  mjProxy,
  mjProxyImg,
  ideoProxy,
- ideoProxyFile} from './sse'
+ ideoProxyFile,
+ klingProxy} from './sse'
 import bodyParser  from 'body-parser';
 import cors from 'cors'
 import multer from "multer"
@@ -232,6 +233,9 @@ import { mlog } from './sse/utils'
 	
 	//suno
 	app.use('/sunoapi' ,openHkUserCheck, sunoProxy);
+
+	//kling转发
+	app.use('/kling' ,openHkUserCheck, klingProxy);
 
 	//ideogram
 	//ideoProxyFileDo

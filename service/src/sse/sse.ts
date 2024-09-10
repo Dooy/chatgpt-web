@@ -490,7 +490,8 @@ async function sseDo( request:Request, response:Response, next?:NextFunction) {
         
        
 		try{
-            const model= request.body.model;
+            const model= request.body.model??'';
+             
             if( request.body && request.body.stream==true ){
                 headers['Content-Type']= 'text/event-stream'; //为了 适配fastcgi
             }
