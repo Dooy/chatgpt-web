@@ -12,7 +12,8 @@ import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenAp
  mjProxyImg,
  ideoProxy,
  ideoProxyFile,
- klingProxy} from './sse'
+ klingProxy,
+ sleep} from './sse'
 import bodyParser  from 'body-parser';
 import cors from 'cors'
 import multer from "multer"
@@ -192,6 +193,12 @@ import { mlog } from './sse/utils'
 		} catch (error) {
 			res.send({status: 'Fail', message: error.message, data: null})
 		}
+	})
+	router.use('/v3/test', async (req, res) => {
+		let a={a:"1",q: req.query.q,query:req.query }
+		let numb= req.query.q ? parseInt(req.query.q as string  ):1
+		await sleep( isNaN(numb)?3: numb*1000)
+		res.json(a)
 	})
 
 	router.post('/tokenizer', async (req, res) => {

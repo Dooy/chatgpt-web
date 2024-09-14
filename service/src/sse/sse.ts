@@ -603,3 +603,8 @@ async function sseDo( request:Request, response:Response, next?:NextFunction) {
             mlog("error","response.end")
         }
 }
+
+
+export function sleep(time: number) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
