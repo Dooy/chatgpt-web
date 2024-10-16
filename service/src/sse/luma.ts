@@ -51,11 +51,32 @@ export const lumaProxy= proxy(process.env.LUMA_SERVER??'https://suno-api.suno.ai
             return  req.originalUrl
 		},
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) { 
-			if ( process.env.SUNO_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.LUMA_KEY;
+			if ( process.env.LUMA_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.LUMA_KEY;
             else proxyReqOpts.headers['Authorization'] ='Bearer hi' ;
 			proxyReqOpts.headers['Content-Type'] = 'application/json';
 			return proxyReqOpts;
 		},
 		userResDecorator:endResDecorator
+})
+
+
+
+//lumaAPI代理
+export const pikaProxy= proxy(process.env.PIKA_SERVER??'https://suno-api.suno.ai', {
+		https: false, limit: '10mb',
+		proxyReqPathResolver: function (req) { 
+            return  req.originalUrl
+		},
+		proxyReqOptDecorator: function (proxyReqOpts, srcReq) { 
+			if ( process.env.PIKA_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.PIKA_KEY;
+            else proxyReqOpts.headers['Authorization'] ='Bearer hi' ;
+			proxyReqOpts.headers['Content-Type'] = 'application/json';
+			return proxyReqOpts;
+		},
+		userResDecorator:(  proxyRes:any, proxyResData:any, req:any , userRes:any )=>{
+			const dd={ from:'pika',etime: Date.now() ,url: req.originalUrl,header:req.headers, body:req.body ,data:proxyResData.toString('utf8') };			
+			http2mq( 'pika',dd )
+			return proxyResData;  
+		}
 })
 

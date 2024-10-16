@@ -13,13 +13,14 @@ import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenAp
  ideoProxy,
  ideoProxyFile,
  klingProxy,
- sleep} from './sse'
+ sleep,
+ sseDoTimeOut} from './sse'
 import bodyParser  from 'body-parser';
 import cors from 'cors'
 import multer from "multer"
-import { lumaProProxy, lumaProxy } from './sse/luma'
+import { lumaProProxy, lumaProxy, pikaProxy } from './sse/luma'
 import { proViggleProxy, viggleProxy, viggleProxyFile } from './sse/viggle'
-import { runwayProxy } from './sse/runway'
+import { realtimeProxy, runwayProxy } from './sse/runway'
 import { mlog } from './sse/utils'
 
 
@@ -194,12 +195,14 @@ import { mlog } from './sse/utils'
 			res.send({status: 'Fail', message: error.message, data: null})
 		}
 	})
+	router.use('/v3/test/fetch',  sseDoTimeOut )
 	router.use('/v3/test', async (req, res) => {
 		let a={a:"1",q: req.query.q,query:req.query }
 		let numb= req.query.q ? parseInt(req.query.q as string  ):1
 		await sleep( isNaN(numb)?3: numb*1000)
 		res.json(a)
 	})
+	
 
 	router.post('/tokenizer', async (req, res) => {
 		try {
@@ -256,6 +259,9 @@ import { mlog } from './sse/utils'
 	app.use('/luma' ,openHkUserCheck, lumaProxy);
 	//app.use('/relex/luma' ,openHkUserCheck, lumaProxy);
 
+	app.use('/pika' ,openHkUserCheck, pikaProxy);
+
+
 	 
 	
 	//文件还是自己同NGINX 转发吧
@@ -267,6 +273,9 @@ import { mlog } from './sse/utils'
 
 	//runway
 	app.use('/runway',openHkUserCheck ,runwayProxy)
+
+	// /v1/realtime
+	//app.all('/v1/realtime', async ( request, response, next)=>{ console.log("/v1/realtime"); next()} ,realtimeProxy)
 	
 
 

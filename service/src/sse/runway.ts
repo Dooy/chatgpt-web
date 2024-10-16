@@ -3,6 +3,9 @@
 import { Request, Response, NextFunction } from 'express';
 import  proxy from "express-http-proxy"
 import { http2mq } from './suno';
+import { createProxyMiddleware} from "http-proxy-middleware"
+
+ 
 
 const endResDecorator= (  proxyRes:any, proxyResData:any, req:any , userRes:any )=>{
    // slog('log','responseData'   );
@@ -32,3 +35,54 @@ export const runwayProxy= proxy(  process.env.RUNWAY_SERVER??'https://suno-api.s
 		},
 		userResDecorator:endResDecorator
 })
+
+
+//export const realtimeProxy=proxy( 'wss://api.openai.com',{
+//export const realtimeProxy=proxy( 'https://gptproxy-2.aigpai.com',{
+export const realtimeProxy=proxy( 'https://test-api.bltcy.ai/v1/realtime',{
+  proxyReqPathResolver: (req) => {
+	console.log('realtimeProxy ', req.originalUrl )
+    // 解析请求路径
+    return req.originalUrl;
+  },
+  proxyReqOptDecorator: function (proxyReqOpts, srcReq) { 
+	proxyReqOpts.headers['connection']='upgrade'
+	// proxyReqOpts.headers['Authorization']='Bearer sk-xxxxxxxxx'
+	// proxyReqOpts.headers['OpenAI-Beta']='realtime=v1'
+	//"OpenAI-Beta": "realtime=v1"
+	
+	//sec-websocket-extensions
+	//sec-websocket-key
+	//sec-websocket-protocol
+	// delete proxyReqOpts.headers['sec-websocket-extensions']
+	// delete proxyReqOpts.headers['sec-websocket-key']
+	// delete proxyReqOpts.headers['sec-websocket-protocol']
+	// delete proxyReqOpts.headers['sec-websocket-version']
+	 
+	console.log('realtimeProxy ', proxyReqOpts.headers )
+	//console.log('realtimeProxy ', proxyReqOpts.headers['connection'] )
+	return proxyReqOpts;
+  },
+  // WebSocket 代理支持
+  ws: true,
+  proxyReqWs: true
+  //wss:true
+});
+
+// export const realtimeProxy3= createProxyMiddleware({
+//   target: 'wws://gptproxy-2.aigpai.com',
+//   //target: 'wws://api.openai.com',
+//   changeOrigin: true,
+  
+//   ws: true,
+//   onProxyReqWs: (proxyReq, req, socket, options, head) => {
+// 	console.log("goodnew", proxyReq.getHeaderNames() )
+//     console.log('WebSocket request:', req.url);
+//   },
+//   onOpen: (proxySocket) => {
+//     console.log('WebSocket connection opened');
+//   },
+//   onClose: (res, socket, head) => {
+//     console.log('WebSocket connection closed');
+//   }
+// })

@@ -608,3 +608,41 @@ async function sseDo( request:Request, response:Response, next?:NextFunction) {
 export function sleep(time: number) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
+
+export const sseDoTimeOut= async ( request:Request, response:Response, next?:NextFunction) =>{
+    let headers = {
+			//'Content-Type': 'text/event-stream',
+			'Content-Type': 'application/json',
+			'Connection': 'keep-alive',
+			'Cache-Control': 'no-cache'
+		};
+    let  rqUrl = 'https://api.openai-hk.com/v3/test?q='+request.query.q
+    let isGo = false
+    console.log('onMessage>> q ',  request.query.q  )
+    await fetchSSE( rqUrl ,{
+            method: 'GET',
+            headers:{
+                'Content-Type': 'application/json',
+                // Authorization:  tomq.myKey
+            },
+            onMessage(data) {
+                if(!isGo) response.writeHead(200, headers);
+                isGo=true;
+                console.log('onMessage>>', data )
+                //response.write(`data: ${ data}\n\n`);
+                response.write( data);
+                //tomq.response+= data;
+                
+            },
+            onError(e) {
+                console.log('onError>>', e );
+                response.writeHead(e.status );
+                response.end( e.reason);
+                //publishData( "openapi", 'error',  JSON.stringify({e,tomq} ));
+                //endStr=e.reason;
+            }
+            //,body: JSON.stringify( request.body)
+    });
+     console.log('end >>' )
+    response.end();
+}
