@@ -75,6 +75,9 @@ export async function getMyKey( request:Request, enType:string):Promise<any> {
         //request.headers['mj-api-secret']?? request.headers['authorization']
         authorization= (request.headers['mj-api-secret']?? request.headers['authorization']) as string;
     }
+    if( enType=='claude' && request.headers['x-api-key'] != undefined ){
+         authorization= (request.headers['x-api-key']?? request.headers['authorization']) as string;
+    }
    // const body= request.body;
 
      if( ! authorization || authorization=='' ) throw  new mError( "HK KEY ERROR, KEY缺失");

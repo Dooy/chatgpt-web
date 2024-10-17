@@ -35,15 +35,20 @@ async function sseDo( request:Request, response:Response, next?:NextFunction) {
         if( request.body && request.body.stream==true ){
             headers['Content-Type']= 'text/event-stream'; //为了 适配fastcgi
         }
-        const mykey=await getMyKey( request,'gpt' ); //request.headers['authorization'], request.body
+        const mykey=await getMyKey( request,'claude' ); //request.headers['authorization'], request.body
         tomq.myKey=mykey.key ;
         tomq.user= mykey.user;
         let rqUrl=  url+uri
+        let key= isNotEmptyString( process.env.CLAUDE_KEY)?process.env.CLAUDE_KEY:'sk-no-key'
+        // --header "x-api-key: hk-your-key" \
+        //--header "anthropic-version: 2023-06-01"
         await fetchSSE( rqUrl ,{
             method: 'POST',
             headers:{
                 'Content-Type': 'application/json',
-                Authorization:  isNotEmptyString( process.env.CLAUDE_KEY)?('Bearer '+process.env.CLAUDE_KEY):'Bearer sk-no-key'
+                Authorization:  'Bearer '+key,
+                'x-api-key':  key,
+                'anthropic-version':  '2023-06-01',
             },
             onMessage(data) {
                 if(!isGo) response.writeHead(200, headers);
