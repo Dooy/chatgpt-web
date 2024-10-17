@@ -84,7 +84,8 @@ async function sseDo( request:Request, response:Response, next?:NextFunction) {
                     response.writeHead(428);
                     //response.end("get way error...\n"  );
                     let ss = e.reason??'gate way error...';
-                    let ojson={"error":{"message": ss ,"type":"openai_hk_error","code":"gate_way_error"}}
+                    let ojson={ "type": "error", "error": { "type": "invalid_request_error",
+                                "message": ss }}
                     response.end(  JSON.stringify(ojson)  );
                     if( e.reason ) mlog("error",'error big2>>', ss   )
                     else console.log('error no reason>>', e    )
