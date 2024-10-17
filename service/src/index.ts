@@ -22,6 +22,7 @@ import { lumaProProxy, lumaProxy, pikaProxy } from './sse/luma'
 import { proViggleProxy, viggleProxy, viggleProxyFile } from './sse/viggle'
 import { realtimeProxy, runwayProxy } from './sse/runway'
 import { mlog } from './sse/utils'
+import { claudeProxy } from './sse/claude'
 
 
 
@@ -298,6 +299,9 @@ import { mlog } from './sse/utils'
 
     //逆向 https://gptscopilot.ai
 	router.post('/gptscopilot',  gptscopilot );
+
+	//cluade原生支持
+	router.post('/v1/messages',  claudeProxy );
 
 
 	//v1/chat/completions
