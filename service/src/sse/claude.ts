@@ -75,7 +75,15 @@ async function sseDo( request:Request, response:Response, next?:NextFunction) {
                     console.log('error big3>>'    )
                     publishData( "openapi", 'error',  JSON.stringify({e,tomq} ));
                     response.writeHead(e.status );
-                    response.end( e.reason?.replace(/one_api_error/ig,'openai_hk_error'));
+                    try {
+                        let jj= JSON.parse(e.reason )
+                        let ojson={ "type": "error", "error": { "type": "openai_hk_error",
+                                "message": jj.error.message }}
+                        response.end(  JSON.stringify(ojson)  );
+                    } catch (ee4 ) {
+                        response.end( e.reason?.replace(/one_api_error/ig,'openai_hk_error'));
+                    }
+                    
                     return ;
                     //response.write(`data: ${ e.reason}\n\n`);
                 }
@@ -84,7 +92,7 @@ async function sseDo( request:Request, response:Response, next?:NextFunction) {
                     response.writeHead(428);
                     //response.end("get way error...\n"  );
                     let ss = e.reason??'gate way error...';
-                    let ojson={ "type": "error", "error": { "type": "invalid_request_error",
+                    let ojson={ "type": "error", "error": { "type": "openai_hk_error",
                                 "message": ss }}
                     response.end(  JSON.stringify(ojson)  );
                     if( e.reason ) mlog("error",'error big2>>', ss   )
