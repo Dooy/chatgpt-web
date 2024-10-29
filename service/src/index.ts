@@ -7,7 +7,7 @@ import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
 import {getTokens, jianDan, readAidutu, writeAidutu} from "./utils";
 import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenApi,
- uploadFileApi ,openHkUserCheck ,sunoProxy, 
+ uploadFileApi ,openHkUserCheck ,sunoProxy,sunoNewApiProxy,
  mjProxy,
  mjProxyImg,
  ideoProxy,
@@ -244,6 +244,11 @@ import { claudeProxy } from './sse/claude'
 	
 	//suno
 	app.use('/sunoapi' ,openHkUserCheck, sunoProxy);
+
+	app.use('/suno/submit' ,openHkUserCheck, sunoNewApiProxy);
+	app.use('/suno/fetch' ,openHkUserCheck, sunoNewApiProxy);
+
+
 
 	//kling转发
 	app.use('/kling' ,openHkUserCheck, klingProxy);

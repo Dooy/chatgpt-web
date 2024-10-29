@@ -30,6 +30,28 @@ export const sunoProxy= proxy(process.env.SUNO_SERVER??'https://suno-api.suno.ai
 		},
 		userResDecorator:endResDecorator
 })
+
+export const sunoNewApiProxy=proxy(process.env.SUNO_NEWAPI_SERVER??'https://suno-api.suno.ai', {
+		https: false, limit: '10mb',
+		proxyReqPathResolver: function (req) {
+			//return req.originalUrl.replace('/sunoapi', '') // 将URL中的 `/openapi` 替换为空字符串
+			let url= req.originalUrl.replace('/sunoapi', '') // 将URL中的 `/openapi` 替换为空字符串
+            //url=(process.env.SUNO_SERVER_DIR??'')+url;
+            return url;
+		},
+		proxyReqOptDecorator: function (proxyReqOpts, srcReq) { 
+			if ( process.env.SUNO_NEWAPI_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.SUNO_NEWAPI_KEY;
+            else proxyReqOpts.headers['Authorization'] ='Bearer hi' ;
+			proxyReqOpts.headers['Content-Type'] = 'application/json';
+			return proxyReqOpts;
+		},
+		userResDecorator:(  proxyRes:any, proxyResData:any, req:any , userRes:any )=>{ 
+            const dd={ from:'suno-newapi',etime: Date.now() ,url: req.originalUrl,header:req.headers, body:req.body ,data:proxyResData.toString('utf8') };
+            http2mq( 'suno-newapi',dd )
+            return proxyResData;
+        }
+})
+
 //sunoAPI代理
 export const suno2Proxy= proxy(process.env.SUNO_SERVER??'https://suno-api.suno.ai', {
 		https: false, limit: '10mb',
