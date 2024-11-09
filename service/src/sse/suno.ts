@@ -69,7 +69,19 @@ export const suno2Proxy= proxy(process.env.SUNO_SERVER??'https://suno-api.suno.a
 		},
 		userResDecorator:endResDecorator
 })
-
+export const headerSet = async(req:Request, response:Response, next?:NextFunction)=>{
+// 如果 Content-Type 不是 application/json，手动设置为 application/json
+    console.log("asdsd>> ",req.headers['content-type'],"\n\n", req.body )
+    if ( !req.headers['content-type']  ) {
+        req.headers['content-type'] = 'application/json';
+        // 如果请求体不是 JSON 格式，可以在这里进行转换
+        // 例如，将表单数据转换为 JSON
+        if (req.body && typeof req.body === 'object') {
+            req.body = JSON.stringify(req.body);
+        }
+    }
+    next();
+}
 //用户确认是否有积分
 export const openHkUserCheck= async  ( request:Request, response:Response, next?:NextFunction)=> {
      const clientId =    generateRandomCode(16);

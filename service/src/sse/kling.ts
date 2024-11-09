@@ -27,3 +27,24 @@ export const klingProxy= proxy(  process.env.KLING_SERVER??'https://kling.kuaish
 		},
 		userResDecorator:endResDecorator
 })
+
+//udio 代理 udio
+export const udioProxy= proxy(  process.env.UDIO_SERVER??'https://api.openai.com', {
+		https: false, limit: '10mb',
+		proxyReqPathResolver: function (req) {	
+            
+            return  req.originalUrl.replace('/pro', '')
+		},
+		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {     
+			if ( process.env.UDIO_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.UDIO_KEY;
+			return proxyReqOpts;
+		},
+		userResDecorator:(  proxyRes:any, proxyResData:any, req:any , userRes:any )=>{
+			// slog('log','responseData'   );
+			//mlog("log 数据 ",  proxyResData.toString('utf8')  ) 
+			const dd={ from:'udio',etime: Date.now() ,url: req.originalUrl,header:req.headers, body:req.body ,data:proxyResData.toString('utf8') };
+			
+			http2mq( 'udio',dd )
+			return proxyResData; //.toString('utf8') 
+		}
+})

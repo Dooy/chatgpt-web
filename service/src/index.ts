@@ -12,8 +12,9 @@ import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenAp
  mjProxyImg,
  ideoProxy,
  ideoProxyFile,
- klingProxy,
+ klingProxy,udioProxy,
  sleep,
+ headerSet,
  sseDoTimeOut} from './sse'
 import bodyParser  from 'body-parser';
 import cors from 'cors'
@@ -245,13 +246,16 @@ import { claudeProxy } from './sse/claude'
 	//suno
 	app.use('/sunoapi' ,openHkUserCheck, sunoProxy);
 
-	app.use('/suno/submit' ,openHkUserCheck, sunoNewApiProxy);
-	app.use('/suno/fetch' ,openHkUserCheck, sunoNewApiProxy);
+	app.use('/suno/submit',openHkUserCheck, sunoNewApiProxy);
+	app.use('/suno/fetch',openHkUserCheck, sunoNewApiProxy);
 
 
 
 	//kling转发
 	app.use('/kling' ,openHkUserCheck, klingProxy);
+
+	//udio
+	app.use('/udio' ,openHkUserCheck, udioProxy);
 
 	//ideogram
 	//ideoProxyFileDo
