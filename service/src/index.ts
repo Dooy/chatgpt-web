@@ -284,7 +284,7 @@ import { claudeProxy } from './sse/claude'
 	//runway
 	app.use('/runway',openHkUserCheck ,runwayProxy)
 	//runwayml
-	app.use('/runway',openHkUserCheck ,runwaymlProxy)
+	app.use('/runwayml',openHkUserCheck ,runwaymlProxy)
 
 	// /v1/realtime
 	//app.all('/v1/realtime', async ( request, response, next)=>{ console.log("/v1/realtime"); next()} ,realtimeProxy)
