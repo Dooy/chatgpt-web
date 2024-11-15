@@ -21,7 +21,7 @@ import cors from 'cors'
 import multer from "multer"
 import { lumaProProxy, lumaProxy, pikaProxy } from './sse/luma'
 import { proViggleProxy, viggleProxy, viggleProxyFile } from './sse/viggle'
-import { realtimeProxy, runwayProxy } from './sse/runway'
+import { realtimeProxy, runwayProxy , runwaymlProxy} from './sse/runway'
 import { mlog } from './sse/utils'
 import { claudeProxy } from './sse/claude'
 
@@ -283,6 +283,8 @@ import { claudeProxy } from './sse/claude'
 
 	//runway
 	app.use('/runway',openHkUserCheck ,runwayProxy)
+	//runwayml
+	app.use('/runway',openHkUserCheck ,runwaymlProxy)
 
 	// /v1/realtime
 	//app.all('/v1/realtime', async ( request, response, next)=>{ console.log("/v1/realtime"); next()} ,realtimeProxy)

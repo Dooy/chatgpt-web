@@ -15,7 +15,7 @@ const endResDecorator= (  proxyRes:any, proxyResData:any, req:any , userRes:any 
     return proxyResData; //.toString('utf8') 
 }
 
-//lumaAPI代理
+//runwayAPI代理
 export const runwayProxy= proxy(  process.env.RUNWAY_SERVER??'https://suno-api.suno.ai', {
 		https: false, limit: '10mb',
 		proxyReqPathResolver: function (req) {
@@ -28,12 +28,31 @@ export const runwayProxy= proxy(  process.env.RUNWAY_SERVER??'https://suno-api.s
 		},
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) { 
             //mlog("log ",srcReq.originalUrl  )
-			if ( process.env.VIGGLE_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.RUNWAY_KEY;
+			if ( process.env.RUNWAY_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.RUNWAY_KEY;
             //else proxyReqOpts.headers['Authorization'] ='Bearer hi' ;
 			//proxyReqOpts.headers['Content-Type'] = 'application/json';
 			return proxyReqOpts;
 		},
 		userResDecorator:endResDecorator
+})
+
+export const runwaymlProxy= proxy(  process.env.RUNWAYML_SERVER??'https://suno-api.suno.ai', {
+		https: false, limit: '10mb',
+		proxyReqPathResolver: function (req) {
+			 
+            return  req.originalUrl.replace('/pro', '')
+		},
+		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {  
+			if ( process.env.RUNWAYML_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.RUNWAYML_KEY; 
+			return proxyReqOpts;
+		},
+		userResDecorator: (  proxyRes:any, proxyResData:any, req:any , userRes:any )=>{
+   			// slog('log','responseData'   );
+			const dd={ from:'runwayml',etime: Date.now() ,url: req.originalUrl,header:req.headers, body:req.body ,data:proxyResData.toString('utf8') };
+			http2mq( 'runwayml',dd )
+			return proxyResData; //.toString('utf8') 
+		}
+
 })
 
 
