@@ -9,7 +9,7 @@ export const  sunoApi = async  ( request:Request, response:Response, next?:NextF
 const endResDecorator= (  proxyRes:any, proxyResData:any, req:any , userRes:any )=>{
    // slog('log','responseData'   );
     const dd={ from:'cnt',etime: Date.now() ,url: req.originalUrl,header:req.headers, body:req.body 
-    ,data:proxyResData.toString('utf8'), statusCode: proxyResData.statusCode ,"qq":"qq"};
+    ,data:proxyResData.toString('utf8'), statusCode: proxyRes.statusCode ,"qq":"qq"};
     
     http2mq( 'suno',dd )
     return proxyResData; //.toString('utf8') 
