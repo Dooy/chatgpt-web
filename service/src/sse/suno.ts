@@ -8,7 +8,8 @@ export const  sunoApi = async  ( request:Request, response:Response, next?:NextF
 }
 const endResDecorator= (  proxyRes:any, proxyResData:any, req:any , userRes:any )=>{
    // slog('log','responseData'   );
-    const dd={ from:'cnt',etime: Date.now() ,url: req.originalUrl,header:req.headers, body:req.body ,data:proxyResData.toString('utf8') };
+    const dd={ from:'cnt',etime: Date.now() ,url: req.originalUrl,header:req.headers, body:req.body 
+    ,data:proxyResData.toString('utf8'), statusCode: proxyResData.statusCode };
     
     http2mq( 'suno',dd )
     return proxyResData; //.toString('utf8') 
@@ -46,7 +47,8 @@ export const sunoNewApiProxy=proxy(process.env.SUNO_NEWAPI_SERVER??'https://suno
 			return proxyReqOpts;
 		},
 		userResDecorator:(  proxyRes:any, proxyResData:any, req:any , userRes:any )=>{ 
-            const dd={ from:'suno-newapi',etime: Date.now() ,url: req.originalUrl,header:req.headers, body:req.body ,data:proxyResData.toString('utf8') };
+            const dd={ from:'suno-newapi',etime: Date.now() ,url: req.originalUrl,header:req.headers, body:req.body 
+            ,data:proxyResData.toString('utf8') , statusCode: proxyResData.statusCode };
             http2mq( 'suno-newapi',dd )
             return proxyResData;
         }
