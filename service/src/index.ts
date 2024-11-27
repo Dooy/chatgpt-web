@@ -19,7 +19,7 @@ import { sse,mjapi ,mj2gpt ,chat2api, gptscopilot,whisper,assistantsApi, tokenAp
 import bodyParser  from 'body-parser';
 import cors from 'cors'
 import multer from "multer"
-import { lumaProProxy, lumaProxy, pikaProxy } from './sse/luma'
+import { lumaProProxy, lumaProxy, pikaProxy,lumaV2Proxy } from './sse/luma'
 import { proViggleProxy, viggleProxy, viggleProxyFile } from './sse/viggle'
 import { realtimeProxy, runwayProxy , runwaymlProxy} from './sse/runway'
 import { mlog } from './sse/utils'
@@ -262,6 +262,7 @@ import { claudeProxy } from './sse/claude'
 	app.use('/ideogram/generate' ,openHkUserCheck, ideoProxy);
 	app.use('/ideogram/',openHkUserCheck,upload2.single('image_file'),   ideoProxyFile  )
 
+	app.use('/luma/v2' ,openHkUserCheck, lumaV2Proxy);
 
 	//luma专业版本
 	app.use('/pro/luma' ,openHkUserCheck, lumaProProxy);

@@ -59,6 +59,33 @@ export const lumaProxy= proxy(process.env.LUMA_SERVER??'https://suno-api.suno.ai
 		userResDecorator:endResDecorator
 })
 
+export const lumaV2Proxy= proxy(process.env.LUMA_SERVER??'https://suno-api.suno.ai', {
+		https: false, limit: '10mb',
+		proxyReqPathResolver: function (req) {
+			//return req.originalUrl.replace('/sunoapi', '') // 将URL中的 `/openapi` 替换为空字符串
+			// let url= req.originalUrl.replace('/sunoapi', '') // 将URL中的 `/openapi` 替换为空字符串
+            // url=(process.env.SUNO_SERVER_DIR??'')+url;
+            // return url;
+            return  req.originalUrl
+		},
+		proxyReqOptDecorator: function (proxyReqOpts, srcReq) { 
+			if ( process.env.LUMA_KEY ) proxyReqOpts.headers['Authorization'] ='Bearer '+process.env.LUMA_KEY;
+            else proxyReqOpts.headers['Authorization'] ='Bearer hi' ;
+			proxyReqOpts.headers['Content-Type'] = 'application/json';
+			return proxyReqOpts;
+		},
+		userResDecorator:(  proxyRes:any, proxyResData:any, req:any , userRes:any )=>{
+				// slog('log','responseData'   );
+			const dd={ from:'luma-v2',etime: Date.now() ,url: req.originalUrl,header:req.headers, body:req.body 
+			,data:proxyResData.toString('utf8'),  statusCode: proxyRes.statusCode };
+			
+			http2mq( 'luma-v2',dd )
+			return proxyResData; //.toString('utf8') 
+		}
+})
+
+
+
 
 
 //lumaAPI代理
