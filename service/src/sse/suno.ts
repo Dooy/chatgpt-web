@@ -50,6 +50,8 @@ export const sunoProxy = proxy(
 				//1000034806
 				if (bodyContent.mv && bodyContent.mv == "chirp-v3-5") {
 					bodyContent.mv = "chirp-v4";
+				} else if (srcReq.method === "POST") {
+					bodyContent.mv = "chirp-v4";
 				}
 			}
 			return bodyContent;
