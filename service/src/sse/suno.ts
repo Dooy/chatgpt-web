@@ -86,6 +86,23 @@ export const sunoNewApiProxy = proxy(
 			//url=(process.env.SUNO_SERVER_DIR??'')+url;
 			return url;
 		},
+		// 修改请求 body
+		proxyReqBodyDecorator: (bodyContent, srcReq) => {
+			const headers = srcReq.headers;
+			const auth = headers["authorization"] as string;
+			if (
+				auth &&
+				(auth.indexOf("1000034806") > -1 || auth.indexOf("1000039120") > -1)
+			) {
+				//
+				if (bodyContent.mv && bodyContent.mv == "chirp-v3-5") {
+					bodyContent.mv = "chirp-v4";
+				} else if (srcReq.method === "POST") {
+					bodyContent.mv = "chirp-v4";
+				}
+			}
+			return bodyContent;
+		},
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
 			if (process.env.SUNO_NEWAPI_KEY)
 				proxyReqOpts.headers["Authorization"] =
