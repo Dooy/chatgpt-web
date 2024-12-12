@@ -45,9 +45,11 @@ export const sunoProxy = proxy(
 		proxyReqBodyDecorator: (bodyContent, srcReq) => {
 			const headers = srcReq.headers;
 			const auth = headers["authorization"] as string;
-			if (auth && auth.indexOf("1000034806") > -1) {
-				//1000032859
-				//1000034806
+			if (
+				auth &&
+				(auth.indexOf("1000034806") > -1 || auth.indexOf("1000039120") > -1)
+			) {
+				//
 				if (bodyContent.mv && bodyContent.mv == "chirp-v3-5") {
 					bodyContent.mv = "chirp-v4";
 				} else if (srcReq.method === "POST") {
