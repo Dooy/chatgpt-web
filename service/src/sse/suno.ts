@@ -29,6 +29,24 @@ const endResDecorator = (
 	http2mq("suno", dd);
 	return proxyResData; //.toString('utf8')
 };
+
+const sunoBody = (bodyContent, srcReq) => {
+	// const headers = srcReq.headers;
+	// const auth = headers["authorization"] as string;
+	// if (
+	// 	auth &&
+	// 	(auth.indexOf("1000034806") > -1 || auth.indexOf("1000039120") > -1)
+	// ) {
+	// 	//
+	// 	if (bodyContent.mv && bodyContent.mv == "chirp-v3-5") {
+	// 		bodyContent.mv = "chirp-v4";
+	// 	} else if (srcReq.method === "POST") {
+	// 		bodyContent.mv = "chirp-v4";
+	// 	}
+	// }
+	return bodyContent;
+};
+
 //sunoAPI代理
 export const sunoProxy = proxy(
 	process.env.SUNO_SERVER ?? "https://suno-api.suno.ai",
@@ -42,22 +60,7 @@ export const sunoProxy = proxy(
 			return url;
 		},
 		// 修改请求 body
-		proxyReqBodyDecorator: (bodyContent, srcReq) => {
-			const headers = srcReq.headers;
-			const auth = headers["authorization"] as string;
-			if (
-				auth &&
-				(auth.indexOf("1000034806") > -1 || auth.indexOf("1000039120") > -1)
-			) {
-				//
-				if (bodyContent.mv && bodyContent.mv == "chirp-v3-5") {
-					bodyContent.mv = "chirp-v4";
-				} else if (srcReq.method === "POST") {
-					bodyContent.mv = "chirp-v4";
-				}
-			}
-			return bodyContent;
-		},
+		proxyReqBodyDecorator: sunoBody,
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
 			const headers = srcReq.headers;
 			const auth = headers["authorization"] as string;
@@ -87,22 +90,7 @@ export const sunoNewApiProxy = proxy(
 			return url;
 		},
 		// 修改请求 body
-		proxyReqBodyDecorator: (bodyContent, srcReq) => {
-			const headers = srcReq.headers;
-			const auth = headers["authorization"] as string;
-			if (
-				auth &&
-				(auth.indexOf("1000034806") > -1 || auth.indexOf("1000039120") > -1)
-			) {
-				//
-				if (bodyContent.mv && bodyContent.mv == "chirp-v3-5") {
-					bodyContent.mv = "chirp-v4";
-				} else if (srcReq.method === "POST") {
-					bodyContent.mv = "chirp-v4";
-				}
-			}
-			return bodyContent;
-		},
+		proxyReqBodyDecorator: sunoBody,
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
 			if (process.env.SUNO_NEWAPI_KEY)
 				proxyReqOpts.headers["Authorization"] =
