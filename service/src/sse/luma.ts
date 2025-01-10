@@ -210,3 +210,41 @@ export const pixverseProxy = proxy(
 		},
 	}
 );
+
+// vmodel 逆向代理
+export const vmodelProxy = proxy(
+	process.env.VMODEL_SERVER ?? "https://suno-api.suno.ai",
+	{
+		https: false,
+		limit: "10mb",
+		proxyReqPathResolver: function (req) {
+			return req.originalUrl;
+		},
+		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+			if (process.env.VMODEL_KEY)
+				proxyReqOpts.headers["Authorization"] =
+					"Bearer " + process.env.VMODEL_KEY;
+			else proxyReqOpts.headers["Authorization"] = "Bearer hi";
+			proxyReqOpts.headers["Content-Type"] = "application/json";
+			return proxyReqOpts;
+		},
+		userResDecorator: (
+			proxyRes: any,
+			proxyResData: any,
+			req: any,
+			userRes: any
+		) => {
+			const dd = {
+				from: "vmodel",
+				etime: Date.now(),
+				url: req.originalUrl,
+				header: req.headers,
+				body: req.body,
+				data: proxyResData.toString("utf8"),
+				statusCode: proxyRes.statusCode,
+			};
+			http2mq("vmodel", dd);
+			return proxyResData;
+		},
+	}
+);
