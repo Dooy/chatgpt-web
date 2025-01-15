@@ -39,6 +39,7 @@ import {
 	lumaV2Proxy,
 	pixverseProxy,
 	vmodelProxy,
+	replicateProxy,
 } from "./sse/luma";
 import { proViggleProxy, viggleProxy, viggleProxyFile } from "./sse/viggle";
 import { realtimeProxy, runwayProxy, runwaymlProxy } from "./sse/runway";
@@ -293,6 +294,8 @@ app.use("/pika", openHkUserCheck, pikaProxy);
 app.use("/pixverse", openHkUserCheck, pixverseProxy);
 
 app.use("/vmodel", openHkUserCheck, vmodelProxy);
+
+app.use("/replicate", openHkUserCheck, replicateProxy);
 
 //文件还是自己同NGINX 转发吧
 app.use(
