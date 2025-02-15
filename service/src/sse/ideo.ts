@@ -82,7 +82,7 @@ const ideoProxyFileEditDo = async (
 		url: req.originalUrl,
 		header: req.headers,
 		clientId,
-		body: req.body,
+		body: { prompt: req.body.prompt, model: req.body.model }, //req.body,
 		data: {},
 	};
 
