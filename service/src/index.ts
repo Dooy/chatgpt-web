@@ -28,6 +28,7 @@ import {
 	sleep,
 	headerSet,
 	sseDoTimeOut,
+	ideoProxyFileEidt,
 } from "./sse";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -275,6 +276,12 @@ app.use("/udio", openHkUserCheck, udioProxy);
 //ideogram
 //ideoProxyFileDo
 app.use("/ideogram/generate", openHkUserCheck, ideoProxy);
+app.use(
+	"/ideogram/edit",
+	openHkUserCheck,
+	upload2.fields([{ name: "image_file" }, { name: "mask" }]),
+	ideoProxyFileEidt
+);
 app.use(
 	"/ideogram/",
 	openHkUserCheck,
