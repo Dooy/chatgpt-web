@@ -46,6 +46,7 @@ import { proViggleProxy, viggleProxy, viggleProxyFile } from "./sse/viggle";
 import { realtimeProxy, runwayProxy, runwaymlProxy } from "./sse/runway";
 import { mlog } from "./sse/utils";
 import { claudeProxy } from "./sse/claude";
+import { GptImageEdit } from "./sse/file-post";
 
 //const cors = require('cors');
 
@@ -247,6 +248,8 @@ router.post("/v1/audio/speech", sse);
 const storage2 = multer.memoryStorage();
 const upload2 = multer({ storage: storage2 });
 router.post("/v1/audio/transcriptions", upload2.single("file"), whisper);
+
+router.post("/v1/images/edits", openHkUserCheck, upload2.any(), GptImageEdit);
 
 router.post("/sse", sse);
 router.post("/mj/submit/upload-discord-images", openHkUserCheck, mjProxyImg);

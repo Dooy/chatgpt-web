@@ -198,6 +198,7 @@ export const openHkUserCheck = async (
 			response.writeHead(e.status);
 			publishData("openapi", "error", JSON.stringify({ e, tomq }));
 			response.end(e.reason?.replace(/one_api_error/gi, "openai_hk_error"));
+			response.end(e.reason?.replace(/new_api_error/gi, "openai_hk_error"));
 			return;
 			//response.write(`data: ${ e.reason}\n\n`);
 		} else {
@@ -205,7 +206,7 @@ export const openHkUserCheck = async (
 			//response.end("get way error...\n"  );
 			let ss = e.reason ?? "gate way error...";
 			response.end(
-				`{"error":{"message":"${ss}","type":"openai_hk_error","code":"gate_way_error"}}`
+				`{"error":{"message":"${ss}","type":"openai_hk_error","code":"gate_check_way_error"}}`
 			);
 			console.log("error>>", ss, e);
 
