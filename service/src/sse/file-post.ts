@@ -40,6 +40,7 @@ export const doGptImageEdit = async (
 		body: req.body,
 		data: "", //JSON.stringify(responseBody.data),
 		status: 0, // responseBody.status,
+		rqid: clientId,
 	};
 
 	let url = isNotEmptyString(process.env.GPT_IMAGE_BASE_URL)
@@ -96,16 +97,17 @@ export const doGptImageEdit = async (
 			},
 		});
 
-		// const dd = {
-		// 	from: "gpt-image-edit",
-		// 	etime: Date.now(),
-		// 	url: req.originalUrl,
-		// 	header: req.headers,
-		// 	body: req.body,
-		// 	data: JSON.stringify(responseBody.data),
-		// 	status: responseBody.status,
-		// };
-		dd.data = JSON.stringify(responseBody.data);
+		let ss = responseBody.data;
+		if (ss.data && ss.data.length > 0) {
+			for (let i = 0; i < ss.data.length; i++) {
+				let o = ss.data[i];
+				if (o.b64_json) {
+					o.b64_json = "ok";
+				}
+				ss.data[i] = o;
+			}
+		}
+		dd.data = ss;
 		dd.status = responseBody.status;
 
 		//res.json(responseBody.data);
