@@ -97,7 +97,7 @@ export const doGptImageEdit = async (
 			},
 		});
 
-		let ss = responseBody.data;
+		const ss = { ...responseBody.data };
 		if (ss.data && ss.data.length > 0) {
 			for (let i = 0; i < ss.data.length; i++) {
 				let o = ss.data[i];
