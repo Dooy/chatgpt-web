@@ -103,7 +103,7 @@ export const doGptImageEdit = async (
 			for (let i = 0; i < ss.data.length; i++) {
 				let o = ss.data[i];
 				if (o.b64_json) {
-					o.b64_json = "ok";
+					o.b64_json = "yes";
 				}
 				ss.data[i] = o;
 			}
