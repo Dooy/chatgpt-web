@@ -96,6 +96,7 @@ export const doGptImageEdit = async (
 				"Content-Type": "multipart/form-data",
 			},
 		});
+		res.status(responseBody.status).send(responseBody.data);
 
 		const ss = { ...responseBody.data };
 		if (ss.data && ss.data.length > 0) {
@@ -109,9 +110,6 @@ export const doGptImageEdit = async (
 		}
 		dd.data = ss;
 		dd.status = responseBody.status;
-
-		//res.json(responseBody.data);
-		res.status(responseBody.status).send(responseBody.data);
 	} catch (error) {
 		if (error.response) {
 			let responseBody = error.response;
