@@ -46,7 +46,7 @@ import { proViggleProxy, viggleProxy, viggleProxyFile } from "./sse/viggle";
 import { realtimeProxy, runwayProxy, runwaymlProxy } from "./sse/runway";
 import { mlog } from "./sse/utils";
 import { claudeProxy } from "./sse/claude";
-import { GptImageEdit } from "./sse/file-post";
+import { GptImageEdit, IdeoV3 } from "./sse/file-post";
 
 //const cors = require('cors');
 
@@ -278,6 +278,14 @@ app.use("/udio", openHkUserCheck, udioProxy);
 
 //ideogram
 //ideoProxyFileDo
+//ideogram/v1/ideogram-v3/generate
+app.use(
+	"/ideogram/v1/ideogram-v3/:act",
+	openHkUserCheck,
+	upload2.any(),
+	IdeoV3
+);
+
 app.use("/ideogram/generate", openHkUserCheck, ideoProxy);
 app.use(
 	"/ideogram/edit",
@@ -285,6 +293,7 @@ app.use(
 	upload2.fields([{ name: "image_file" }, { name: "mask" }]),
 	ideoProxyFileEidt
 );
+
 app.use(
 	"/ideogram/",
 	openHkUserCheck,

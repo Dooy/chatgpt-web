@@ -131,3 +131,109 @@ export const doGptImageEdit = async (
 
 	http2mq("gpt-image-edit", dd);
 };
+
+export const IdeoV3 = async (
+	request: Request,
+	response: Response,
+	next?: NextFunction
+) => {
+	try {
+		doIdeoV3(request, response, next);
+	} catch (e) {
+		mlog("error", "ideo/v3", e);
+	}
+};
+
+const doIdeoV3 = async (req: Request, res: Response, next?: NextFunction) => {
+	const formData = new FormData();
+	const clientId = generateRandomCode(16);
+	const request = req;
+	const response = res;
+
+	request.on("close", () => {
+		mlog(`${clientId} Connection closed`);
+		//clients = clients.filter(client => client.id !== clientId);
+	});
+	const dd = {
+		from: "ideo-v3",
+		etime: Date.now(),
+		url: req.originalUrl,
+		header: req.headers,
+		body: req.body,
+		data: "", //JSON.stringify(responseBody.data),
+		status: 0, // responseBody.status,
+		rqid: clientId,
+	};
+
+	let BASE_URL = process.env.IDEO_SERVER;
+	let BASE_KEY = process.env.IDEO_KEY ?? process.env.OPENAI_API_KEY;
+	const myKey = BASE_KEY;
+	try {
+		for (let o in req.body) {
+			try {
+				//mlog("body2 ", o);
+				formData.append(o, req.body[o]);
+			} catch (error) {
+				mlog("body  error", o);
+			}
+		}
+
+		if (req.files) {
+			// 处理上传的文件
+			req.files.forEach((file) => {
+				// 判断是单文件还是多文件上传
+
+				mlog("fileName >>", file.fieldname);
+				formData.append(file.fieldname, file.buffer, {
+					filename: file.originalname,
+					contentType: file.mimetype,
+				});
+			});
+		}
+
+		//验证IP百名单
+		//await checkWhileIp( +mykey.user.uid,request );
+
+		let rqUrl = BASE_URL + req.originalUrl;
+
+		mlog(
+			"log",
+			"请求>>",
+			req.body.rendering_speed,
+			rqUrl,
+			myKey
+
+			//tomq.request.duration
+		);
+
+		let responseBody = await axios.post(rqUrl, formData, {
+			headers: {
+				Authorization: "Bearer " + BASE_KEY,
+				"Content-Type": "multipart/form-data",
+			},
+		});
+		res.status(responseBody.status).send(responseBody.data);
+
+		dd.data = responseBody.data;
+		dd.status = responseBody.status;
+	} catch (error) {
+		if (error.response) {
+			let responseBody = error.response;
+			//let data = error.response.data;
+			dd.data = responseBody.data ?? { dtail: "openai_hk_error" };
+			dd.status = responseBody.status ?? 428;
+			res.status(dd.status).send(dd.data);
+		} else {
+			response.writeHead(428);
+
+			let ss = error ? JSON.stringify(error) : "gate way error...";
+			response.end(
+				`{"error":{"message":"${ss}","type":"openai_hk_error","code":"gate_way_error"}}`
+			);
+			dd.data = ss;
+			dd.status = 428;
+		}
+	}
+
+	http2mq("ideo-v3", dd);
+};
