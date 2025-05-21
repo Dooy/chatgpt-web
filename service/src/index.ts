@@ -43,7 +43,12 @@ import {
 	replicateProxy,
 } from "./sse/luma";
 import { proViggleProxy, viggleProxy, viggleProxyFile } from "./sse/viggle";
-import { realtimeProxy, runwayProxy, runwaymlProxy } from "./sse/runway";
+import {
+	higgsfieldProxy,
+	realtimeProxy,
+	runwayProxy,
+	runwaymlProxy,
+} from "./sse/runway";
 import { mlog } from "./sse/utils";
 import { claudeProxy } from "./sse/claude";
 import { GptImageEdit, IdeoV3 } from "./sse/file-post";
@@ -337,6 +342,8 @@ app.use("/pro/viggle", openHkUserCheck, proViggleProxy);
 app.use("/runway", openHkUserCheck, runwayProxy);
 //runwayml
 app.use("/runwayml", openHkUserCheck, runwaymlProxy);
+//higgs
+app.use("/higgsfield", openHkUserCheck, higgsfieldProxy);
 
 // /v1/realtime
 //app.all('/v1/realtime', async ( request, response, next)=>{ console.log("/v1/realtime"); next()} ,realtimeProxy)
