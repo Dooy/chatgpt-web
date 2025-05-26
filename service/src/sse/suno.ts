@@ -192,7 +192,7 @@ export const openHkUserCheck = async (
 
 		next();
 	} catch (e) {
-		//console.log('error>>',e)
+		console.log("openHkUserCheck  error>>", e);
 		//response.send(2)
 		if (e.status) {
 			response.writeHead(e.status);
