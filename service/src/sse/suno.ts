@@ -192,13 +192,15 @@ export const openHkUserCheck = async (
 
 		next();
 	} catch (e) {
-		console.log("openHkUserCheck  error>>", e);
+		//console.log("openHkUserCheck  error>>", e);
 		//response.send(2)
 		if (e.status) {
 			response.writeHead(e.status);
-			publishData("openapi", "error2", JSON.stringify({ e, tomq }));
-			response.end(e.reason?.replace(/one_api_error/gi, "openai_hk_error"));
-			response.end(e.reason?.replace(/new_api_error/gi, "openai_hk_error"));
+			publishData("openapi", "error", JSON.stringify({ e, tomq }));
+			let str = e.reason?.replace(/one_api_error/gi, "openai_hk_error");
+			str = str.replace(/new_api_error/gi, "openai_hk_error");
+			response.end(str);
+			//response.end(e.reason?.replace(/new_api_error/gi, "openai_hk_error"));
 			return;
 			//response.write(`data: ${ e.reason}\n\n`);
 		} else {
