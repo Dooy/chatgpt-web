@@ -189,6 +189,11 @@ export const openHkUserCheck = async (
 		mlog("model>> ", request.url, model);
 		const mykey = await getMyKey(request, model); //并发限制去除
 		tomq.user = mykey.user;
+		//response.locals.myuser = mykey.user;
+		request.headers = {
+			...request.headers,
+			myuid: mykey.user.uid ?? "no",
+		};
 
 		next();
 	} catch (e) {
