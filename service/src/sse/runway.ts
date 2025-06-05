@@ -123,6 +123,46 @@ export const higgsfieldProxy = proxy(
 	}
 );
 
+//
+
+export const riffusionProxy = proxy(
+	process.env.RIFF_SERVER ?? "https://suno-api.suno.ai",
+	{
+		https: false,
+		limit: "10mb",
+		proxyReqPathResolver: function (req) {
+			return req.originalUrl.replace("/pro", "");
+		},
+		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+			if (process.env.RIFF_KEY) {
+				proxyReqOpts.headers["Authorization"] =
+					"Bearer " + process.env.RIFF_KEY;
+			}
+			proxyReqOpts.headers["Content-Type"] = "application/json";
+			return proxyReqOpts;
+		},
+		userResDecorator: (
+			proxyRes: any,
+			proxyResData: any,
+			req: any,
+			userRes: any
+		) => {
+			// slog('log','responseData'   );
+			const dd = {
+				from: "riff",
+				etime: Date.now(),
+				url: req.originalUrl,
+				header: req.headers,
+				body: req.body,
+				data: proxyResData.toString("utf8"),
+				statusCode: proxyRes.statusCode,
+			};
+			http2mq("riff", dd);
+			return proxyResData; //.toString('utf8')
+		},
+	}
+);
+
 //export const realtimeProxy=proxy( 'wss://api.openai.com',{
 //export const realtimeProxy=proxy( 'https://gptproxy-2.aigpai.com',{
 export const realtimeProxy = proxy("https://test-api.bltcy.ai/v1/realtime", {

@@ -46,6 +46,7 @@ import { proViggleProxy, viggleProxy, viggleProxyFile } from "./sse/viggle";
 import {
 	higgsfieldProxy,
 	realtimeProxy,
+	riffusionProxy,
 	runwayProxy,
 	runwaymlProxy,
 } from "./sse/runway";
@@ -344,6 +345,8 @@ app.use("/runway", openHkUserCheck, runwayProxy);
 app.use("/runwayml", openHkUserCheck, runwaymlProxy);
 //higgs
 app.use("/higgsfield", openHkUserCheck, higgsfieldProxy);
+//riffusion
+app.use("/riffusion", openHkUserCheck, riffusionProxy);
 
 // /v1/realtime
 //app.all('/v1/realtime', async ( request, response, next)=>{ console.log("/v1/realtime"); next()} ,realtimeProxy)
