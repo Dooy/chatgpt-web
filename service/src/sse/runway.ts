@@ -123,8 +123,45 @@ export const higgsfieldProxy = proxy(
 	}
 );
 
-//
+//dooy bflProxy
+export const bflProxy = proxy(
+	process.env.BFL_SERVER ?? "https://suno-api.suno.ai",
+	{
+		https: false,
+		limit: "10mb",
+		proxyReqPathResolver: function (req) {
+			return req.originalUrl.replace("/pro", "");
+		},
+		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+			if (process.env.BFL_KEY) {
+				proxyReqOpts.headers["Authorization"] = "Bearer " + process.env.BFL_KEY;
+			}
+			proxyReqOpts.headers["Content-Type"] = "application/json";
+			return proxyReqOpts;
+		},
+		userResDecorator: (
+			proxyRes: any,
+			proxyResData: any,
+			req: any,
+			userRes: any
+		) => {
+			// slog('log','responseData'   );
+			const dd = {
+				from: "bfl",
+				etime: Date.now(),
+				url: req.originalUrl,
+				header: req.headers,
+				body: req.body,
+				data: proxyResData.toString("utf8"),
+				statusCode: proxyRes.statusCode,
+			};
+			http2mq("bfl", dd);
+			return proxyResData; //.toString('utf8')
+		},
+	}
+);
 
+//dooy riff
 export const riffusionProxy = proxy(
 	process.env.RIFF_SERVER ?? "https://suno-api.suno.ai",
 	{
