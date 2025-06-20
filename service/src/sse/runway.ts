@@ -91,7 +91,7 @@ export const higgsfieldProxy = proxy(
 		https: false,
 		limit: "10mb",
 		proxyReqPathResolver: function (req) {
-			return req.originalUrl.replace("/pro", "");
+			return req.originalUrl; //.replace("/pro", "");
 		},
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
 			if (process.env.HIGGS_KEY) {
@@ -206,7 +206,7 @@ export const riffusionProxy = proxy(
 		https: false,
 		limit: "10mb",
 		proxyReqPathResolver: function (req) {
-			return req.originalUrl.replace("/pro", "");
+			return req.originalUrl; //.replace("/pro", "");
 		},
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
 			if (process.env.RIFF_KEY) {
