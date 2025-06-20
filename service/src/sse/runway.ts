@@ -129,9 +129,9 @@ export const bflProxy = proxy(
 	{
 		https: false,
 		limit: "10mb",
-		// proxyReqPathResolver: function (req) {
-		// 	return req.originalUrl.replace("/pro", "");
-		// },
+		proxyReqPathResolver: function (req) {
+			return req.originalUrl.replace("/pro", "");
+		},
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
 			if (process.env.BFL_KEY) {
 				proxyReqOpts.headers["Authorization"] = "Bearer " + process.env.BFL_KEY;
@@ -167,9 +167,9 @@ export const FalProxy = proxy(
 	{
 		https: false,
 		limit: "10mb",
-		// proxyReqPathResolver: function (req) {
-		// 	return req.originalUrl.replace("/pro", "");
-		// },
+		proxyReqPathResolver: function (req) {
+			return req.originalUrl.replace("/pro", "");
+		},
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
 			if (process.env.FAL_KEY) {
 				proxyReqOpts.headers["Authorization"] = "Bearer " + process.env.FAL_KEY;
@@ -205,9 +205,9 @@ export const riffusionProxy = proxy(
 	{
 		https: false,
 		limit: "10mb",
-		// proxyReqPathResolver: function (req) {
-		// 	return req.originalUrl.replace("/pro", "");
-		// },
+		proxyReqPathResolver: function (req) {
+			return req.originalUrl.replace("/pro", "");
+		},
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
 			if (process.env.RIFF_KEY) {
 				proxyReqOpts.headers["Authorization"] =
