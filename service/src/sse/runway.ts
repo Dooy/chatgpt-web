@@ -168,7 +168,7 @@ export const FalProxy = proxy(
 		https: false,
 		limit: "10mb",
 		proxyReqPathResolver: function (req) {
-			return req.originalUrl.replace("/pro", "");
+			return req.originalUrl; //.replace("/pro", "");
 		},
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
 			if (process.env.FAL_KEY) {
