@@ -45,6 +45,7 @@ import {
 import { proViggleProxy, viggleProxy, viggleProxyFile } from "./sse/viggle";
 import {
 	FalProxy,
+	GptImage,
 	bflProxy,
 	higgsfieldProxy,
 	realtimeProxy,
@@ -258,6 +259,7 @@ const upload2 = multer({ storage: storage2 });
 router.post("/v1/audio/transcriptions", upload2.single("file"), whisper);
 
 router.post("/v1/images/edits", openHkUserCheck, upload2.any(), GptImageEdit);
+router.post("/v1/images/generations", openHkUserCheck, GptImage);
 
 router.post("/sse", sse);
 router.post("/mj/submit/upload-discord-images", openHkUserCheck, mjProxyImg);

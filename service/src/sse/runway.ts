@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import proxy from "express-http-proxy";
 import { http2mq } from "./suno";
 import { createProxyMiddleware } from "http-proxy-middleware";
+import { generateRandomCode } from "./utils";
 
 const endResDecorator = (
 	proxyRes: any,
@@ -156,6 +157,44 @@ export const bflProxy = proxy(
 				statusCode: proxyRes.statusCode,
 			};
 			http2mq("bfl", dd);
+			return proxyResData; //.toString('utf8')
+		},
+	}
+);
+
+export const GptImage = proxy(
+	process.env.DALL_E_SERVER ?? "https://suno-api.suno.ai",
+	{
+		https: false,
+		limit: "10mb",
+		proxyReqPathResolver: function (req) {
+			return req.originalUrl; //.replace("/pro", "");
+		},
+		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+			if (process.env.DALL_E_KEY) {
+				proxyReqOpts.headers["Authorization"] =
+					"Bearer " + process.env.DALL_E_KEY;
+			}
+			proxyReqOpts.headers["Content-Type"] = "application/json";
+			return proxyReqOpts;
+		},
+		userResDecorator: (
+			proxyRes: any,
+			proxyResData: any,
+			req: any,
+			userRes: any
+		) => {
+			const dd = {
+				from: "dall-e",
+				etime: Date.now(),
+				url: req.originalUrl,
+				header: req.headers,
+				body: req.body,
+				data: proxyResData.toString("utf8"),
+				status: proxyRes.statusCode, // responseBody.status,
+				rqid: generateRandomCode(16),
+			};
+			http2mq("dall-e", dd);
 			return proxyResData; //.toString('utf8')
 		},
 	}
