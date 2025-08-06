@@ -207,7 +207,16 @@ export const VeoProxy = proxy(
 		https: false,
 		limit: "10mb",
 		proxyReqPathResolver: function (req) {
-			return req.originalUrl; //.replace("/pro", "");
+			//console.log("url ", req.originalUrl);
+			let url: string = req.originalUrl.replace("/veo/", "/");
+			//console.log("url2 ", url);
+			if (url.includes("feed")) {
+				let arr = url.split("feed/");
+				if (arr.length > 1) url = `/v1/video/query?id=${arr[1]}`;
+			}
+			//console.log("url2 ", url);
+
+			return url; //.replace("/pro", "");
 		},
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
 			if (process.env.VEO_KEY) {

@@ -357,7 +357,7 @@ app.use("/bfl", openHkUserCheck, bflProxy);
 //fal.ai
 app.use("/fal-ai", openHkUserCheck, FalProxy);
 //google veo
-app.use("/veo/v1/api", openHkUserCheck, VeoProxy);
+app.use("/veo/v1/video", openHkUserCheck, VeoProxy); //
 
 // /v1/realtime
 //app.all('/v1/realtime', async ( request, response, next)=>{ console.log("/v1/realtime"); next()} ,realtimeProxy)
