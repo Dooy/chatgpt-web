@@ -46,6 +46,7 @@ import { proViggleProxy, viggleProxy, viggleProxyFile } from "./sse/viggle";
 import {
 	FalProxy,
 	GptImage,
+	VeoProxy,
 	bflProxy,
 	higgsfieldProxy,
 	realtimeProxy,
@@ -355,6 +356,8 @@ app.use("/riffusion", openHkUserCheck, riffusionProxy);
 app.use("/bfl", openHkUserCheck, bflProxy);
 //fal.ai
 app.use("/fal-ai", openHkUserCheck, FalProxy);
+//google veo
+app.use("/veo/v1/api", openHkUserCheck, VeoProxy);
 
 // /v1/realtime
 //app.all('/v1/realtime', async ( request, response, next)=>{ console.log("/v1/realtime"); next()} ,realtimeProxy)
