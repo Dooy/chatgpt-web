@@ -208,12 +208,15 @@ export const VeoProxy = proxy(
 		limit: "10mb",
 		proxyReqPathResolver: function (req) {
 			//console.log("url ", req.originalUrl);
-			let url: string = req.originalUrl.replace("/veo/", "/");
+
+			let url: string = req.originalUrl; //req.originalUrl.replace("/veo/", "/");
 			//console.log("url2 ", url);
-			if (url.includes("feed")) {
-				let arr = url.split("feed/");
-				if (arr.length > 1) url = `/v1/video/query?id=${arr[1]}`;
-			}
+
+			// if (url.includes("feed")) {
+			// 	let arr = url.split("feed/");
+			// 	if (arr.length > 1) url = `/v1/video/query?id=${arr[1]}`;
+			// }
+
 			//console.log("url2 ", url);
 
 			return url; //.replace("/pro", "");
