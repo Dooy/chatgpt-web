@@ -264,6 +264,7 @@ router.post("/v1/images/generations", openHkUserCheck, GptImage);
 
 router.post("/sse", sse);
 router.post("/mj/submit/upload-discord-images", openHkUserCheck, mjProxyImg);
+router.post("/mj/submit/video", openHkUserCheck, mjProxy);
 router.post("/mj/submit", mjapi);
 router.post("/mj/submit/imagine", mjapi);
 
