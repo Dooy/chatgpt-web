@@ -171,9 +171,9 @@ export const GptSpeech = proxy(
 			return req.originalUrl; //.replace("/pro", "");
 		},
 		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
-			if (process.env.GPT_AUDIO) {
+			if (process.env.GPT_AUDIO_KEY) {
 				proxyReqOpts.headers["Authorization"] =
-					"Bearer " + process.env.GPT_AUDIO;
+					"Bearer " + process.env.GPT_AUDIO_KEY;
 			}
 			proxyReqOpts.headers["Content-Type"] = "application/json";
 			return proxyReqOpts;
