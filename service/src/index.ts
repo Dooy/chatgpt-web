@@ -264,7 +264,7 @@ const upload2 = multer({ storage: storage2 });
 // 	whisper
 // );
 router.post("/v1/audio/speech", openHkUserCheck, GptSpeech);
-router.post("/fish/", openHkUserCheck, GptSpeech);
+
 router.post(
 	"/v1/audio/transcriptions",
 	openHkUserCheck,
@@ -301,6 +301,7 @@ app.use("/kling", openHkUserCheck, klingProxy);
 
 //udio
 app.use("/udio", openHkUserCheck, udioProxy);
+app.use("/fish", openHkUserCheck, GptSpeech);
 
 //ideogram
 //ideoProxyFileDo
