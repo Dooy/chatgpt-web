@@ -162,6 +162,46 @@ export const bflProxy = proxy(
 	}
 );
 
+export const GptSpeech = proxy(
+	process.env.GPT_AUDIO_BASE_URL ?? "https://suno-api.suno.ai",
+	{
+		https: false,
+		limit: "10mb",
+		proxyReqPathResolver: function (req) {
+			return req.originalUrl; //.replace("/pro", "");
+		},
+		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+			if (process.env.GPT_AUDIO) {
+				proxyReqOpts.headers["Authorization"] =
+					"Bearer " + process.env.GPT_AUDIO;
+			}
+			proxyReqOpts.headers["Content-Type"] = "application/json";
+			return proxyReqOpts;
+		},
+		userResDecorator: (
+			proxyRes: any,
+			proxyResData: any,
+			req: any,
+			userRes: any
+		) => {
+			const dd = {
+				from: "gpt-audio", //"gpt-audio
+				etime: Date.now(),
+				url: req.originalUrl,
+				header: req.headers,
+				body: req.body,
+				data: {
+					length: proxyResData.toString("utf8")?.length,
+					header: proxyRes.headers,
+				},
+				status: proxyRes.statusCode, // responseBody.status,
+				rqid: generateRandomCode(16),
+			};
+			http2mq("gpt-audio", dd);
+			return proxyResData; //.toString('utf8')
+		},
+	}
+);
 export const GptImage = proxy(
 	process.env.DALL_E_SERVER ?? "https://suno-api.suno.ai",
 	{

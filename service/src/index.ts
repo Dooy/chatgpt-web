@@ -46,6 +46,7 @@ import { proViggleProxy, viggleProxy, viggleProxyFile } from "./sse/viggle";
 import {
 	FalProxy,
 	GptImage,
+	GptSpeech,
 	VeoProxy,
 	bflProxy,
 	higgsfieldProxy,
@@ -56,7 +57,7 @@ import {
 } from "./sse/runway";
 import { mlog } from "./sse/utils";
 import { claudeProxy } from "./sse/claude";
-import { GptImageEdit, IdeoV3 } from "./sse/file-post";
+import { GptImageEdit, GptWhisper, IdeoV3 } from "./sse/file-post";
 
 //const cors = require('cors');
 
@@ -252,12 +253,24 @@ else if (API_ENTRY == "gptscopilot")
 else router.post("/v1/chat/completions", sse);
 
 router.post("/v1/embeddings", sse);
-router.post("/v1/audio/speech", sse);
 
 //whisper
 const storage2 = multer.memoryStorage();
 const upload2 = multer({ storage: storage2 });
-router.post("/v1/audio/transcriptions", upload2.single("file"), whisper);
+// router.post(
+// 	"/v1/audio/transcriptions",
+// 	openHkUserCheck,
+// 	upload2.single("file"),
+// 	whisper
+// );
+router.post("/v1/audio/speech", openHkUserCheck, GptSpeech);
+router.post(
+	"/v1/audio/transcriptions",
+	openHkUserCheck,
+	upload2.any(),
+	GptWhisper
+);
+//router.post("/v1/audio/speech", gptSpeech);
 
 router.post("/v1/images/edits", openHkUserCheck, upload2.any(), GptImageEdit);
 router.post("/v1/images/generations", openHkUserCheck, GptImage);
