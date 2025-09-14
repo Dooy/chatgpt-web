@@ -220,15 +220,7 @@ export const doGptImageEdit = async (
 		//验证IP百名单
 		//await checkWhileIp( +mykey.user.uid,request );
 
-		mlog(
-			"log",
-			"请求>>",
-			req.body.model,
-			rqUrl,
-			myKey
-
-			//tomq.request.duration
-		);
+		mlog("log", "请求>>", req.body.model, rqUrl, myKey);
 
 		let responseBody = await axios.post(rqUrl, formData, {
 			headers: {
