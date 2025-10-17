@@ -47,6 +47,7 @@ import {
 	FalProxy,
 	GptImage,
 	GptSpeech,
+	GptVideoProxy,
 	VeoProxy,
 	bflProxy,
 	higgsfieldProxy,
@@ -57,7 +58,12 @@ import {
 } from "./sse/runway";
 import { mlog } from "./sse/utils";
 import { claudeProxy } from "./sse/claude";
-import { GptImageEdit, GptWhisper, IdeoV3 } from "./sse/file-post";
+import {
+	GptImageEdit,
+	GptVideoPost,
+	GptWhisper,
+	IdeoV3,
+} from "./sse/file-post";
 
 //const cors = require('cors');
 
@@ -375,6 +381,9 @@ app.use("/fal-ai", openHkUserCheck, FalProxy);
 //google veo
 app.use("/veo/v1/video", openHkUserCheck, VeoProxy); //
 app.use("/sora/v1/video", openHkUserCheck, VeoProxy); //
+
+router.post("/v1/videos", upload2.any(), GptVideoPost); //openHkUserCheck,
+app.use("/v1/videos", GptVideoProxy); //openHkUserCheck,
 
 // /v1/realtime
 //app.all('/v1/realtime', async ( request, response, next)=>{ console.log("/v1/realtime"); next()} ,realtimeProxy)

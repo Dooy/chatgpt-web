@@ -23,6 +23,18 @@ export const GptImageEdit = async (
 	}
 };
 
+export const GptVideoPost = async (
+	request: Request,
+	response: Response,
+	next?: NextFunction
+) => {
+	try {
+		doGptVideoPost(request, response, next);
+	} catch (e) {
+		mlog("error", "gpt.image.edit /v1/images/edits", e);
+	}
+};
+
 export const GptWhisper = async (
 	request: Request,
 	response: Response,
@@ -157,6 +169,103 @@ export const DoFilePost = async (
 		}
 		return meRep;
 	}
+};
+
+const doGptVideoPost = async (
+	req: Request,
+	res: Response,
+	next?: NextFunction
+) => {
+	const formData = new FormData();
+	const clientId = generateRandomCode(16);
+	const request = req;
+	const response = res;
+	request.on("close", () => {
+		mlog(`${clientId} Connection closed`);
+		//clients = clients.filter(client => client.id !== clientId);
+	});
+	const dd = {
+		from: "sora-api",
+		etime: Date.now(),
+		url: req.originalUrl,
+		header: req.headers,
+		body: req.body,
+		data: "", //JSON.stringify(responseBody.data),
+		status: 0, // responseBody.status,
+		rqid: clientId,
+	};
+
+	let url = isNotEmptyString(process.env.GPT_SORA_BASE_URL)
+		? process.env.GPT_SORA_BASE_URL
+		: "https://api.openai.com";
+
+	let myKey = isNotEmptyString(process.env.GPT_SORA_KEY)
+		? process.env.GPT_SORA_KEY
+		: "my-key";
+	// 添加其他字段
+	let rqUrl = url + "/v1/videos";
+	//mlog("rqUrl   ", url);
+
+	try {
+		for (let o in req.body) {
+			try {
+				//mlog("body2 ", o);
+				formData.append(o, req.body[o]);
+			} catch (error) {
+				mlog("body  error", o);
+			}
+		}
+
+		if (req.files) {
+			// 处理上传的文件
+			req.files.forEach((file) => {
+				// 判断是单文件还是多文件上传
+
+				mlog("fileName >>", file.fieldname);
+				formData.append(file.fieldname, file.buffer, {
+					filename: file.originalname,
+					contentType: file.mimetype,
+				});
+			});
+		}
+
+		//验证IP百名单
+		//await checkWhileIp( +mykey.user.uid,request );
+
+		mlog("log", "请求>>", req.body.model, rqUrl, myKey);
+
+		let responseBody = await axios.post(rqUrl, formData, {
+			headers: {
+				Authorization: myKey,
+				"Content-Type": "multipart/form-data",
+			},
+		});
+		res.status(responseBody.status).send(responseBody.data);
+
+		const ss = { ...responseBody.data };
+
+		dd.data = ss;
+		dd.status = responseBody.status;
+	} catch (error) {
+		if (error.response) {
+			let responseBody = error.response;
+			//let data = error.response.data;
+			dd.data = responseBody.data ?? { dtail: "openai_hk_error" };
+			dd.status = responseBody.status ?? 428;
+			res.status(dd.status).send(dd.data);
+		} else {
+			response.writeHead(428);
+
+			let ss = error ? JSON.stringify(error) : "gate way error...";
+			response.end(
+				`{"error":{"message":"${ss}","type":"openai_hk_error","code":"gate_way_error"}}`
+			);
+			dd.data = ss;
+			dd.status = 428;
+		}
+	}
+
+	http2mq("sora-api", dd);
 };
 
 export const doGptImageEdit = async (

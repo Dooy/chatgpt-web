@@ -240,6 +240,49 @@ export const GptImage = proxy(
 	}
 );
 
+export const GptVideoProxy = proxy(
+	process.env.GPT_SORA_BASE_URL ?? "https://suno-api.suno.ai",
+	{
+		https: false,
+		limit: "10mb",
+		proxyReqPathResolver: function (req) {
+			//console.log("url ", req.originalUrl);
+
+			let url: string = req.originalUrl;
+
+			return url;
+		},
+		proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+			if (process.env.GPT_SORA_KEY) {
+				proxyReqOpts.headers["Authorization"] =
+					"Bearer " + process.env.GPT_SORA_KEY;
+			}
+			proxyReqOpts.headers["Content-Type"] = "application/json";
+			return proxyReqOpts;
+		},
+		userResDecorator: (
+			proxyRes: any,
+			proxyResData: any,
+			req: any,
+			userRes: any
+		) => {
+			// slog('log','responseData'   );
+			const dd = {
+				from: "sora-api",
+				etime: Date.now(),
+				url: req.originalUrl,
+				header: req.headers,
+				body: req.body,
+				data: proxyResData.toString("utf8"),
+				statusCode: proxyRes.statusCode,
+				status: proxyRes.statusCode,
+			};
+			http2mq("sora-api", dd);
+			return proxyResData; //.toString('utf8')
+		},
+	}
+);
+
 //google veo
 export const VeoProxy = proxy(
 	process.env.VEO_SERVER ?? "https://suno-api.suno.ai",
