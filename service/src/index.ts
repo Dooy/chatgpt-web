@@ -383,7 +383,7 @@ app.use("/veo/v1/video", openHkUserCheck, VeoProxy); //
 app.use("/sora/v1/video", openHkUserCheck, VeoProxy); //
 
 router.post("/v1/videos", openHkUserCheck, upload2.any(), GptVideoPost); //
-router.get("/v1/videos/*", openHkUserCheck, GptVideoProxy); //openHkUserCheck,
+router.all("/v1/videos/*", openHkUserCheck, GptVideoProxy); //openHkUserCheck,
 
 // /v1/realtime
 //app.all('/v1/realtime', async ( request, response, next)=>{ console.log("/v1/realtime"); next()} ,realtimeProxy)
