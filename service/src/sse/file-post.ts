@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { generateRandomCode, mlog } from "./utils";
 import FormData from "form-data";
 import { isNotEmptyString } from "src/utils/is";
+import sizeOf from "image-size";
 import { getMyKey } from "./sse";
 import axios from "axios";
 import { http2mq } from "./suno";
@@ -304,10 +305,14 @@ export const doGptImageEdit = async (
 	let rqUrl = url + "/v1/images/edits";
 
 	try {
+		let size = "";
 		for (let o in req.body) {
 			try {
 				//mlog("body2 ", o);
 				formData.append(o, req.body[o]);
+				if (o == "size") {
+					size = req.body[o];
+				}
 			} catch (error) {
 				mlog("body  error", o);
 			}
@@ -319,6 +324,16 @@ export const doGptImageEdit = async (
 				// 判断是单文件还是多文件上传
 
 				mlog("fileName >>", file.fieldname);
+				if (file.mimetype.startsWith("image/")) {
+					try {
+						// sizeOf 可以直接读取 Buffer
+						const dimensions = sizeOf(file.buffer);
+						console.log(
+							`图片 [${file.originalname}] 尺寸: 宽=${dimensions.width}, 高=${dimensions.height}`
+						);
+						if (size == "") size = `${dimensions.width}x${dimensions.height}`;
+					} catch (e) {}
+				}
 				formData.append(file.fieldname, file.buffer, {
 					filename: file.originalname,
 					contentType: file.mimetype,
